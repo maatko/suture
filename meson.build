@@ -7,7 +7,7 @@ sources = files('.clang-format')
 subdir('include')
 subdir('lib')
 
-suture = shared_library(
+suture = static_library(
 	'suture',
 	sources, 
 	dependencies: jni, 
