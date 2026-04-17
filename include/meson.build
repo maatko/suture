@@ -1,3 +1,4 @@
 sources += files(
-	'suture.h'
+	'suture.h',
+	'suture/types.h', 'suture/error.h'
 )
