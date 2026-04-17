@@ -1,0 +1,14 @@
+.cache/
+.vs/
+.idea/
+.eclipse/
+
+compile_commands.json
+compile_flags.txt
+
+build
+Makefile
+*.make
+
+*.sln
+*.vcxproj*
