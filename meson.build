@@ -7,9 +7,17 @@ sources = files('.clang-format')
 subdir('include')
 subdir('lib')
 
-shared_library(
+suture = shared_library(
 	'suture',
 	sources, 
 	dependencies: jni, 
 	include_directories: include_directories('include')
+)
+
+shared_library(
+	'example',
+	files('example/detour.c'),
+	dependencies: jni,
+	include_directories: include_directories('include'),
+	link_with: suture
 )

@@ -1,3 +1,1 @@
-sources += files(
-	'suture.c'
-)
+sources += files('suture.c')
