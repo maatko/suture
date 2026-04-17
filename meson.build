@@ -15,8 +15,8 @@ suture = shared_library(
 )
 
 shared_library(
-	'example',
-	files('example/detour.c'),
+	'detour',
+	files('examples/detour.c'),
 	dependencies: jni,
 	include_directories: include_directories('include'),
 	link_with: suture
