@@ -36,16 +36,12 @@ enum su_error su_init(struct su_env *env) {
     return SU_JVM_NO_VIRTUAL_MACHINES;
 
   SU_TRY(su_attach_thread(env->jvm, (void **)&jni, &attached), SU_JVM_JNI_ATTACH_FAILURE);
-
   JVM_TRY(JVM_INVOKE(env->jvm, GetEnv, (void **)&env->jvmti, JVMTI_VERSION_1_1), JNI_OK, SU_JVM_JVMTI_ATTACH_FAILURE);
-
-  if (attached)
-    (*env->jvm)->DetachCurrentThread(env->jvm);
 
   return SU_OK;
 }
 
-enum su_error su_detour(struct su_env *env, const char *class_name, const char *method_name, const char *method_signature, void *function) {
+enum su_error su_detour(struct su_env *env, const char *class_name, const char *method_name, const char *method_signature, jmethodID *original_method, void *function) {
   assert(env != NULL && "su_detour: `env` must be a valid pointer.");
   assert(function != NULL && "su_detour: `function` must be a valid pointer.");
 
@@ -57,12 +53,13 @@ enum su_error su_detour(struct su_env *env, const char *class_name, const char *
       .name = strdup(method_name),
       .signature = strdup(method_signature),
       .class_name = strdup(class_name),
-      .function = function};
+      .original = original_method,
+      .detour = function};
 
   return SU_OK;
 }
 
-enum su_error su_mdetour(struct su_env *env, jmethodID method, void *function) {
+enum su_error su_mdetour(struct su_env *env, jmethodID method, jmethodID *original_method, void *function) {
   enum su_error status = SU_OK;
 
   jclass declaring_class = NULL;
@@ -72,14 +69,12 @@ enum su_error su_mdetour(struct su_env *env, jmethodID method, void *function) {
   char *method_signature = NULL;
 
   JVM_TRY(JVM_INVOKE(env->jvmti, GetMethodDeclaringClass, method, &declaring_class), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
-
   JVM_TRY(JVM_INVOKE(env->jvmti, GetClassSignature, declaring_class, &class_name, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
-
   JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, GetMethodName, method, &method_name, &method_signature, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE, catch);
+  SU_TRY_CATCH(status, su_detour(env, class_name, method_name, method_signature, original_method, function), exit);
 
-  SU_TRY_CATCH(status, su_detour(env, class_name, method_name, method_signature, function), catch);
+exit:
 
-catch:
   JVM_FREE(env->jvmti, class_name);
   JVM_FREE(env->jvmti, method_name);
   JVM_FREE(env->jvmti, method_signature);
@@ -92,7 +87,7 @@ enum su_error su_transform(struct su_env *env) {
 }
 
 void su_dispose(struct su_env *env) {
-  jflag_patch("AllowRedefinitionToAddDeleteMethods", false);
+  JVM_INVOKE(env->jvm, DetachCurrentThread);
 
   if (env->hooks != NULL) {
     for (u2 i = 0; i < env->hooks_count; i++) {
@@ -107,4 +102,6 @@ void su_dispose(struct su_env *env) {
 
     SU_FREE(env->hooks);
   }
+
+  jflag_patch("AllowRedefinitionToAddDeleteMethods", false);
 }
