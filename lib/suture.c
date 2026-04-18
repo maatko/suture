@@ -31,7 +31,7 @@ enum su_error su_init(struct su_env *env) {
   JNIEnv *jni;
   bool attached;
 
-  if (!jflag_patch("AllowRedefinitionToAddDeleteMethods", true))
+  if (!su_flag_patch("AllowRedefinitionToAddDeleteMethods", true))
     return SU_JVM_FLAG_PATCH_FAILURE;
 
   if (JNI_GetCreatedJavaVMs(&env->jvm, 1, &count) != JNI_OK || count == 0)
@@ -149,5 +149,5 @@ void su_dispose(struct su_env *env) {
     SU_FREE(env->hooks);
   }
 
-  jflag_patch("AllowRedefinitionToAddDeleteMethods", false);
+  su_flag_patch("AllowRedefinitionToAddDeleteMethods", false);
 }

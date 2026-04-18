@@ -26,7 +26,7 @@ typedef struct {
 extern JNIIMPORT VMStructEntry *gHotSpotVMStructs;
 extern JNIIMPORT VMTypeEntry *gHotSpotVMTypes;
 
-bool jflag_patch(const char *name, const bool value) {
+bool su_flag_patch(const char *name, const bool value) {
   if (!name || !gHotSpotVMStructs || !gHotSpotVMTypes)
     return false;
 

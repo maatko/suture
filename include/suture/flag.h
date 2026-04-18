@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-bool jflag_patch(const char *name, bool value);
+bool su_flag_patch(const char *name, bool value);
 
 #ifdef __cplusplus
 }
