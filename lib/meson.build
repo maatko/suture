@@ -1,1 +1,1 @@
-sources += files('suture.c', 'hook.c')
+sources += files('suture.c', 'hook.c', 'flag.c')

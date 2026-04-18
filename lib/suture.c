@@ -1,4 +1,5 @@
 #include <suture.h>
+#include <suture/flag.h>
 
 #include <assert.h>
 #include <stdbool.h>
@@ -27,6 +28,9 @@ enum su_error su_init(struct su_env *env) {
   jsize count;
   JNIEnv *jni;
   bool attached;
+
+  if (!jflag_patch("AllowRedefinitionToAddDeleteMethods", true))
+    return SU_JVM_FLAG_PATCH_FAILURE;
 
   if (JNI_GetCreatedJavaVMs(&env->jvm, 1, &count) != JNI_OK || count == 0)
     return SU_JVM_NO_VIRTUAL_MACHINES;
@@ -88,6 +92,8 @@ enum su_error su_transform(struct su_env *env) {
 }
 
 void su_dispose(struct su_env *env) {
+  jflag_patch("AllowRedefinitionToAddDeleteMethods", false);
+
   if (env->hooks != NULL) {
     for (u2 i = 0; i < env->hooks_count; i++) {
       struct su_hook *hook = &env->hooks[i];
