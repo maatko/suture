@@ -1,5 +1,7 @@
 #include <suture.h>
+
 #include <suture/flag.h>
+#include <suture/transform.h>
 
 #include <assert.h>
 #include <stdbool.h>
@@ -38,7 +40,15 @@ enum su_error su_init(struct su_env *env) {
   SU_TRY(su_attach_thread(env->jvm, (void **)&jni, &attached), SU_JVM_JNI_ATTACH_FAILURE);
   JVM_TRY(JVM_INVOKE(env->jvm, GetEnv, (void **)&env->jvmti, JVMTI_VERSION_1_1), JNI_OK, SU_JVM_JVMTI_ATTACH_FAILURE);
 
-  return SU_OK;
+  jvmtiCapabilities capabilities = {0};
+  capabilities.can_redefine_classes = 1;
+  capabilities.can_redefine_any_class = 1;
+  capabilities.can_retransform_classes = 1;
+  capabilities.can_retransform_any_class = 1;
+
+  JVM_TRY(JVM_INVOKE(env->jvmti, AddCapabilities, &capabilities), JVMTI_ERROR_NONE, SU_JVM_CAPABILITIES_FAILURE);
+
+  return su_transform_init(env);
 }
 
 enum su_error su_detour(struct su_env *env, const char *class_name, const char *method_name, const char *method_signature, jmethodID *original_method, void *function) {
@@ -53,6 +63,7 @@ enum su_error su_detour(struct su_env *env, const char *class_name, const char *
       .name = strdup(method_name),
       .signature = strdup(method_signature),
       .class_name = strdup(class_name),
+      .original_name = su_hook_original_name(class_name),
       .original = original_method,
       .detour = function};
 
@@ -70,7 +81,8 @@ enum su_error su_mdetour(struct su_env *env, jmethodID method, jmethodID *origin
 
   JVM_TRY(JVM_INVOKE(env->jvmti, GetMethodDeclaringClass, method, &declaring_class), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
   JVM_TRY(JVM_INVOKE(env->jvmti, GetClassSignature, declaring_class, &class_name, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
-  JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, GetMethodName, method, &method_name, &method_signature, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE, catch);
+
+  JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, GetMethodName, method, &method_name, &method_signature, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE, exit);
   SU_TRY_CATCH(status, su_detour(env, class_name, method_name, method_signature, original_method, function), exit);
 
 exit:
@@ -82,11 +94,44 @@ exit:
   return status;
 }
 
-enum su_error su_transform(struct su_env *env) {
-  return SU_OK;
+enum su_error su_transform(const struct su_env *env) {
+  JNIEnv *jni = NULL;
+  bool attached;
+  enum su_error status = SU_OK;
+
+  SU_TRY(su_attach_thread(env->jvm, (void **)&jni, &attached), SU_JVM_JNI_ATTACH_FAILURE);
+
+  JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, SetEnvironmentLocalStorage, env), JVMTI_ERROR_NONE, SU_JVM_ENVIRONMENT_STORAGE_FAILURE, exit);
+
+  jclass *classes = (jclass *)malloc(sizeof(jclass) * env->hooks_count);
+  assert(classes != NULL && "su_transform: failed to allocate memory for classes");
+
+  for (u2 i = 0; i < env->hooks_count; i++) {
+    const struct su_hook *hook = &env->hooks[i];
+    classes[i] = JVM_INVOKE(jni, FindClass, hook->class_name);
+  }
+
+  JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, RetransformClasses, env->hooks_count, classes), JVMTI_ERROR_NONE, SU_JVM_RETRANSFORM_FAILURE, exit);
+
+  // for (u2 i = 0; i < env->hooks_count; i++) {
+  //   const struct su_hook *hook = &env->hooks[i];
+  //   const jclass klass = classes[i];
+  //
+  //  if (hook->original != NULL)
+  //    (*hook->original) = JVM_INVOKE(jni, GetMethodID, klass, hook->original_name, hook->signature);
+  //}
+
+exit:
+
+  if (attached)
+    JVM_TRY(JVM_INVOKE(env->jvm, DetachCurrentThread), JNI_OK, SU_JVM_JVMTI_DETACH_FAILURE);
+
+  return status;
 }
 
 void su_dispose(struct su_env *env) {
+  su_transform_dispose(env);
+
   JVM_INVOKE(env->jvm, DetachCurrentThread);
 
   if (env->hooks != NULL) {
@@ -98,6 +143,7 @@ void su_dispose(struct su_env *env) {
       SU_FREE(hook->name);
       SU_FREE(hook->signature);
       SU_FREE(hook->class_name);
+      SU_FREE(hook->original_name);
     }
 
     SU_FREE(env->hooks);

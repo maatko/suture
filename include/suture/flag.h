@@ -1,7 +1,6 @@
 #ifndef SUTURE_FLAG_H
 #define SUTURE_FLAG_H
 
-
 #include <stdbool.h>
 
 #ifdef __cplusplus

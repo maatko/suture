@@ -13,9 +13,20 @@ struct su_hook {
   char *name;
   char *signature;
   char *class_name;
+  char *original_name;
 
   jmethodID* original;
   void *detour;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+char* su_hook_original_name(const char *name);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // SUTURE_HOOK_H

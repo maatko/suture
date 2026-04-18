@@ -3,5 +3,6 @@ sources += files(
 	'suture/types.h',
 	'suture/error.h',
 	'suture/hook.h',
-	'suture/flag.h'
+	'suture/flag.h',
+	'suture/transform.h'
 )

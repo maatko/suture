@@ -22,11 +22,11 @@ extern "C" {
 
 enum su_error su_init(struct su_env *env);
 
-enum su_error su_detour(struct su_env *env, const char *class_name, const char *method_name, const char *method_signature, jmethodID* original_method, void *function);
+enum su_error su_detour(struct su_env *env, const char *class_name, const char *method_name, const char *method_signature, jmethodID *original_method, void *function);
 
-enum su_error su_mdetour(struct su_env *env, jmethodID method, jmethodID* original_method, void *function);
+enum su_error su_mdetour(struct su_env *env, jmethodID method, jmethodID *original_method, void *function);
 
-enum su_error su_transform(struct su_env *env);
+enum su_error su_transform(const struct su_env *env);
 
 void su_dispose(struct su_env *env);
 

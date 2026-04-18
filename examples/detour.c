@@ -10,11 +10,12 @@ static FILE *err;
 static void OpenConsole();
 static void CloseConsole();
 
-static void JNICALL click_mouse_detour(JNIEnv *env, jobject instance) {
-  (void)env;
-  (void)instance;
+static jmethodID original_click_mouse;
 
+static void JNICALL click_mouse_detour(JNIEnv *env, jobject instance) {
   printf("click_mouse_detour: called\n");
+
+  (*env)->CallVoidMethod(env, instance, original_click_mouse);
 }
 
 static DWORD WINAPI ThreadMain(LPVOID lpParams) {
@@ -26,7 +27,7 @@ static DWORD WINAPI ThreadMain(LPVOID lpParams) {
     return 1;
   }
 
-  if (su_detour(&env, "ave", "ax", "()V", click_mouse_detour) != SU_OK) {
+  if (su_detour(&env, "ave", "ax", "()V", &original_click_mouse, click_mouse_detour) != SU_OK) {
     fprintf(stderr, "Failed to register method detour hook");
     return 1;
   }
