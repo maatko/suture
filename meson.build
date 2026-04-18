@@ -1,8 +1,15 @@
 project('suture', 'c', 'java', default_options : ['c_std=c11'])
 
+cc = meson.get_compiler('c')
+
+clang = find_program('clang', required: false)
+if clang.found() and cc.get_id() != 'clang'
+  message('clang found but not the active compiler — consider: CC=clang meson setup build')
+endif
+
 jni = dependency('jni', version: '>=1.8', modules: ['jvm'], required: true)
 
-sources = files('.clang-format')
+sources = files()
 
 subdir('include')
 subdir('lib')

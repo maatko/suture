@@ -10,12 +10,24 @@ static FILE *err;
 static void OpenConsole();
 static void CloseConsole();
 
+static void JNICALL click_mouse_detour(JNIEnv *env, jobject instance) {
+  (void)env;
+  (void)instance;
+
+  printf("click_mouse_detour: called\n");
+}
+
 static DWORD WINAPI ThreadMain(LPVOID lpParams) {
   OpenConsole();
 
   struct su_env env = {0};
   if (su_init(&env) != SU_OK) {
-    fprintf(stderr, "Failed to initialize the suture library.");
+    fprintf(stderr, "Failed to initialize the suture library");
+    return 1;
+  }
+
+  if (su_detour(&env, "ave", "ax", "()V", click_mouse_detour) != SU_OK) {
+    fprintf(stderr, "Failed to register method detour hook");
     return 1;
   }
 

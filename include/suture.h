@@ -2,6 +2,7 @@
 #define SUTURE_H
 
 #include <suture/error.h>
+#include <suture/hook.h>
 #include <suture/types.h>
 
 #include <jni.h>
@@ -9,8 +10,10 @@
 
 struct su_env {
   JavaVM *jvm;
-  JNIEnv *jni;
   jvmtiEnv *jvmti;
+
+  struct su_hook *hooks;
+  u2 hooks_count;
 };
 
 #ifdef __cplusplus
@@ -18,6 +21,10 @@ extern "C" {
 #endif
 
 enum su_error su_init(struct su_env *env);
+
+enum su_error su_detour(struct su_env *env, const char *class_name, const char *method_name, const char *method_signature, void *function);
+
+enum su_error su_mdetour(struct su_env *env, jmethodID method, void *function);
 
 enum su_error su_transform(struct su_env *env);
 
