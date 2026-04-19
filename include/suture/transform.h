@@ -12,7 +12,7 @@
 struct su_method {
   char *name;
   char *desc;
-  struct su_stream *chunk;
+  u2 chunk_index;
 };
 
 struct su_transform {
@@ -35,6 +35,8 @@ extern void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *j
 enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 buffer_length);
 
 u2 su_const_add_utf8(struct su_transform *transform, const char *utf8);
+
+struct su_stream *su_add_method(struct su_transform *transform, const char *name, const char *desc, u2 access_flags);
 
 enum su_error su_transform_build(const struct su_transform *transform, u1 **buffer, u2 *buffer_length);
 
