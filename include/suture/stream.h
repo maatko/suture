@@ -15,6 +15,8 @@ struct su_stream {
 extern "C" {
 #endif
 
+enum su_error su_stream_rn(struct su_stream *stream, u1 *buffer, u2 size, u2 offset);
+
 enum su_error su_stream_r1(struct su_stream *stream, u1 *value, u2 offset);
 
 enum su_error su_stream_r2(struct su_stream *stream, u2 *value, u2 offset);
@@ -23,7 +25,7 @@ enum su_error su_stream_r4(struct su_stream *stream, u4 *value, u2 offset);
 
 enum su_error su_stream_r8(struct su_stream *stream, u8 *value, u2 offset);
 
-enum su_error su_stream_chunk(struct su_stream *stream, struct su_stream **chunks, u2* chunks_count);
+enum su_error su_stream_chunk(struct su_stream *stream, struct su_stream **chunks, u2 *chunks_count);
 
 #ifdef __cplusplus
 }

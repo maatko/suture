@@ -12,18 +12,16 @@
 struct su_transform {
   struct su_stream *chunks;
   u2 chunks_count;
+
+  u2 constant_pool_count;
+  char **strings;
 };
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void JNICALL su_transform_class_file_load_hook(
-    jvmtiEnv *jvmti, JNIEnv *jni,
-    jclass class_being_redefined, jobject loader,
-    const char *name, jobject protection_domain,
-    jint class_data_len, const unsigned char *class_data,
-    jint *new_class_data_len, unsigned char **new_class_data);
+void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jclass class_being_redefined, jobject loader, const char *name, jobject protection_domain, jint class_data_len, const unsigned char *class_data, jint *new_class_data_len, unsigned char **new_class_data);
 
 enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 buffer_length);
 

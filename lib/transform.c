@@ -4,6 +4,7 @@
 #include <suture/stream.h>
 #include <suture/types.h>
 
+#include <assert.h>
 #include <string.h>
 
 #define CONSTANT_Class 7
@@ -21,12 +22,7 @@
 #define CONSTANT_MethodType 16
 #define CONSTANT_InvokeDynamic 18
 
-void JNICALL su_transform_class_file_load_hook(
-    jvmtiEnv *jvmti, JNIEnv *jni,
-    jclass class_being_redefined, jobject loader,
-    const char *name, jobject protection_domain,
-    jint class_data_len, const unsigned char *class_data,
-    jint *new_class_data_len, unsigned char **new_class_data) {
+void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jclass class_being_redefined, jobject loader, const char *name, jobject protection_domain, jint class_data_len, const unsigned char *class_data, jint *new_class_data_len, unsigned char **new_class_data) {
   struct su_env *env = NULL;
   if (JVM_INVOKE(jvmti, GetEnvironmentLocalStorage, (void **)&env) != JVMTI_ERROR_NONE)
     return;
@@ -92,11 +88,12 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 b
   stream.cursor += sizeof(u2) * 2;
 
   SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, &transform->chunks_count), exit);
+  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &transform->constant_pool_count, 0), exit);
 
-  u2 constant_pool_count;
-  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &constant_pool_count, 0), exit);
+  transform->strings = calloc(transform->constant_pool_count, sizeof(char *));
+  assert(transform->strings != NULL && "failed to allocate memory for strings");
 
-  for (u2 i = 1; i < constant_pool_count; i++) {
+  for (u2 i = 1; i < transform->constant_pool_count; i++) {
     u1 tag;
     SU_TRY_CATCH(status, su_stream_read(&stream, u1, &tag, 0), exit);
 
@@ -126,7 +123,13 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 b
       u2 length;
       SU_TRY_CATCH(status, su_stream_read(&stream, u2, &length, 0), exit);
 
-      stream.cursor += length;
+      char *string = malloc(sizeof(char) * (length + 1));
+      assert(string != NULL && "failed to allocate memory for string");
+
+      SU_TRY_CATCH(status, su_stream_rn(&stream, (u1 *)string, length, 0), exit);
+      string[length] = '\0';
+
+      transform->strings[i] = string;
     } break;
     case CONSTANT_MethodHandle:
       stream.cursor += sizeof(u1) + sizeof(u2);
@@ -165,8 +168,14 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 b
   SU_TRY_CATCH(status, su_stream_read(&stream, u2, &methods_count, 0), exit);
 
   for (u2 i = 0; i < methods_count; i++) {
+    u2 name_index;
+    SU_TRY_CATCH(status, su_stream_read(&stream, u2, &name_index, sizeof(u2)), exit);
+
+    u2 desc_index;
+    SU_TRY_CATCH(status, su_stream_read(&stream, u2, &desc_index, 0), exit);
+
     u2 attributes_count;
-    SU_TRY_CATCH(status, su_stream_read(&stream, u2, &attributes_count, sizeof(u2) * 3), exit);
+    SU_TRY_CATCH(status, su_stream_read(&stream, u2, &attributes_count, 0), exit);
 
     for (u2 j = 0; j < attributes_count; j++) {
       u4 attributes_length;
@@ -174,9 +183,9 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 b
 
       stream.cursor += attributes_length;
     }
-  }
 
-  SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, &transform->chunks_count), exit);
+    SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, &transform->chunks_count), exit);
+  }
 
   u2 attributes_count;
   SU_TRY_CATCH(status, su_stream_read(&stream, u2, &attributes_count, 0), exit);
@@ -217,8 +226,11 @@ enum su_error su_transform_build(const struct su_transform *transform, u1 **buff
 }
 
 void su_transform_dispose(struct su_transform *transform) {
+  for (u2 i = 0; i < transform->constant_pool_count; i++)
+    SU_FREE(transform->strings[i]);
+  SU_FREE(transform->strings);
+
   for (u2 i = 0; i < transform->chunks_count; i++)
     SU_FREE(transform->chunks[i].buffer);
-
   SU_FREE(transform->chunks);
 }
