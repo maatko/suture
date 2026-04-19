@@ -17,6 +17,9 @@ struct su_hook {
 
   jmethodID* original;
   void *detour;
+
+  const unsigned char* original_bytes;
+  jint original_length;
 };
 
 #ifdef __cplusplus

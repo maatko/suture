@@ -9,6 +9,8 @@
 #include <jvmti.h>
 
 struct su_env {
+  enum su_error error;
+
   JavaVM *jvm;
   jvmtiEnv *jvmti;
 

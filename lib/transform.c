@@ -1,32 +1,139 @@
 #include <suture/transform.h>
 
-#include <jni.h>
-#include <jvmti.h>
+#include <suture.h>
+#include <suture/stream.h>
 
-static void JNICALL ClassFileLoadHook(
+#define CONSTANT_Class 7
+#define CONSTANT_Fieldref 9
+#define CONSTANT_Methodref 10
+#define CONSTANT_InterfaceMethodref 11
+#define CONSTANT_String 8
+#define CONSTANT_Integer 3
+#define CONSTANT_Float 4
+#define CONSTANT_Long 5
+#define CONSTANT_Double 6
+#define CONSTANT_NameAndType 12
+#define CONSTANT_Utf8 1
+#define CONSTANT_MethodHandle 15
+#define CONSTANT_MethodType 16
+#define CONSTANT_InvokeDynamic 18
+
+void JNICALL su_transform_class_file_load_hook(
     jvmtiEnv *jvmti, JNIEnv *jni,
     jclass class_being_redefined, jobject loader,
     const char *name, jobject protection_domain,
     jint class_data_len, const unsigned char *class_data,
     jint *new_class_data_len, unsigned char **new_class_data) {
-  printf("transforming: %s\n", name);
+  struct su_env *env = NULL;
+  if (JVM_INVOKE(jvmti, GetEnvironmentLocalStorage, (void **)&env) != JVMTI_ERROR_NONE)
+    return;
+
+  const struct su_transform transform = { 0 };
+
+  enum su_error status = SU_OK;
+  SU_TRY_CATCH(status, su_transform_init(&transform, (u1 *)class_data, (u2)class_data_len), exit);
+
+exit:
+  env->error = status;
 }
 
-enum su_error su_transform_init(const struct su_env *env) {
-  jvmtiEventCallbacks callbacks = {0};
-  callbacks.ClassFileLoadHook = &ClassFileLoadHook;
+enum su_error su_transform_init(const struct su_transform *transform, u1 *buffer, u2 buffer_length) {
+  enum su_error status = SU_OK;
 
-  JVM_TRY(JVM_INVOKE(env->jvmti, SetEventCallbacks, &callbacks, sizeof(callbacks)), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
-  JVM_TRY(JVM_INVOKE(env->jvmti, SetEventNotificationMode, JVMTI_ENABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
+  struct su_stream stream = {
+    .buffer = buffer,
+    .length = buffer_length,
+    .cursor = 0
+  };
 
-  return SU_OK;
+  u4 magic;
+  SU_TRY_CATCH(status, su_stream_read(&stream, u4, &magic, 0), exit);
+
+  if (magic != 0xCAFEBABE)
+    return SU_JVM_INVALID_CLASS_MAGIC;
+
+  u2 constant_pool_count;
+  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &constant_pool_count, sizeof(u2) * 2), exit);
+
+  for (u2 i = 1; i < constant_pool_count; i++) {
+    u1 tag;
+    SU_TRY_CATCH(status, su_stream_read(&stream, u1, &tag, 0), exit);
+
+    switch (tag) {
+    case CONSTANT_Class:
+    case CONSTANT_String:
+    case CONSTANT_MethodType:
+      stream.cursor += sizeof(u2);
+      break;
+    case CONSTANT_Fieldref:
+    case CONSTANT_Methodref:
+    case CONSTANT_InterfaceMethodref:
+    case CONSTANT_NameAndType:
+    case CONSTANT_InvokeDynamic:
+      stream.cursor += sizeof(u2) * 2;
+      break;
+    case CONSTANT_Integer:
+    case CONSTANT_Float:
+      stream.cursor += sizeof(u4);
+      break;
+    case CONSTANT_Long:
+    case CONSTANT_Double:
+      stream.cursor += sizeof(u4) * 2;
+      i++;
+      break;
+    case CONSTANT_Utf8: {
+      u2 length;
+      SU_TRY_CATCH(status, su_stream_read(&stream, u2, &length, 0), exit);
+
+      stream.cursor += length;
+    } break;
+    case CONSTANT_MethodHandle:
+      stream.cursor += sizeof(u1) + sizeof(u2);
+      break;
+    default:
+      status = SU_JVM_INVALID_CONSTANT_POOL;
+      goto exit;
+    }
+  }
+
+  u2 interfaces_count;
+  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &interfaces_count, sizeof(u2) * 3), exit);
+
+  stream.cursor += sizeof(u2) * interfaces_count;
+
+  u2 fields_count;
+  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &fields_count, 0), exit);
+
+  for (u2 i = 0; i < fields_count; i++) {
+    u2 attributes_count;
+    SU_TRY_CATCH(status, su_stream_read(&stream, u2, &attributes_count, sizeof(u2) * 3), exit);
+
+    for (u2 j = 0; j < attributes_count; j++) {
+      u4 attributes_length;
+      SU_TRY_CATCH(status, su_stream_read(&stream, u4, &attributes_length, sizeof(u2)), exit);
+
+      stream.cursor += attributes_length;
+    }
+  }
+
+  u2 methods_count;
+  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &methods_count, 0), exit);
+
+  for (u2 i = 0; i < methods_count; i++) {
+    u2 attributes_count;
+    SU_TRY_CATCH(status, su_stream_read(&stream, u2, &attributes_count, sizeof(u2) * 3), exit);
+
+    for (u2 j = 0; j < attributes_count; j++) {
+      u4 attributes_length;
+      SU_TRY_CATCH(status, su_stream_read(&stream, u4, &attributes_length, sizeof(u2)), exit);
+
+      stream.cursor += attributes_length;
+    }
+  }
+exit:
+  return status;
 }
 
-enum su_error su_transform_dispose(struct su_env *env) {
-  const jvmtiEventCallbacks callbacks = {0};
-
-  JVM_TRY(JVM_INVOKE(env->jvmti, SetEventCallbacks, &callbacks, sizeof(callbacks)), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
-  JVM_TRY(JVM_INVOKE(env->jvmti, SetEventNotificationMode, JVMTI_DISABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
-
+enum su_error su_transform_dispose(const struct su_transform *transform) {
   return SU_OK;
 }

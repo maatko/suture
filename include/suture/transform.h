@@ -1,15 +1,30 @@
 #ifndef SUTURE_TRANSFORM_H
 #define SUTURE_TRANSFORM_H
 
-#include <suture.h>
+#include "error.h"
+#include "types.h"
+
+#include <jni.h>
+#include <jvmti.h>
+
+struct su_transform {
+  int i;
+};
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-enum su_error su_transform_init(const struct su_env *env);
+void JNICALL su_transform_class_file_load_hook(
+    jvmtiEnv *jvmti, JNIEnv *jni,
+    jclass class_being_redefined, jobject loader,
+    const char *name, jobject protection_domain,
+    jint class_data_len, const unsigned char *class_data,
+    jint *new_class_data_len, unsigned char **new_class_data);
 
-enum su_error su_transform_dispose(struct su_env *env);
+enum su_error su_transform_init(const struct su_transform *transform, u1 *buffer, u2 buffer_length);
+
+enum su_error su_transform_dispose(const struct su_transform *transform);
 
 #ifdef __cplusplus
 }

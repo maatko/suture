@@ -40,7 +40,7 @@ enum su_error su_init(struct su_env *env) {
   SU_TRY(su_attach_thread(env->jvm, (void **)&jni, &attached), SU_JVM_JNI_ATTACH_FAILURE);
   JVM_TRY(JVM_INVOKE(env->jvm, GetEnv, (void **)&env->jvmti, JVMTI_VERSION_1_1), JNI_OK, SU_JVM_JVMTI_ATTACH_FAILURE);
 
-  jvmtiCapabilities capabilities = {0};
+  jvmtiCapabilities capabilities = { 0 };
   capabilities.can_redefine_classes = 1;
   capabilities.can_redefine_any_class = 1;
   capabilities.can_retransform_classes = 1;
@@ -48,7 +48,13 @@ enum su_error su_init(struct su_env *env) {
 
   JVM_TRY(JVM_INVOKE(env->jvmti, AddCapabilities, &capabilities), JVMTI_ERROR_NONE, SU_JVM_CAPABILITIES_FAILURE);
 
-  return su_transform_init(env);
+  jvmtiEventCallbacks callbacks = { 0 };
+  callbacks.ClassFileLoadHook = &su_transform_class_file_load_hook;
+
+  JVM_TRY(JVM_INVOKE(env->jvmti, SetEventCallbacks, &callbacks, sizeof(callbacks)), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
+  JVM_TRY(JVM_INVOKE(env->jvmti, SetEventNotificationMode, JVMTI_ENABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
+
+  return SU_OK;
 }
 
 enum su_error su_detour(struct su_env *env, const char *class_name, const char *method_name, const char *method_signature, jmethodID *original_method, void *function) {
@@ -59,13 +65,14 @@ enum su_error su_detour(struct su_env *env, const char *class_name, const char *
   assert(env->hooks != NULL && "su_detour: failed to reallocate memory for the hooks");
 
   env->hooks[env->hooks_count - 1] = (struct su_hook){
-      .type = SU_HOOK_DETOUR,
-      .name = strdup(method_name),
-      .signature = strdup(method_signature),
-      .class_name = strdup(class_name),
-      .original_name = su_hook_original_name(class_name),
-      .original = original_method,
-      .detour = function};
+    .type = SU_HOOK_DETOUR,
+    .name = strdup(method_name),
+    .signature = strdup(method_signature),
+    .class_name = strdup(class_name),
+    .original_name = su_hook_original_name(class_name),
+    .original = original_method,
+    .detour = function
+  };
 
   return SU_OK;
 }
@@ -95,9 +102,9 @@ exit:
 }
 
 enum su_error su_transform(const struct su_env *env) {
+  enum su_error status = SU_OK;
   JNIEnv *jni = NULL;
   bool attached;
-  enum su_error status = SU_OK;
 
   SU_TRY(su_attach_thread(env->jvm, (void **)&jni, &attached), SU_JVM_JNI_ATTACH_FAILURE);
 
@@ -112,6 +119,11 @@ enum su_error su_transform(const struct su_env *env) {
   }
 
   JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, RetransformClasses, env->hooks_count, classes), JVMTI_ERROR_NONE, SU_JVM_RETRANSFORM_FAILURE, exit);
+
+  // this is for handling errors in the actual transform
+  // class hook function, since we don't log them directly.
+  if (env->error != SU_OK)
+    return env->error;
 
   // for (u2 i = 0; i < env->hooks_count; i++) {
   //   const struct su_hook *hook = &env->hooks[i];
@@ -130,8 +142,10 @@ exit:
 }
 
 void su_dispose(struct su_env *env) {
-  su_transform_dispose(env);
+  const jvmtiEventCallbacks callbacks = { 0 };
 
+  JVM_INVOKE(env->jvmti, SetEventCallbacks, &callbacks, sizeof(callbacks));
+  JVM_INVOKE(env->jvmti, SetEventNotificationMode, JVMTI_DISABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL);
   JVM_INVOKE(env->jvm, DetachCurrentThread);
 
   if (env->hooks != NULL) {
