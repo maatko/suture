@@ -7,8 +7,11 @@
 #include <jni.h>
 #include <jvmti.h>
 
+#include "stream.h"
+
 struct su_transform {
-  int i;
+  struct su_stream *chunks;
+  u2 chunks_count;
 };
 
 #ifdef __cplusplus
@@ -22,9 +25,11 @@ void JNICALL su_transform_class_file_load_hook(
     jint class_data_len, const unsigned char *class_data,
     jint *new_class_data_len, unsigned char **new_class_data);
 
-enum su_error su_transform_init(const struct su_transform *transform, u1 *buffer, u2 buffer_length);
+enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 buffer_length);
 
-enum su_error su_transform_dispose(const struct su_transform *transform);
+enum su_error su_transform_build(const struct su_transform *transform, u1 **buffer, u2 *buffer_length);
+
+void su_transform_dispose(struct su_transform *transform);
 
 #ifdef __cplusplus
 }

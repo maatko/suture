@@ -25,6 +25,8 @@ enum su_error {
   SU_OK = 0,
 
   // stream
+  SU_STREAM_INVALID_CHUNK,
+  SU_STREAM_UNFINISHED_READ,
   SU_STREAM_AT_END,
 
   // virtual machine specific

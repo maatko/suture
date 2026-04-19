@@ -24,17 +24,17 @@ static DWORD WINAPI ThreadMain(LPVOID lpParams) {
   struct su_env env = { 0 };
   if (su_init(&env) != SU_OK) {
     fprintf(stderr, "Failed to initialize the suture library");
-    FreeLibraryAndExitThread((HINSTANCE)lpParams, 1);
+    goto exit;
   }
 
   if (su_detour(&env, "ave", "ax", "()V", &original_click_mouse, click_mouse_detour) != SU_OK) {
     fprintf(stderr, "Failed to register method detour hook");
-    FreeLibraryAndExitThread((HINSTANCE)lpParams, 1);
+    goto exit;
   }
 
   if (su_transform(&env) != SU_OK) {
     fprintf(stderr, "Failed to apply the class transforms");
-    FreeLibraryAndExitThread((HINSTANCE)lpParams, 1);
+    goto exit;
   }
 
   printf("Transform ok\n");
@@ -42,6 +42,7 @@ static DWORD WINAPI ThreadMain(LPVOID lpParams) {
   while (!(GetAsyncKeyState(VK_DELETE) & 0x1))
     Sleep(100);
 
+exit:
   su_dispose(&env);
 
   CloseConsole();

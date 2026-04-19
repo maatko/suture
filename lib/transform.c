@@ -2,6 +2,9 @@
 
 #include <suture.h>
 #include <suture/stream.h>
+#include <suture/types.h>
+
+#include <string.h>
 
 #define CONSTANT_Class 7
 #define CONSTANT_Fieldref 9
@@ -28,22 +31,56 @@ void JNICALL su_transform_class_file_load_hook(
   if (JVM_INVOKE(jvmti, GetEnvironmentLocalStorage, (void **)&env) != JVMTI_ERROR_NONE)
     return;
 
-  const struct su_transform transform = { 0 };
-
   enum su_error status = SU_OK;
-  SU_TRY_CATCH(status, su_transform_init(&transform, (u1 *)class_data, (u2)class_data_len), exit);
+  for (u2 i = 0; i < env->hooks_count; i++) {
+    const struct su_hook *hook = &env->hooks[i];
+    if (strcmp(name, hook->class_name) != 0)
+      continue;
+
+    struct su_transform transform = { 0 };
+    SU_TRY_CATCH(status, su_transform_init(&transform, (u1 *)class_data, (u2)class_data_len), exit);
+
+    u1 *t_buffer;
+    u2 t_length;
+
+    su_transform_build(&transform, &t_buffer, &t_length);
+
+    FILE *file = fopen("transformed.class", "wb");
+    {
+      fwrite((void *)t_buffer, t_length, 1, file);
+    }
+    fclose(file);
+
+    {
+      unsigned char *jvmti_buffer = NULL;
+      JVM_TRY_CATCH(status, JVM_INVOKE(jvmti, Allocate, t_length, &jvmti_buffer), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE, exit);
+
+      memcpy(jvmti_buffer, t_buffer, t_length);
+
+      (*new_class_data) = jvmti_buffer;
+      (*new_class_data_len) = t_length;
+    }
+
+    free(t_buffer);
+
+    su_transform_dispose(&transform);
+  }
 
 exit:
   env->error = status;
 }
 
-enum su_error su_transform_init(const struct su_transform *transform, u1 *buffer, u2 buffer_length) {
+enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 buffer_length) {
   enum su_error status = SU_OK;
+
+  memset((void *)transform, 0, sizeof(struct su_transform));
+  transform->chunks = NULL;
 
   struct su_stream stream = {
     .buffer = buffer,
     .length = buffer_length,
-    .cursor = 0
+    .cursor = 0,
+    .chunk = 0
   };
 
   u4 magic;
@@ -52,8 +89,12 @@ enum su_error su_transform_init(const struct su_transform *transform, u1 *buffer
   if (magic != 0xCAFEBABE)
     return SU_JVM_INVALID_CLASS_MAGIC;
 
+  stream.cursor += sizeof(u2) * 2;
+
+  SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, &transform->chunks_count), exit);
+
   u2 constant_pool_count;
-  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &constant_pool_count, sizeof(u2) * 2), exit);
+  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &constant_pool_count, 0), exit);
 
   for (u2 i = 1; i < constant_pool_count; i++) {
     u1 tag;
@@ -96,6 +137,8 @@ enum su_error su_transform_init(const struct su_transform *transform, u1 *buffer
     }
   }
 
+  SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, &transform->chunks_count), exit);
+
   u2 interfaces_count;
   SU_TRY_CATCH(status, su_stream_read(&stream, u2, &interfaces_count, sizeof(u2) * 3), exit);
 
@@ -116,6 +159,8 @@ enum su_error su_transform_init(const struct su_transform *transform, u1 *buffer
     }
   }
 
+  SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, &transform->chunks_count), exit);
+
   u2 methods_count;
   SU_TRY_CATCH(status, su_stream_read(&stream, u2, &methods_count, 0), exit);
 
@@ -130,10 +175,50 @@ enum su_error su_transform_init(const struct su_transform *transform, u1 *buffer
       stream.cursor += attributes_length;
     }
   }
+
+  SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, &transform->chunks_count), exit);
+
+  u2 attributes_count;
+  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &attributes_count, 0), exit);
+
+  for (u2 j = 0; j < attributes_count; j++) {
+    u4 attributes_length;
+    SU_TRY_CATCH(status, su_stream_read(&stream, u4, &attributes_length, sizeof(u2)), exit);
+
+    stream.cursor += attributes_length;
+  }
+
+  SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, &transform->chunks_count), exit);
+
+  if (stream.cursor < stream.length) {
+    return SU_STREAM_UNFINISHED_READ;
+  }
+
 exit:
   return status;
 }
 
-enum su_error su_transform_dispose(const struct su_transform *transform) {
+enum su_error su_transform_build(const struct su_transform *transform, u1 **buffer, u2 *buffer_length) {
+  u2 sz = 0;
+  u1 *buff = NULL;
+
+  for (u2 i = 0; i < transform->chunks_count; i++) {
+    const struct su_stream *chunk = &transform->chunks[i];
+
+    buff = realloc(buff, sz + chunk->length);
+    memcpy(buff + sz, chunk->buffer, chunk->length);
+
+    sz += chunk->length;
+  }
+
+  (*buffer) = buff;
+  (*buffer_length) = sz;
   return SU_OK;
+}
+
+void su_transform_dispose(struct su_transform *transform) {
+  for (u2 i = 0; i < transform->chunks_count; i++)
+    SU_FREE(transform->chunks[i].buffer);
+
+  SU_FREE(transform->chunks);
 }
