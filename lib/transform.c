@@ -7,6 +7,8 @@
 #include <assert.h>
 #include <string.h>
 
+#define CONSTANT_POOL_INDEX 1
+
 #define CONSTANT_Class 7
 #define CONSTANT_Fieldref 9
 #define CONSTANT_Methodref 10
@@ -35,6 +37,8 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
 
     struct su_transform transform = { 0 };
     SU_TRY_CATCH(status, su_transform_init(&transform, (u1 *)class_data, (u2)class_data_len), exit);
+
+    su_const_add_utf8(&transform, "Hello, World!");
 
     u1 *t_buffer;
     u2 t_length;
@@ -90,8 +94,8 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 b
   SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, &transform->chunks_count), exit);
   SU_TRY_CATCH(status, su_stream_read(&stream, u2, &transform->constant_pool_count, 0), exit);
 
-  transform->strings = calloc(transform->constant_pool_count, sizeof(char *));
-  assert(transform->strings != NULL && "failed to allocate memory for strings");
+  transform->constant_pool = calloc(transform->constant_pool_count, sizeof(void *));
+  assert(transform->constant_pool != NULL && "failed to allocate memory for strings");
 
   for (u2 i = 1; i < transform->constant_pool_count; i++) {
     u1 tag;
@@ -129,7 +133,7 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 b
       SU_TRY_CATCH(status, su_stream_rn(&stream, (u1 *)string, length, 0), exit);
       string[length] = '\0';
 
-      transform->strings[i] = string;
+      transform->constant_pool[i] = string;
     } break;
     case CONSTANT_MethodHandle:
       stream.cursor += sizeof(u1) + sizeof(u2);
@@ -207,12 +211,31 @@ exit:
   return status;
 }
 
+u2 su_const_add_utf8(struct su_transform *transform, const char *utf8) {
+  struct su_stream *chunk = &transform->chunks[CONSTANT_POOL_INDEX];
+  su_stream_w1(chunk, CONSTANT_Utf8, 0);
+
+  const u2 length = (u2)strlen(utf8);
+  su_stream_w2(chunk, length, 0);
+  su_stream_wn(chunk, (void *)utf8, length, 0);
+
+  transform->constant_pool = realloc(transform->constant_pool, sizeof(void *) * (transform->constant_pool_count + 1));
+  transform->constant_pool[transform->constant_pool_count] = NULL;
+
+  return transform->constant_pool_count++;
+}
+
 enum su_error su_transform_build(const struct su_transform *transform, u1 **buffer, u2 *buffer_length) {
   u2 sz = 0;
   u1 *buff = NULL;
 
   for (u2 i = 0; i < transform->chunks_count; i++) {
-    const struct su_stream *chunk = &transform->chunks[i];
+    struct su_stream *chunk = &transform->chunks[i];
+
+    if (i == CONSTANT_POOL_INDEX) {
+      chunk->cursor = 0;
+      su_stream_w2(chunk, transform->constant_pool_count, 0);
+    }
 
     buff = realloc(buff, sz + chunk->length);
     memcpy(buff + sz, chunk->buffer, chunk->length);
@@ -227,8 +250,8 @@ enum su_error su_transform_build(const struct su_transform *transform, u1 **buff
 
 void su_transform_dispose(struct su_transform *transform) {
   for (u2 i = 0; i < transform->constant_pool_count; i++)
-    SU_FREE(transform->strings[i]);
-  SU_FREE(transform->strings);
+    SU_FREE(transform->constant_pool[i]);
+  SU_FREE(transform->constant_pool);
 
   for (u2 i = 0; i < transform->chunks_count; i++)
     SU_FREE(transform->chunks[i].buffer);
