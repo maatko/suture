@@ -181,7 +181,7 @@ void su_dispose(struct su_env *env) {
       SU_FREE(hook->original_name);
     }
 
-    jvmtiError e = JVM_INVOKE(env->jvmti, RedefineClasses, env->hooks_count, definitions);
+    JVM_INVOKE(env->jvmti, RedefineClasses, env->hooks_count, definitions);
 
     SU_FREE(definitions);
     SU_FREE(env->hooks);
