@@ -126,7 +126,7 @@ enum su_error su_transform(const struct su_env *env) {
 
   for (u2 i = 0; i < env->hooks_count; i++) {
     const struct su_hook *hook = &env->hooks[i];
-     jclass klass = classes[i];
+    jclass klass = classes[i];
 
     JNINativeMethod method = {
       .name = hook->name,
@@ -138,11 +138,11 @@ enum su_error su_transform(const struct su_env *env) {
 
     klass = JVM_INVOKE(jni, FindClass, hook->class_name);
 
-    free(classes);
-
     if (hook->original != NULL)
       (*hook->original) = JVM_INVOKE(jni, GetMethodID, klass, hook->original_name, hook->signature);
   }
+
+  free(classes);
 
 exit:
 
@@ -153,17 +153,27 @@ exit:
 }
 
 void su_dispose(struct su_env *env) {
-  const jvmtiEventCallbacks callbacks = { 0 };
-
-  JVM_INVOKE(env->jvmti, SetEventCallbacks, &callbacks, sizeof(callbacks));
-  JVM_INVOKE(env->jvmti, SetEventNotificationMode, JVMTI_DISABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL);
-  JVM_INVOKE(env->jvm, DetachCurrentThread);
-
   if (env->hooks != NULL) {
+    jvmtiClassDefinition *definitions = malloc(sizeof(jvmtiClassDefinition) * env->hooks_count);
+    assert(definitions != NULL && "su_dispose: failed to allocate memory for definitions");
+
+    JNIEnv *jni;
+    bool attached;
+
+    const jvmtiEventCallbacks callbacks = { 0 };
+    JVM_INVOKE(env->jvmti, SetEventCallbacks, &callbacks, sizeof(callbacks));
+    JVM_INVOKE(env->jvmti, SetEventNotificationMode, JVMTI_DISABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL);
+
+    su_attach_thread(env->jvm, (void **)&jni, &attached);
+
     for (u2 i = 0; i < env->hooks_count; i++) {
       struct su_hook *hook = &env->hooks[i];
       if (hook == NULL)
         continue;
+
+      definitions[i].klass = JVM_INVOKE(jni, FindClass, hook->class_name);
+      definitions[i].class_byte_count = hook->original_length;
+      definitions[i].class_bytes = hook->original_bytes;
 
       SU_FREE(hook->name);
       SU_FREE(hook->signature);
@@ -171,6 +181,16 @@ void su_dispose(struct su_env *env) {
       SU_FREE(hook->original_name);
     }
 
+    jvmtiError e = JVM_INVOKE(env->jvmti, RedefineClasses, env->hooks_count, definitions);
+
+    SU_FREE(definitions);
     SU_FREE(env->hooks);
+
+    if (attached)
+      JVM_INVOKE(env->jvm, DetachCurrentThread);
   }
+
+  JVM_INVOKE(env->jvm, DetachCurrentThread);
+
+  su_flag_patch("AllowRedefinitionToAddDeleteMethods", false);
 }

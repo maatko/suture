@@ -15,10 +15,10 @@ struct su_hook {
   char *class_name;
   char *original_name;
 
-  jmethodID* original;
+  jmethodID *original;
   void *detour;
 
-  const unsigned char* original_bytes;
+  unsigned char *original_bytes;
   jint original_length;
 };
 
@@ -26,7 +26,7 @@ struct su_hook {
 extern "C" {
 #endif
 
-char* su_hook_original_name(const char *name);
+char *su_hook_original_name(const char *name);
 
 #ifdef __cplusplus
 }

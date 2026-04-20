@@ -42,13 +42,21 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
   if (JVM_INVOKE(jvmti, GetEnvironmentLocalStorage, (void **)&env) != JVMTI_ERROR_NONE)
     return;
 
+  unsigned char *old_bytes = (u1 *)malloc(sizeof(unsigned char) * class_data_len);
+  assert(old_bytes != NULL && "failed to allocate memory for the old bytes");
+
+  memcpy(old_bytes, class_data, class_data_len);
+
   struct su_transform transform = { 0 };
   SU_TRY_CATCH(status, su_transform_init(&transform, (u1 *)class_data, (u2)class_data_len), exit);
 
   for (u2 i = 0; i < env->hooks_count; i++) {
-    const struct su_hook *hook = &env->hooks[i];
+    struct su_hook *hook = &env->hooks[i];
     if (strcmp(name, hook->class_name) != 0)
       continue;
+
+    hook->original_bytes = old_bytes;
+    hook->original_length = class_data_len;
 
     u1 *attributes = NULL;
     u2 attributes_length = 0;
