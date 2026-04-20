@@ -11,7 +11,7 @@ static enum su_error su_attach_thread(JavaVM *jvm, void **env, bool *has_attache
   assert(jvm != NULL && "su_attach_thread: parameter `jvm` must be a valid pointer.");
   assert(env != NULL && "su_attach_thread: parameter `env` must be a valid pointer.");
 
-  jint res = JVM_INVOKE(jvm, GetEnv, env, JNI_VERSION_1_1);
+  jint res = JVM_INVOKE(jvm, GetEnv, env, JNI_VERSION_1_6);
 
   const bool attach = res == JNI_EDETACHED;
   if (attach)
@@ -31,14 +31,11 @@ enum su_error su_init(struct su_env *env) {
   JNIEnv *jni;
   bool attached;
 
-  if (!su_flag_patch("AllowRedefinitionToAddDeleteMethods", true))
-    return SU_JVM_FLAG_PATCH_FAILURE;
-
   if (JNI_GetCreatedJavaVMs(&env->jvm, 1, &count) != JNI_OK || count == 0)
     return SU_JVM_NO_VIRTUAL_MACHINES;
 
   SU_TRY(su_attach_thread(env->jvm, (void **)&jni, &attached), SU_JVM_JNI_ATTACH_FAILURE);
-  JVM_TRY(JVM_INVOKE(env->jvm, GetEnv, (void **)&env->jvmti, JVMTI_VERSION_1_1), JNI_OK, SU_JVM_JVMTI_ATTACH_FAILURE);
+  JVM_TRY(JVM_INVOKE(env->jvm, GetEnv, (void **)&env->jvmti, JVMTI_VERSION_1_2), JNI_OK, SU_JVM_JVMTI_ATTACH_FAILURE);
 
   jvmtiCapabilities capabilities = { 0 };
   capabilities.can_redefine_classes = 1;
@@ -53,6 +50,10 @@ enum su_error su_init(struct su_env *env) {
 
   JVM_TRY(JVM_INVOKE(env->jvmti, SetEventCallbacks, &callbacks, sizeof(callbacks)), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
   JVM_TRY(JVM_INVOKE(env->jvmti, SetEventNotificationMode, JVMTI_ENABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
+
+  if (!su_flag_patch("AllowRedefinitionToAddDeleteMethods", true)) {
+    return SU_JVM_GENERIC_FAILURE;
+  }
 
   return SU_OK;
 }
@@ -120,18 +121,28 @@ enum su_error su_transform(const struct su_env *env) {
 
   JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, RetransformClasses, env->hooks_count, classes), JVMTI_ERROR_NONE, SU_JVM_RETRANSFORM_FAILURE, exit);
 
-  // this is for handling errors in the actual transform
-  // class hook function, since we don't log them directly.
   if (env->error != SU_OK)
     return env->error;
 
-  // for (u2 i = 0; i < env->hooks_count; i++) {
-  //   const struct su_hook *hook = &env->hooks[i];
-  //   const jclass klass = classes[i];
-  //
-  //  if (hook->original != NULL)
-  //    (*hook->original) = JVM_INVOKE(jni, GetMethodID, klass, hook->original_name, hook->signature);
-  //}
+  for (u2 i = 0; i < env->hooks_count; i++) {
+    const struct su_hook *hook = &env->hooks[i];
+     jclass klass = classes[i];
+
+    JNINativeMethod method = {
+      .name = hook->name,
+      .signature = hook->signature,
+      .fnPtr = hook->detour
+    };
+
+    JVM_TRY_CATCH(status, JVM_INVOKE(jni, RegisterNatives, klass, &method, 1), JVMTI_ERROR_NONE, SU_JVM_RETRANSFORM_FAILURE, exit);
+
+    klass = JVM_INVOKE(jni, FindClass, hook->class_name);
+
+    free(classes);
+
+    if (hook->original != NULL)
+      (*hook->original) = JVM_INVOKE(jni, GetMethodID, klass, hook->original_name, hook->signature);
+  }
 
 exit:
 
@@ -162,6 +173,4 @@ void su_dispose(struct su_env *env) {
 
     SU_FREE(env->hooks);
   }
-
-  su_flag_patch("AllowRedefinitionToAddDeleteMethods", false);
 }

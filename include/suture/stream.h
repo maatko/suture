@@ -11,6 +11,13 @@ struct su_stream {
   u2 chunk;
 };
 
+struct su_chunk {
+  struct su_stream stream;
+
+  struct su_chunk *next;
+  struct su_chunk *prev;
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,7 +42,7 @@ void su_stream_w4(struct su_stream *stream, u4 value, u2 offset);
 
 void su_stream_w8(struct su_stream *stream, u8 value, u2 offset);
 
-enum su_error su_stream_chunk(struct su_stream *stream, struct su_stream **chunks, u2 *chunks_count);
+enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks, struct su_chunk** chunk_out);
 
 #ifdef __cplusplus
 }

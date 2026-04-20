@@ -13,4 +13,4 @@ bool su_flag_patch(const char *name, bool value);
 }
 #endif
 
-#endif //SUTURE_FLAG_H
+#endif // SUTURE_FLAG_H

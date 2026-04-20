@@ -15,7 +15,7 @@ static jmethodID original_click_mouse;
 static void JNICALL click_mouse_detour(JNIEnv *env, jobject instance) {
   printf("click_mouse_detour: called\n");
 
-  // (*env)->CallVoidMethod(env, instance, original_click_mouse);
+  (*env)->CallVoidMethod(env, instance, original_click_mouse);
 }
 
 static DWORD WINAPI ThreadMain(LPVOID lpParams) {

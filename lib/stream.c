@@ -154,7 +154,7 @@ void su_stream_w8(struct su_stream *stream, const u8 value, const u2 offset) {
   stream->cursor += type_size;
 }
 
-enum su_error su_stream_chunk(struct su_stream *stream, struct su_stream **chunks, u2 *chunks_count) {
+enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks, struct su_chunk **chunk_out) {
   assert(stream != NULL && "su_stream_chunk: `stream` must be a valid pointer");
   assert(chunks != NULL && "su_stream_chunk: `chunks` must be a valid pointer");
 
@@ -162,24 +162,43 @@ enum su_error su_stream_chunk(struct su_stream *stream, struct su_stream **chunk
   if (chunk_size <= 0 || chunk_size >= stream->length)
     return SU_STREAM_INVALID_CHUNK;
 
-  const int new_count = (*chunks_count) + 1;
-  (*chunks) = realloc((void *)*chunks, (new_count * sizeof(struct su_stream)));
-  assert((*chunks) != NULL && "su_stream_chunk: failed to allocate memory for chunks");
-
   u1 *buffer = (u1 *)malloc(sizeof(u1) * chunk_size);
   assert(buffer != NULL && "su_stream_chunk: failed to allocate memory for a stream chunk");
 
   memcpy(buffer, stream->buffer + stream->chunk, chunk_size);
 
-  (*chunks)[new_count - 1] = (struct su_stream){
-    .buffer = buffer,
-    .length = chunk_size,
-    .cursor = chunk_size,
-    .chunk = 0
-  };
+  struct su_chunk *chunk = (struct su_chunk *)malloc(sizeof(struct su_chunk));
+  assert(chunk != NULL && "su_stream_chunk: failed to allocate memory for a chunk");
+
+  {
+    chunk->next = NULL;
+    chunk->prev = NULL;
+
+    chunk->stream = (struct su_stream){
+      .buffer = buffer,
+      .length = chunk_size,
+      .cursor = chunk_size,
+      .chunk = 0
+    };
+  }
 
   stream->chunk = stream->cursor;
 
-  (*chunks_count) = new_count;
+  if ((*chunks) == NULL) {
+    (*chunks) = chunk;
+    if (chunk_out != NULL)
+      (*chunk_out) = chunk;
+    return SU_OK;
+  }
+
+  struct su_chunk *last_chunk = (*chunks);
+  while (last_chunk->next != NULL)
+    last_chunk = last_chunk->next;
+
+  chunk->prev = last_chunk;
+  last_chunk->next = chunk;
+
+  if (chunk_out != NULL)
+    (*chunk_out) = chunk;
   return SU_OK;
 }

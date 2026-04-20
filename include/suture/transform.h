@@ -2,22 +2,20 @@
 #define SUTURE_TRANSFORM_H
 
 #include "error.h"
+#include "stream.h"
 #include "types.h"
 
 #include <jni.h>
 #include <jvmti.h>
 
-#include "stream.h"
-
 struct su_method {
   char *name;
   char *desc;
-  u2 chunk_index;
+  struct su_chunk *chunk;
 };
 
 struct su_transform {
-  struct su_stream *chunks;
-  u2 chunks_count;
+  struct su_chunk *chunks;
 
   struct su_method *methods;
   u2 methods_count;

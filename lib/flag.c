@@ -5,74 +5,74 @@
 #include <stdint.h>
 #include <string.h>
 
-typedef struct {
-  const char *typeName;
-  const char *fieldName;
-  const char *typeString;
-  int32_t isStatic;
+struct vm_struct_entry {
+  const char *type_name;
+  const char *field_name;
+  const char *type_string;
+
+  int32_t is_static;
   uint64_t offset;
+
   void *address;
-} VMStructEntry;
+};
 
-typedef struct {
-  const char *typeName;
-  const char *superclassName;
-  int32_t isOopType;
-  int32_t isIntegerType;
-  int32_t isUnsigned;
+struct vm_type_entry {
+  const char *type_name;
+  const char *super_class_name;
+
+  int32_t is_oop_type;
+  int32_t is_integer_type;
+  int32_t is_unsigned;
+
   uint64_t size;
-} VMTypeEntry;
+};
 
-extern JNIIMPORT VMStructEntry *gHotSpotVMStructs;
-extern JNIIMPORT VMTypeEntry *gHotSpotVMTypes;
+extern JNIIMPORT struct vm_struct_entry *gHotSpotVMStructs;
+extern JNIIMPORT struct vm_type_entry *gHotSpotVMTypes;
 
 bool su_flag_patch(const char *name, const bool value) {
-  if (!name || !gHotSpotVMStructs || !gHotSpotVMTypes)
-    return false;
+  unsigned char *flags_array = NULL;
+  size_t numFlags = 0;
+  uint64_t flagSize = 0;
+  uint64_t nameOffset = 0, addrOffset = 0;
 
-  uint64_t flag_size = 0;
-  for (const VMTypeEntry *type_entry = gHotSpotVMTypes; type_entry->typeName; type_entry++) {
-    if (strcmp(type_entry->typeName, "JVMFlag") == 0 ||
-        strcmp(type_entry->typeName, "Flag") == 0) {
-      flag_size = type_entry->size;
+  for (struct vm_type_entry *t = gHotSpotVMTypes; t->type_name; t++) {
+    if (strcmp(t->type_name, "JVMFlag") == 0 || strcmp(t->type_name, "Flag") == 0) {
+      flagSize = t->size;
       break;
     }
   }
 
-  unsigned char *flags_array = NULL;
-  size_t num_flags = 0;
-  uint64_t name_offset = 0;
-  uint64_t addr_offset = 0;
+  for (struct vm_struct_entry *s = gHotSpotVMStructs; s->type_name; s++) {
+    bool isFlagType = (strcmp(s->type_name, "JVMFlag") == 0 || strcmp(s->type_name, "Flag") == 0);
+    if (isFlagType && strcmp(s->field_name, "_name") == 0)
+      nameOffset = s->offset;
+    if (isFlagType && strcmp(s->field_name, "_addr") == 0)
+      addrOffset = s->offset;
 
-  for (const VMStructEntry *struct_entry = gHotSpotVMStructs; struct_entry->typeName; struct_entry++) {
-    const bool is_flag_type = (strcmp(struct_entry->typeName, "JVMFlag") == 0 || strcmp(struct_entry->typeName, "Flag") == 0);
-    if (is_flag_type) {
-      if (strcmp(struct_entry->fieldName, "_name") == 0)
-        name_offset = struct_entry->offset;
-      else if (strcmp(struct_entry->fieldName, "_addr") == 0)
-        addr_offset = struct_entry->offset;
+
+    if (s->is_static && (strcmp(s->field_name, "flags") == 0 ||
+                         strcmp(s->field_name, "flagTable") == 0 ||
+                         strcmp(s->field_name, "head") == 0) && flags_array == NULL) {
+      flags_array = *(unsigned char **)s->address;
     }
 
-    if (struct_entry->isStatic) {
-      if (strcmp(struct_entry->fieldName, "flags") == 0 ||
-          strcmp(struct_entry->fieldName, "flagTable") == 0 ||
-          strcmp(struct_entry->fieldName, "head") == 0) {
-        flags_array = *(unsigned char **)struct_entry->address;
-      } else if (strcmp(struct_entry->fieldName, "numFlags") == 0) {
-        num_flags = *(size_t *)struct_entry->address;
-      }
+    if (s->is_static && strcmp(s->field_name, "numFlags") == 0) {
+      numFlags = *(size_t *)s->address;
     }
   }
 
-  if (!flags_array || !num_flags || !flag_size)
+  if (!flags_array || !numFlags || !flagSize) {
     return false;
+  }
 
-  for (size_t i = 0; i < num_flags; i++) {
-    unsigned char *entry = flags_array + (i * flag_size);
-    const char *currentName = *(const char **)(entry + name_offset);
+  for (size_t i = 0; i < numFlags; i++) {
+    unsigned char *current = flags_array + (i * flagSize);
+    const char *current_name = *(const char **)(current + nameOffset);
 
-    if (currentName && strcmp(currentName, name) == 0) {
-      *(*(bool **)(entry + addr_offset)) = value;
+    if (current_name != NULL && strcmp(current_name, name) == 0) {
+      bool *offset = *(bool **)(current + addrOffset);
+      memset(offset, value, sizeof(bool));
       return true;
     }
   }

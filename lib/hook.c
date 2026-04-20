@@ -15,5 +15,7 @@ char *su_hook_original_name(const char *name) {
     return NULL;
 
   snprintf(original_name, original_name_length + 1, "%s%s", prefix, name);
+  original_name[original_name_length] = '\0';
+
   return original_name;
 }
