@@ -16,6 +16,9 @@ struct su_env {
 
   struct su_hook *hooks;
   u2 hooks_count;
+
+  jclass *targets;
+  u2 targets_count;
 };
 
 #ifdef __cplusplus

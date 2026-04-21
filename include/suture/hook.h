@@ -15,6 +15,7 @@ struct su_hook {
   char *class_name;
   char *original_name;
 
+  jclass klass;
   jmethodID *original;
   void *detour;
 
