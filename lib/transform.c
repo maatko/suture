@@ -60,6 +60,7 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
 
     u1 *attributes = NULL;
     u2 attributes_length = 0;
+    u2 flags = 0;
 
     const u2 methods_count = transform.methods_count;
     for (u2 j = 0; j < methods_count; j++) {
@@ -68,10 +69,10 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
         continue;
 
       struct su_stream *stream = &method->chunk->stream;
+      flags = (stream->buffer[0] << 8) | stream->buffer[1];
 
-      const u2 oldFlags = (stream->buffer[0] << 8) | stream->buffer[1];
-      const u2 oldName = (stream->buffer[2] << 8) | stream->buffer[3];
-      const u2 oldDesc = (stream->buffer[4] << 8) | stream->buffer[5];
+      const u2 name_index = (stream->buffer[2] << 8) | stream->buffer[3];
+      const u2 desc_index = (stream->buffer[4] << 8) | stream->buffer[5];
 
       attributes_length = (stream->length - 6);
       attributes = malloc(sizeof(u1) * attributes_length);
@@ -85,9 +86,9 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
       stream->length = 0;
       stream->cursor = 0;
 
-      su_stream_w2(stream, oldFlags | ACC_NATIVE, 0);
-      su_stream_w2(stream, oldName, 0);
-      su_stream_w2(stream, oldDesc, 0);
+      su_stream_w2(stream, flags | ACC_NATIVE, 0);
+      su_stream_w2(stream, name_index, 0);
+      su_stream_w2(stream, desc_index, 0);
       su_stream_w2(stream, 0, 0);
 
       break;
@@ -350,9 +351,20 @@ void su_transform_dispose(struct su_transform *transform) {
     SU_FREE(transform->constant_pool[i]);
   SU_FREE(transform->constant_pool);
 
-  // todo: free the methods
+  struct su_chunk *chunk = transform->chunks;
+  while (chunk != NULL) {
+    struct su_chunk *next = chunk->next;
 
-  // for (u2 i = 0; i < transform->chunks_count; i++)
-  //   SU_FREE(transform->chunks[i].buffer);
-  // SU_FREE(transform->chunks);
+    SU_FREE(chunk->stream.buffer);
+    SU_FREE(chunk);
+
+    chunk = next;
+  }
+  transform->chunks = NULL;
+
+  for (u2 i = 0; i < transform->methods_count; i++) {
+    SU_FREE(transform->methods[i].name);
+    SU_FREE(transform->methods[i].desc);
+  }
+  SU_FREE(transform->methods);
 }
