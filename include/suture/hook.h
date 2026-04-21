@@ -1,6 +1,10 @@
 #ifndef SUTURE_HOOK_H
 #define SUTURE_HOOK_H
 
+#include "error.h"
+#include "transform.h"
+#include "stream.h"
+
 #include <jni.h>
 
 enum su_hook_type {
@@ -27,7 +31,7 @@ struct su_hook {
 extern "C" {
 #endif
 
-
+enum su_error su_hook_detour(const struct su_hook *hook, struct su_transform *transform, struct su_stream *stream);
 
 char *su_hook_original_name(const char *name);
 
