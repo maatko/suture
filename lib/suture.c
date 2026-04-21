@@ -133,14 +133,13 @@ enum su_error su_mdetour(struct su_env *env, jmethodID method, jmethodID *origin
   char *method_name = NULL;
   char *method_signature = NULL;
 
-  // todo: there is a bug here, the class name that this
-  // returns will be in a Ljava/lang/Class; format.
-
   JVM_TRY(JVM_INVOKE(env->jvmti, GetMethodDeclaringClass, method, &declaring_class), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
   JVM_TRY(JVM_INVOKE(env->jvmti, GetClassSignature, declaring_class, &class_name, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
 
+  class_name[strlen(class_name) - 1] = '\0';
+
   JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, GetMethodName, method, &method_name, &method_signature, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE, exit);
-  SU_TRY_CATCH(status, su_detour(env, class_name, method_name, method_signature, original_method, function), exit);
+  SU_TRY_CATCH(status, su_detour(env, class_name + 1, method_name, method_signature, original_method, function), exit);
 
 exit:
   JVM_FREE(env->jvmti, class_name);
@@ -166,8 +165,10 @@ enum su_error su_transform(const struct su_env *env) {
   if (env->error != SU_OK)
     return env->error;
 
+  // this could be done better, loop through targets, and get methods
+  // for all those targets and batch the `RegisterNatives` call.
   for (u2 i = 0; i < env->hooks_count; i++) {
-    struct su_hook *hook = &env->hooks[i];
+    const struct su_hook *hook = &env->hooks[i];
 
     JNINativeMethod method = {
       .name = hook->name,
@@ -177,10 +178,9 @@ enum su_error su_transform(const struct su_env *env) {
 
     JVM_TRY_CATCH(status, JVM_INVOKE(jni, RegisterNatives, hook->klass, &method, 1), JVMTI_ERROR_NONE, SU_JVM_RETRANSFORM_FAILURE, exit);
 
-    hook->klass = JVM_INVOKE(jni, FindClass, hook->class_name);
-
+    const jclass klass = JVM_INVOKE(jni, FindClass, hook->class_name);
     if (hook->original != NULL)
-      (*hook->original) = JVM_INVOKE(jni, GetMethodID, hook->klass, hook->original_name, hook->signature);
+      (*hook->original) = JVM_INVOKE(jni, GetMethodID, klass, hook->original_name, hook->signature);
   }
 
 exit:
