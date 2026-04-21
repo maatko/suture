@@ -26,6 +26,9 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
   struct su_env *env = NULL;
   enum su_error status = SU_OK;
 
+  u1 *t_buffer;
+  u2 t_length;
+
   if (JVM_INVOKE(jvmti, GetEnvironmentLocalStorage, (void **)&env) != JVMTI_ERROR_NONE)
     return;
 
@@ -65,10 +68,7 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
       break;
     }
 
-    u1 *t_buffer;
-    u2 t_length;
-
-    su_transform_build(&transform, &t_buffer, &t_length);
+    SU_TRY_CATCH(status, su_transform_build(&transform, &t_buffer, &t_length), exit);
 
     unsigned char *jvmti_buffer = NULL;
     JVM_TRY_CATCH(status, JVM_INVOKE(jvmti, Allocate, t_length, &jvmti_buffer), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE, exit);
