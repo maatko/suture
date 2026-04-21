@@ -9,14 +9,22 @@ endif
 
 jni = dependency('jni', version: '>=1.8', modules: ['jvm'], required: true)
 
-sources = files()
+sources = files(
+	'lib/suture.c', 'lib/hook.c',
+	'lib/flag.c', 'lib/transform.c',
+	'lib/stream.c'
+)
 
-subdir('include')
-subdir('lib')
+includes = files(
+	'include/suture.h', 'include/suture/types.h',
+	'include/suture/error.h', 'include/suture/hook.h',
+	'include/suture/flag.h', 'include/suture/transform.h',
+	'include/suture/stream.h'
+)
 
 suture = static_library(
 	'suture',
-	sources, 
+	sources + includes,
 	dependencies: jni, 
 	include_directories: include_directories('include')
 )
