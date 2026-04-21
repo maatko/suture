@@ -10,9 +10,9 @@ endif
 jni = dependency('jni', version: '>=1.8', modules: ['jvm'], required: true)
 
 sources = files(
-	'lib/suture.c', 'lib/hook.c',
-	'lib/flag.c', 'lib/transform.c',
-	'lib/stream.c'
+	'src/suture.c', 'src/hook.c',
+	'src/flag.c', 'src/transform.c',
+	'src/stream.c'
 )
 
 includes = files(
