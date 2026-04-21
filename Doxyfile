@@ -1,0 +1,25 @@
+# Project info
+PROJECT_NAME           = "suture"
+PROJECT_NUMBER         = 1.0
+OUTPUT_DIRECTORY       = docs/
+
+HTML_EXTRA_STYLESHEET  = doxygen-awesome.css
+FULL_SIDEBAR           = NO
+
+# Input sources
+INPUT                  = src/ include/
+FILE_PATTERNS          = *.c *.h
+RECURSIVE              = YES
+
+# What to extract
+EXTRACT_ALL            = YES        # document even uncommented code
+EXTRACT_STATIC         = FALSE      # include static functions
+
+# Output formats
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO         # disable if you don't need PDF
+
+# Graphs (requires graphviz)
+HAVE_DOT               = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
