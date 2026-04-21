@@ -238,35 +238,53 @@ exit:
   return status;
 }
 
-u2 su_const_add_utf8(struct su_transform *transform, const char *utf8) {
+enum su_error su_const_add_utf8(struct su_transform *transform, const char *utf8, u2 *cp_index) {
+  void *larger_buffer = realloc(transform->constant_pool, sizeof(void *) * (transform->constant_pool_count + 1));
+  if (larger_buffer == NULL)
+    return SU_MEMORY_ALLOCATION_FAILURE;
+
+  enum su_error status = SU_OK;
   struct su_stream *const_pool_stream = &transform->chunks->next->stream;
-  su_stream_w1(const_pool_stream, CONSTANT_Utf8, 0);
+  SU_TRY_CATCH(status, su_stream_w1(const_pool_stream, CONSTANT_Utf8, 0), exit);
 
   const u2 length = (u2)strlen(utf8);
-  su_stream_w2(const_pool_stream, length, 0);
-  su_stream_wn(const_pool_stream, (void *)utf8, length, 0);
+  SU_TRY_CATCH(status, su_stream_w2(const_pool_stream, length, 0), exit);
+  SU_TRY_CATCH(status, su_stream_wn(const_pool_stream, (void *)utf8, length, 0), exit);
 
-  transform->constant_pool = realloc(transform->constant_pool, sizeof(void *) * (transform->constant_pool_count + 1));
+  transform->constant_pool = larger_buffer;
   transform->constant_pool[transform->constant_pool_count] = NULL;
 
-  return transform->constant_pool_count++;
+  if (cp_index != NULL)
+    (*cp_index) = transform->constant_pool_count;
+
+  transform->constant_pool_count++;
+exit:
+  return status;
 }
 
-struct su_stream *su_add_method(struct su_transform *transform, const char *name, const char *desc, const u2 access_flags) {
-  const u2 name_index = su_const_add_utf8(transform, name);
-  const u2 desc_index = su_const_add_utf8(transform, desc);
+enum su_error su_add_method(struct su_transform *transform, const char *name, const char *desc, const u2 access_flags, struct su_stream **stream) {
+  enum su_error status = SU_OK;
 
-  transform->methods = realloc(transform->methods, sizeof(struct su_method) * (transform->methods_count + 1));
-  assert(transform->methods != NULL && "failed to allocate memory for the methods");
+  void *larger_buffer = realloc(transform->methods, sizeof(struct su_method) * (transform->methods_count + 1));
+  if (larger_buffer == NULL)
+    return SU_MEMORY_ALLOCATION_FAILURE;
 
   struct su_chunk *method_chunk = (struct su_chunk *)malloc(sizeof(struct su_chunk));
-  assert(method_chunk != NULL && "failed to allocate memory for the method chunk");
-
+  if (method_chunk == NULL) {
+    free(larger_buffer);
+    return SU_MEMORY_ALLOCATION_FAILURE;
+  }
   memset(method_chunk, 0, sizeof(*method_chunk));
 
-  su_stream_w2(&method_chunk->stream, access_flags, 0);
-  su_stream_w2(&method_chunk->stream, name_index, 0);
-  su_stream_w2(&method_chunk->stream, desc_index, 0);
+  transform->methods = (struct su_method *)larger_buffer;
+
+  u2 name_index, desc_index;
+  SU_TRY_CATCH(status, su_const_add_utf8(transform, name, &name_index), exit);
+  SU_TRY_CATCH(status, su_const_add_utf8(transform, desc, &desc_index), exit);
+
+  SU_TRY_CATCH(status, su_stream_w2(&method_chunk->stream, access_flags, 0), exit);
+  SU_TRY_CATCH(status, su_stream_w2(&method_chunk->stream, name_index, 0), exit);
+  SU_TRY_CATCH(status, su_stream_w2(&method_chunk->stream, desc_index, 0), exit);
 
   struct su_chunk *last_chunk = transform->methods[transform->methods_count - 1].chunk;
   method_chunk->prev = last_chunk;
@@ -276,14 +294,18 @@ struct su_stream *su_add_method(struct su_transform *transform, const char *name
     last_chunk->next->prev = method_chunk;
   last_chunk->next = method_chunk;
 
-  transform->methods[transform->methods_count] = (struct su_method){
-    .name = strdup(name),
-    .desc = strdup(desc),
-    .chunk = method_chunk
-  };
+  struct su_method *method = &transform->methods[transform->methods_count];
+  method->name = strdup(name);
+  method->desc = strdup(desc);
+  method->chunk = method_chunk;
 
   transform->methods_count++;
-  return &method_chunk->stream;
+
+  if (stream != NULL)
+    (*stream) = &method_chunk->stream;
+
+exit:
+  return status;
 }
 
 enum su_error su_transform_build(const struct su_transform *transform, u1 **buffer, u2 *buffer_length) {
@@ -312,7 +334,7 @@ enum su_error su_transform_build(const struct su_transform *transform, u1 **buff
     }
 
     buff = (u1 *)expanded_buff;
-    if (chunk_length > 0) 
+    if (chunk_length > 0)
       memcpy(buff + sz, chunk->stream.buffer, chunk_length);
 
     sz += chunk_length;

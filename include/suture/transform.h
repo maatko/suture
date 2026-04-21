@@ -32,9 +32,9 @@ extern void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *j
 
 enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 buffer_length);
 
-u2 su_const_add_utf8(struct su_transform *transform, const char *utf8);
+enum su_error su_const_add_utf8(struct su_transform *transform, const char *utf8, u2 *cp_index);
 
-struct su_stream *su_add_method(struct su_transform *transform, const char *name, const char *desc, u2 access_flags);
+enum su_error su_add_method(struct su_transform *transform, const char *name, const char *desc, u2 access_flags, struct su_stream** stream);
 
 enum su_error su_transform_build(const struct su_transform *transform, u1 **buffer, u2 *buffer_length);
 
