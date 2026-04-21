@@ -83,6 +83,9 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
   }
 
 exit:
+  if (status != SU_OK)
+    JVM_FREE(jvmti, old_bytes);
+
   env->error = status;
 }
 
@@ -302,8 +305,15 @@ enum su_error su_transform_build(const struct su_transform *transform, u1 **buff
   while (chunk != NULL) {
     const u2 chunk_length = chunk->stream.length;
 
-    buff = realloc(buff, sz + chunk_length);
-    memcpy(buff + sz, chunk->stream.buffer, chunk_length);
+    void *expanded_buff = realloc(buff, sz + chunk_length);
+    if (expanded_buff == NULL) {
+      free(buff);
+      return SU_MEMORY_ALLOCATION_FAILURE;
+    }
+
+    buff = (u1 *)expanded_buff;
+    if (chunk_length > 0) 
+      memcpy(buff + sz, chunk->stream.buffer, chunk_length);
 
     sz += chunk_length;
     chunk = chunk->next;

@@ -65,7 +65,7 @@ enum su_error su_flag_patchb(const char *name, bool *original, const bool value)
   }
 
   if (!flags || !num_flags || !flag_size)
-    return SU_JVM_RUNTIME_DETOURING_NOT_SUPPORTED;
+    return SU_DETOURING_NOT_SUPPORTED;
 
   for (size_t i = 0; i < num_flags; i++) {
     unsigned char *current = flags + (i * flag_size);
@@ -82,5 +82,5 @@ enum su_error su_flag_patchb(const char *name, bool *original, const bool value)
     }
   }
 
-  return SU_JVM_RUNTIME_DETOURING_NOT_SUPPORTED;
+  return SU_DETOURING_NOT_SUPPORTED;
 }

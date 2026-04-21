@@ -1,6 +1,5 @@
 #include <suture.h>
 
-#include <Windows.h>
 #include <suture/flag.h>
 #include <suture/transform.h>
 
