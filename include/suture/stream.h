@@ -48,16 +48,4 @@ enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks
 }
 #endif
 
-#define su_stream_read(stream, T, value, offset) _Generic((T){ 0 }, \
-    u1: su_stream_r1,                                               \
-    u2: su_stream_r2,                                               \
-    u4: su_stream_r4,                                               \
-    u8: su_stream_r8)(stream, value, offset)
-
-#define su_stream_write(stream, T, value, offset) _Generic((T){ 0 }, \
-    u1: su_stream_w1,                                                \
-    u2: su_stream_w2,                                                \
-    u4: su_stream_w4,                                                \
-    u8: su_stream_w8)(stream, value, offset)
-
 #endif // SUTURE_STREAM_H

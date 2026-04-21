@@ -1,13 +1,15 @@
 #ifndef SUTURE_FLAG_H
 #define SUTURE_FLAG_H
 
+#include "error.h"
+
 #include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-bool su_flag_patch(const char *name, bool value);
+enum su_error su_flag_patchb(const char *name, bool value);
 
 #ifdef __cplusplus
 }

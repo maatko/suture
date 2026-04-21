@@ -30,7 +30,7 @@ enum su_error su_mdetour(struct su_env *env, jmethodID method, jmethodID *origin
 
 enum su_error su_transform(const struct su_env *env);
 
-void su_dispose(struct su_env *env);
+enum su_error su_dispose(struct su_env *env);
 
 #ifdef __cplusplus
 }

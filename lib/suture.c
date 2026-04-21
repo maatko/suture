@@ -3,13 +3,12 @@
 #include <suture/flag.h>
 #include <suture/transform.h>
 
-#include <assert.h>
 #include <stdbool.h>
 #include <string.h>
 
 static enum su_error su_attach_thread(JavaVM *jvm, void **env, bool *has_attached) {
-  assert(jvm != NULL && "su_attach_thread: parameter `jvm` must be a valid pointer.");
-  assert(env != NULL && "su_attach_thread: parameter `env` must be a valid pointer.");
+  if (jvm == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
 
   jint res = JVM_INVOKE(jvm, GetEnv, env, JNI_VERSION_1_6);
 
@@ -24,7 +23,9 @@ static enum su_error su_attach_thread(JavaVM *jvm, void **env, bool *has_attache
 }
 
 enum su_error su_init(struct su_env *env) {
-  assert(env != NULL && "su_init: `env` must be a valid pointer.");
+  if (env == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
+
   memset(env, 0, sizeof(struct su_env));
 
   jsize count;
@@ -51,19 +52,15 @@ enum su_error su_init(struct su_env *env) {
   JVM_TRY(JVM_INVOKE(env->jvmti, SetEventCallbacks, &callbacks, sizeof(callbacks)), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
   JVM_TRY(JVM_INVOKE(env->jvmti, SetEventNotificationMode, JVMTI_ENABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
 
-  if (!su_flag_patch("AllowRedefinitionToAddDeleteMethods", true)) {
-    return SU_JVM_GENERIC_FAILURE;
-  }
-
-  return SU_OK;
+  return su_flag_patchb("AllowRedefinitionToAddDeleteMethods", true);
 }
 
 enum su_error su_detour(struct su_env *env, const char *class_name, const char *method_name, const char *method_signature, jmethodID *original_method, void *function) {
-  assert(env != NULL && "su_detour: `env` must be a valid pointer.");
-  assert(function != NULL && "su_detour: `function` must be a valid pointer.");
+  if (env == NULL || class_name == NULL || method_signature == NULL || function == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
 
   env->hooks = (struct su_hook *)realloc(env->hooks, (++env->hooks_count) * sizeof(struct su_hook));
-  assert(env->hooks != NULL && "su_detour: failed to reallocate memory for the hooks");
+  // todo: assert(env->hooks != NULL && "su_detour: failed to reallocate memory for the hooks");
 
   env->hooks[env->hooks_count - 1] = (struct su_hook){
     .type = SU_HOOK_DETOUR,
@@ -79,8 +76,10 @@ enum su_error su_detour(struct su_env *env, const char *class_name, const char *
 }
 
 enum su_error su_mdetour(struct su_env *env, jmethodID method, jmethodID *original_method, void *function) {
-  enum su_error status = SU_OK;
+  if (env == NULL || function == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
 
+  enum su_error status = SU_OK;
   jclass declaring_class = NULL;
 
   char *class_name = NULL;
@@ -94,7 +93,6 @@ enum su_error su_mdetour(struct su_env *env, jmethodID method, jmethodID *origin
   SU_TRY_CATCH(status, su_detour(env, class_name, method_name, method_signature, original_method, function), exit);
 
 exit:
-
   JVM_FREE(env->jvmti, class_name);
   JVM_FREE(env->jvmti, method_name);
   JVM_FREE(env->jvmti, method_signature);
@@ -103,16 +101,20 @@ exit:
 }
 
 enum su_error su_transform(const struct su_env *env) {
-  enum su_error status = SU_OK;
+  if (env == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
+
+  jclass *classes = (jclass *)malloc(sizeof(jclass) * env->hooks_count);
+  if (classes == NULL)
+    return SU_MEMORY_ALLOCATION_FAILURE;
+
   JNIEnv *jni = NULL;
   bool attached;
 
   SU_TRY(su_attach_thread(env->jvm, (void **)&jni, &attached), SU_JVM_JNI_ATTACH_FAILURE);
 
+  enum su_error status = SU_OK;
   JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, SetEnvironmentLocalStorage, env), JVMTI_ERROR_NONE, SU_JVM_ENVIRONMENT_STORAGE_FAILURE, exit);
-
-  jclass *classes = (jclass *)malloc(sizeof(jclass) * env->hooks_count);
-  assert(classes != NULL && "su_transform: failed to allocate memory for classes");
 
   for (u2 i = 0; i < env->hooks_count; i++) {
     const struct su_hook *hook = &env->hooks[i];
@@ -152,10 +154,14 @@ exit:
   return status;
 }
 
-void su_dispose(struct su_env *env) {
+enum su_error su_dispose(struct su_env *env) {
+  if (env == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
+
   if (env->hooks != NULL) {
     jvmtiClassDefinition *definitions = malloc(sizeof(jvmtiClassDefinition) * env->hooks_count);
-    assert(definitions != NULL && "su_dispose: failed to allocate memory for definitions");
+    if (definitions == NULL)
+      return SU_MEMORY_ALLOCATION_FAILURE;
 
     JNIEnv *jni;
     bool attached;
@@ -192,5 +198,5 @@ void su_dispose(struct su_env *env) {
 
   JVM_INVOKE(env->jvm, DetachCurrentThread);
 
-  su_flag_patch("AllowRedefinitionToAddDeleteMethods", false);
+  return su_flag_patchb("AllowRedefinitionToAddDeleteMethods", false);
 }

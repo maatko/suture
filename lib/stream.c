@@ -1,12 +1,10 @@
 #include <suture/stream.h>
 
-#include <assert.h>
 #include <string.h>
 
 enum su_error su_stream_rn(struct su_stream *stream, u1 *buffer, const u2 size, const u2 offset) {
-  assert(stream != NULL && "su_stream_r1: `stream` must be a valid pointer");
-  assert(stream != NULL && "su_stream_r1: `value` must be a valid pointer");
-
+  if (stream == NULL || buffer == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
   if (offset + size > stream->length - stream->cursor)
     return SU_STREAM_AT_END;
 
@@ -20,8 +18,8 @@ enum su_error su_stream_rn(struct su_stream *stream, u1 *buffer, const u2 size, 
 }
 
 enum su_error su_stream_r1(struct su_stream *stream, u1 *value, const u2 offset) {
-  assert(stream != NULL && "su_stream_r1: `stream` must be a valid pointer");
-  assert(value != NULL && "su_stream_r1: `value` must be a valid pointer");
+  if (stream == NULL || value == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
 
   const u2 type_size = sizeof(u1);
   if (stream->cursor + type_size + offset >= stream->length)
@@ -35,8 +33,8 @@ enum su_error su_stream_r1(struct su_stream *stream, u1 *value, const u2 offset)
 }
 
 enum su_error su_stream_r2(struct su_stream *stream, u2 *value, const u2 offset) {
-  assert(stream != NULL && "su_stream_r2: `stream` must be a valid pointer");
-  assert(value != NULL && "su_stream_r2: `value` must be a valid pointer");
+  if (stream == NULL || value == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
 
   const u2 type_size = sizeof(u2);
   if (stream->cursor + type_size + offset >= stream->length)
@@ -52,8 +50,8 @@ enum su_error su_stream_r2(struct su_stream *stream, u2 *value, const u2 offset)
 }
 
 enum su_error su_stream_r4(struct su_stream *stream, u4 *value, const u2 offset) {
-  assert(stream != NULL && "su_stream_r4: `stream` must be a valid pointer");
-  assert(value != NULL && "su_stream_r4: `value` must be a valid pointer");
+  if (stream == NULL || value == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
 
   const u2 type_size = sizeof(u4);
   if (stream->cursor + type_size + offset >= stream->length)
@@ -69,8 +67,8 @@ enum su_error su_stream_r4(struct su_stream *stream, u4 *value, const u2 offset)
 }
 
 enum su_error su_stream_r8(struct su_stream *stream, u8 *value, const u2 offset) {
-  assert(stream != NULL && "su_stream_r8: `stream` must be a valid pointer");
-  assert(value != NULL && "su_stream_r8: `value` must be a valid pointer");
+  if (stream == NULL || value == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
 
   const u2 type_size = sizeof(u8);
   if (stream->cursor + type_size + offset >= stream->length)
@@ -155,32 +153,34 @@ void su_stream_w8(struct su_stream *stream, const u8 value, const u2 offset) {
 }
 
 enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks, struct su_chunk **chunk_out) {
-  assert(stream != NULL && "su_stream_chunk: `stream` must be a valid pointer");
-  assert(chunks != NULL && "su_stream_chunk: `chunks` must be a valid pointer");
+  if (stream == NULL || chunks == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
 
   const u2 chunk_size = stream->cursor - stream->chunk;
-  if (chunk_size <= 0 || chunk_size >= stream->length)
+  if (chunk_size >= stream->length)
     return SU_STREAM_INVALID_CHUNK;
 
   u1 *buffer = (u1 *)malloc(sizeof(u1) * chunk_size);
-  assert(buffer != NULL && "su_stream_chunk: failed to allocate memory for a stream chunk");
+  if (buffer == NULL)
+    return SU_MEMORY_ALLOCATION_FAILURE;
 
   memcpy(buffer, stream->buffer + stream->chunk, chunk_size);
 
   struct su_chunk *chunk = (struct su_chunk *)malloc(sizeof(struct su_chunk));
-  assert(chunk != NULL && "su_stream_chunk: failed to allocate memory for a chunk");
-
-  {
-    chunk->next = NULL;
-    chunk->prev = NULL;
-
-    chunk->stream = (struct su_stream){
-      .buffer = buffer,
-      .length = chunk_size,
-      .cursor = chunk_size,
-      .chunk = 0
-    };
+  if (chunk == NULL) {
+    free(buffer);
+    return SU_MEMORY_ALLOCATION_FAILURE;
   }
+
+  chunk->next = NULL;
+  chunk->prev = NULL;
+
+  chunk->stream = (struct su_stream){
+    .buffer = buffer,
+    .length = chunk_size,
+    .cursor = chunk_size,
+    .chunk = 0
+  };
 
   stream->chunk = stream->cursor;
 
@@ -200,5 +200,6 @@ enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks
 
   if (chunk_out != NULL)
     (*chunk_out) = chunk;
+
   return SU_OK;
 }

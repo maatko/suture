@@ -121,7 +121,10 @@ exit:
   env->error = status;
 }
 
-enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 buffer_length) {
+enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, const u2 buffer_length) {
+  if (transform == NULL || buffer == NULL || buffer_length == 0)
+    return SU_MISSING_REQUIRED_PARAMETERS;
+
   enum su_error status = SU_OK;
 
   memset((void *)transform, 0, sizeof(struct su_transform));
@@ -135,7 +138,7 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 b
   };
 
   u4 magic;
-  SU_TRY_CATCH(status, su_stream_read(&stream, u4, &magic, 0), exit);
+  SU_TRY_CATCH(status, su_stream_r4(&stream, &magic, 0), exit);
 
   if (magic != 0xCAFEBABE)
     return SU_JVM_INVALID_CLASS_MAGIC;
@@ -143,14 +146,14 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 b
   stream.cursor += sizeof(u2) * 2;
 
   SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, NULL), exit);
-  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &transform->constant_pool_count, 0), exit);
+  SU_TRY_CATCH(status, su_stream_r2(&stream, &transform->constant_pool_count, 0), exit);
 
   transform->constant_pool = calloc(transform->constant_pool_count, sizeof(void *));
   assert(transform->constant_pool != NULL && "failed to allocate memory for constant pool");
 
   for (u2 i = 1; i < transform->constant_pool_count; i++) {
     u1 tag;
-    SU_TRY_CATCH(status, su_stream_read(&stream, u1, &tag, 0), exit);
+    SU_TRY_CATCH(status, su_stream_r1(&stream, &tag, 0), exit);
 
     switch (tag) {
     case CONSTANT_Class:
@@ -176,7 +179,7 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 b
       break;
     case CONSTANT_Utf8: {
       u2 length;
-      SU_TRY_CATCH(status, su_stream_read(&stream, u2, &length, 0), exit);
+      SU_TRY_CATCH(status, su_stream_r2(&stream, &length, 0), exit);
 
       char *string = malloc(sizeof(char) * (length + 1));
       assert(string != NULL && "failed to allocate memory for string");
@@ -198,45 +201,44 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 b
   SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, NULL), exit);
 
   u2 interfaces_count;
-  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &interfaces_count, sizeof(u2) * 3), exit);
+  SU_TRY_CATCH(status, su_stream_r2(&stream, &interfaces_count, sizeof(u2) * 3), exit);
 
   stream.cursor += sizeof(u2) * interfaces_count;
 
   u2 fields_count;
-  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &fields_count, 0), exit);
+  SU_TRY_CATCH(status, su_stream_r2(&stream, &fields_count, 0), exit);
 
   for (u2 i = 0; i < fields_count; i++) {
     u2 attributes_count;
-    SU_TRY_CATCH(status, su_stream_read(&stream, u2, &attributes_count, sizeof(u2) * 3), exit);
+    SU_TRY_CATCH(status, su_stream_r2(&stream, &attributes_count, sizeof(u2) * 3), exit);
 
     for (u2 j = 0; j < attributes_count; j++) {
       u4 attributes_length;
-      SU_TRY_CATCH(status, su_stream_read(&stream, u4, &attributes_length, sizeof(u2)), exit);
+      SU_TRY_CATCH(status, su_stream_r4(&stream, &attributes_length, sizeof(u2)), exit);
 
       stream.cursor += attributes_length;
     }
   }
 
   SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, NULL), exit);
-
-  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &transform->methods_count, 0), exit);
+  SU_TRY_CATCH(status, su_stream_r2(&stream, &transform->methods_count, 0), exit);
 
   transform->methods = calloc(transform->methods_count, sizeof(struct su_method));
   assert(transform->methods != NULL && "failed to allocate memory for methods");
 
   for (u2 i = 0; i < transform->methods_count; i++) {
     u2 name_index;
-    SU_TRY_CATCH(status, su_stream_read(&stream, u2, &name_index, sizeof(u2)), exit);
+    SU_TRY_CATCH(status, su_stream_r2(&stream, &name_index, sizeof(u2)), exit);
 
     u2 desc_index;
-    SU_TRY_CATCH(status, su_stream_read(&stream, u2, &desc_index, 0), exit);
+    SU_TRY_CATCH(status, su_stream_r2(&stream, &desc_index, 0), exit);
 
     u2 attributes_count;
-    SU_TRY_CATCH(status, su_stream_read(&stream, u2, &attributes_count, 0), exit);
+    SU_TRY_CATCH(status, su_stream_r2(&stream, &attributes_count, 0), exit);
 
     for (u2 j = 0; j < attributes_count; j++) {
       u4 attributes_length;
-      SU_TRY_CATCH(status, su_stream_read(&stream, u4, &attributes_length, sizeof(u2)), exit);
+      SU_TRY_CATCH(status, su_stream_r4(&stream, &attributes_length, sizeof(u2)), exit);
 
       stream.cursor += attributes_length;
     }
@@ -250,20 +252,19 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 b
   }
 
   u2 attributes_count;
-  SU_TRY_CATCH(status, su_stream_read(&stream, u2, &attributes_count, 0), exit);
+  SU_TRY_CATCH(status, su_stream_r2(&stream, &attributes_count, 0), exit);
 
   for (u2 j = 0; j < attributes_count; j++) {
     u4 attributes_length;
-    SU_TRY_CATCH(status, su_stream_read(&stream, u4, &attributes_length, sizeof(u2)), exit);
+    SU_TRY_CATCH(status, su_stream_r4(&stream, &attributes_length, sizeof(u2)), exit);
 
     stream.cursor += attributes_length;
   }
 
   SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, NULL), exit);
 
-  if (stream.cursor < stream.length) {
+  if (stream.cursor < stream.length)
     return SU_STREAM_UNFINISHED_READ;
-  }
 
 exit:
   return status;
@@ -319,6 +320,9 @@ struct su_stream *su_add_method(struct su_transform *transform, const char *name
 }
 
 enum su_error su_transform_build(const struct su_transform *transform, u1 **buffer, u2 *buffer_length) {
+  if (transform == NULL || buffer == NULL || buffer_length == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
+
   u2 sz = 0;
   u1 *buff = NULL;
 
@@ -347,6 +351,9 @@ enum su_error su_transform_build(const struct su_transform *transform, u1 **buff
 }
 
 void su_transform_dispose(struct su_transform *transform) {
+  if (transform == NULL)
+    return;
+
   for (u2 i = 0; i < transform->constant_pool_count; i++)
     SU_FREE(transform->constant_pool[i]);
   SU_FREE(transform->constant_pool);
