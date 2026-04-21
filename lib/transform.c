@@ -65,7 +65,7 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
 
     u1 *attributes = NULL;
     u2 attributes_length = 0;
-    u2 flags = 0;
+    u2 original_flags = 0;
 
     const u2 methods_count = transform.methods_count;
     for (u2 j = 0; j < methods_count; j++) {
@@ -74,7 +74,7 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
         continue;
 
       struct su_stream *stream = &method->chunk->stream;
-      flags = (stream->buffer[0] << 8) | stream->buffer[1];
+      original_flags = (stream->buffer[0] << 8) | stream->buffer[1];
 
       const u2 name_index = (stream->buffer[2] << 8) | stream->buffer[3];
       const u2 desc_index = (stream->buffer[4] << 8) | stream->buffer[5];
@@ -91,7 +91,7 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
       stream->length = 0;
       stream->cursor = 0;
 
-      su_stream_w2(stream, flags | ACC_NATIVE, 0);
+      su_stream_w2(stream, original_flags | ACC_NATIVE, 0);
       su_stream_w2(stream, name_index, 0);
       su_stream_w2(stream, desc_index, 0);
       su_stream_w2(stream, 0, 0);
@@ -99,8 +99,7 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
       break;
     }
 
-    // todo: use old flags and inject final, cause what if the method is static, calling it via member wont work.
-    struct su_stream *original_stream = su_add_method(&transform, hook->original_name, hook->signature, ACC_PRIVATE | ACC_FINAL);
+    struct su_stream *original_stream = su_add_method(&transform, hook->original_name, hook->signature, ACC_PRIVATE | (original_flags & ACC_STATIC ? ACC_STATIC : ACC_FINAL));
     su_stream_wn(original_stream, attributes, attributes_length, 0);
 
     u1 *t_buffer;
@@ -311,7 +310,6 @@ struct su_stream *su_add_method(struct su_transform *transform, const char *name
 
   if (last_chunk->next != NULL)
     last_chunk->next->prev = method_chunk;
-
   last_chunk->next = method_chunk;
 
   transform->methods[transform->methods_count] = (struct su_method){
