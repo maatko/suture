@@ -32,15 +32,15 @@ enum su_error su_stream_r4(struct su_stream *stream, u4 *value, u2 offset);
 
 enum su_error su_stream_r8(struct su_stream *stream, u8 *value, u2 offset);
 
-void su_stream_wn(struct su_stream *stream, const u1 *buffer, u2 size, u2 offset);
+enum su_error su_stream_wn(struct su_stream *stream, const u1 *buffer, u2 size, u2 offset);
 
-void su_stream_w1(struct su_stream *stream, u1 value, u2 offset);
+enum su_error su_stream_w1(struct su_stream *stream, u1 value, u2 offset);
 
-void su_stream_w2(struct su_stream *stream, u2 value, u2 offset);
+enum su_error su_stream_w2(struct su_stream *stream, u2 value, u2 offset);
 
-void su_stream_w4(struct su_stream *stream, u4 value, u2 offset);
+enum su_error su_stream_w4(struct su_stream *stream, u4 value, u2 offset);
 
-void su_stream_w8(struct su_stream *stream, u8 value, u2 offset);
+enum su_error su_stream_w8(struct su_stream *stream, u8 value, u2 offset);
 
 enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks, struct su_chunk** chunk_out);
 

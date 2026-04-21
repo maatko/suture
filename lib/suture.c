@@ -211,8 +211,6 @@ enum su_error su_dispose(struct su_env *env) {
 
     for (u2 i = 0; i < env->hooks_count; i++) {
       struct su_hook *hook = &env->hooks[i];
-      if (hook == NULL)
-        continue;
 
       definitions[i].klass = JVM_INVOKE(jni, FindClass, hook->class_name);
       definitions[i].class_byte_count = hook->original_length;

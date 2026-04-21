@@ -27,6 +27,8 @@ struct su_hook {
 extern "C" {
 #endif
 
+
+
 char *su_hook_original_name(const char *name);
 
 #ifdef __cplusplus

@@ -11,9 +11,7 @@ enum su_error su_stream_rn(struct su_stream *stream, u1 *buffer, const u2 size, 
     return SU_STREAM_AT_END;
 
   stream->cursor += offset;
-
   memcpy(buffer, stream->buffer + stream->cursor, size);
-
   stream->cursor += size;
 
   return SU_OK;
@@ -89,103 +87,103 @@ enum su_error su_stream_r8(struct su_stream *stream, u8 *value, const u2 offset)
   return SU_OK;
 }
 
-void su_stream_wn(struct su_stream *stream, const u1 *buffer, const u2 size, const u2 offset) {
+enum su_error su_stream_wn(struct su_stream *stream, const u1 *buffer, const u2 size, const u2 offset) {
   if (size > stream->length - stream->cursor || offset > stream->length - stream->cursor - size) {
     const size_t length = stream->cursor + size + offset;
     void *bigger_buffer = realloc(stream->buffer, length);
 
     if (!bigger_buffer)
-      return; // todo: throw an error
+      return SU_MEMORY_ALLOCATION_FAILURE;
 
     stream->buffer = (u1 *)bigger_buffer;
     stream->length = length;
   }
 
   stream->cursor += offset;
-
   memcpy(stream->buffer + stream->cursor, buffer, size);
-
   stream->cursor += size;
+
+  return SU_OK;
 }
 
-void su_stream_w1(struct su_stream *stream, const u1 value, const u2 offset) {
+enum su_error su_stream_w1(struct su_stream *stream, const u1 value, const u2 offset) {
   const u2 type_size = sizeof(u1);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
     const size_t length = stream->cursor + type_size + offset;
     void *bigger_buffer = realloc(stream->buffer, length);
 
     if (!bigger_buffer)
-      return; // todo: throw an error
+      return SU_MEMORY_ALLOCATION_FAILURE;
 
     stream->buffer = bigger_buffer;
     stream->length = length;
   }
 
   stream->cursor += offset;
-
   *(u1 *)(stream->buffer + stream->cursor) = value;
-
   stream->cursor += type_size;
+
+  return SU_OK;
 }
 
-void su_stream_w2(struct su_stream *stream, const u2 value, const u2 offset) {
+enum su_error su_stream_w2(struct su_stream *stream, const u2 value, const u2 offset) {
   const u2 type_size = sizeof(u2);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
     const size_t length = stream->cursor + type_size + offset;
     void *bigger_buffer = realloc(stream->buffer, length);
 
     if (!bigger_buffer)
-      return; // todo: throw an error
+      return SU_MEMORY_ALLOCATION_FAILURE;
 
     stream->buffer = bigger_buffer;
     stream->length = length;
   }
 
   stream->cursor += offset;
-
   *(u2 *)(stream->buffer + stream->cursor) = bswap_16(value);
-
   stream->cursor += type_size;
+
+  return SU_OK;
 }
 
-void su_stream_w4(struct su_stream *stream, const u4 value, const u2 offset) {
+enum su_error su_stream_w4(struct su_stream *stream, const u4 value, const u2 offset) {
   const u2 type_size = sizeof(u4);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
     const size_t length = stream->cursor + type_size + offset;
     void *bigger_buffer = realloc(stream->buffer, length);
 
     if (!bigger_buffer)
-      return; // todo: throw an error
+      return SU_MEMORY_ALLOCATION_FAILURE;
 
     stream->buffer = bigger_buffer;
     stream->length = length;
   }
 
   stream->cursor += offset;
-
   *(u4 *)(stream->buffer + stream->cursor) = bswap_32(value);
-
   stream->cursor += type_size;
+
+  return SU_OK;
 }
 
-void su_stream_w8(struct su_stream *stream, const u8 value, const u2 offset) {
+enum su_error su_stream_w8(struct su_stream *stream, const u8 value, const u2 offset) {
   const u2 type_size = sizeof(u8);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
     const size_t length = stream->cursor + type_size + offset;
     void *bigger_buffer = realloc(stream->buffer, length);
 
     if (!bigger_buffer)
-      return; // todo: throw an error
+      return SU_MEMORY_ALLOCATION_FAILURE;
 
     stream->buffer = bigger_buffer;
     stream->length = length;
   }
 
   stream->cursor += offset;
-
   *(u8 *)(stream->buffer + stream->cursor) = bswap_64(value);
-
   stream->cursor += type_size;
+
+  return SU_OK;
 }
 
 enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks, struct su_chunk **chunk_out) {

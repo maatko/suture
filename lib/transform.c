@@ -42,8 +42,13 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
   if (JVM_INVOKE(jvmti, GetEnvironmentLocalStorage, (void **)&env) != JVMTI_ERROR_NONE)
     return;
 
-  unsigned char *old_bytes = (u1 *)malloc(sizeof(unsigned char) * class_data_len);
-  assert(old_bytes != NULL && "failed to allocate memory for the old bytes");
+  unsigned char *old_bytes = NULL;
+  JVM_INVOKE(jvmti, Allocate, class_data_len, &old_bytes);
+
+  if (old_bytes == NULL) {
+    env->error = SU_MEMORY_ALLOCATION_FAILURE;
+    return;
+  }
 
   memcpy(old_bytes, class_data, class_data_len);
 
@@ -94,6 +99,7 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
       break;
     }
 
+    // todo: use old flags and inject final, cause what if the method is static, calling it via member wont work.
     struct su_stream *original_stream = su_add_method(&transform, hook->original_name, hook->signature, ACC_PRIVATE | ACC_FINAL);
     su_stream_wn(original_stream, attributes, attributes_length, 0);
 
@@ -113,7 +119,6 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
     }
 
     free(t_buffer);
-
     su_transform_dispose(&transform);
   }
 
@@ -156,45 +161,45 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, cons
     SU_TRY_CATCH(status, su_stream_r1(&stream, &tag, 0), exit);
 
     switch (tag) {
-    case CONSTANT_Class:
-    case CONSTANT_String:
-    case CONSTANT_MethodType:
-      stream.cursor += sizeof(u2);
-      break;
-    case CONSTANT_Fieldref:
-    case CONSTANT_Methodref:
-    case CONSTANT_InterfaceMethodref:
-    case CONSTANT_NameAndType:
-    case CONSTANT_InvokeDynamic:
-      stream.cursor += sizeof(u2) * 2;
-      break;
-    case CONSTANT_Integer:
-    case CONSTANT_Float:
-      stream.cursor += sizeof(u4);
-      break;
-    case CONSTANT_Long:
-    case CONSTANT_Double:
-      stream.cursor += sizeof(u4) * 2;
-      i++;
-      break;
-    case CONSTANT_Utf8: {
-      u2 length;
-      SU_TRY_CATCH(status, su_stream_r2(&stream, &length, 0), exit);
+      case CONSTANT_Class:
+      case CONSTANT_String:
+      case CONSTANT_MethodType:
+        stream.cursor += sizeof(u2);
+        break;
+      case CONSTANT_Fieldref:
+      case CONSTANT_Methodref:
+      case CONSTANT_InterfaceMethodref:
+      case CONSTANT_NameAndType:
+      case CONSTANT_InvokeDynamic:
+        stream.cursor += sizeof(u2) * 2;
+        break;
+      case CONSTANT_Integer:
+      case CONSTANT_Float:
+        stream.cursor += sizeof(u4);
+        break;
+      case CONSTANT_Long:
+      case CONSTANT_Double:
+        stream.cursor += sizeof(u4) * 2;
+        i++;
+        break;
+      case CONSTANT_Utf8: {
+        u2 length;
+        SU_TRY_CATCH(status, su_stream_r2(&stream, &length, 0), exit);
 
-      char *string = malloc(sizeof(char) * (length + 1));
-      assert(string != NULL && "failed to allocate memory for string");
+        char *string = malloc(sizeof(char) * (length + 1));
+        assert(string != NULL && "failed to allocate memory for string");
 
-      SU_TRY_CATCH(status, su_stream_rn(&stream, (u1 *)string, length, 0), exit);
-      string[length] = '\0';
+        SU_TRY_CATCH(status, su_stream_rn(&stream, (u1 *)string, length, 0), exit);
+        string[length] = '\0';
 
-      transform->constant_pool[i] = string;
-    } break;
-    case CONSTANT_MethodHandle:
-      stream.cursor += sizeof(u1) + sizeof(u2);
-      break;
-    default:
-      status = SU_JVM_INVALID_CONSTANT_POOL;
-      goto exit;
+        transform->constant_pool[i] = string;
+      } break;
+      case CONSTANT_MethodHandle:
+        stream.cursor += sizeof(u1) + sizeof(u2);
+        break;
+      default:
+        status = SU_JVM_INVALID_CONSTANT_POOL;
+        goto exit;
     }
   }
 
