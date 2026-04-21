@@ -59,6 +59,9 @@ enum su_error su_detour(struct su_env *env, const char *class_name, const char *
   if (env == NULL || class_name == NULL || method_signature == NULL || function == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
+  if (class_name[0] == '<')
+    return SU_DETOUR_INVALID_TARGET;
+
   void *hooks_data = realloc(env->hooks, (env->hooks_count + 1) * sizeof(struct su_hook));
   if (hooks_data == NULL)
     return SU_MEMORY_ALLOCATION_FAILURE;
