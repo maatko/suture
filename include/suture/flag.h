@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-enum su_error su_flag_patchb(const char *name, bool value);
+enum su_error su_flag_patchb(const char *name, bool *original, bool value);
 
 #ifdef __cplusplus
 }

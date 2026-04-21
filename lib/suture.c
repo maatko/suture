@@ -53,7 +53,7 @@ enum su_error su_init(struct su_env *env) {
   JVM_TRY(JVM_INVOKE(env->jvmti, SetEventCallbacks, &callbacks, sizeof(callbacks)), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
   JVM_TRY(JVM_INVOKE(env->jvmti, SetEventNotificationMode, JVMTI_ENABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
 
-  return su_flag_patchb("AllowRedefinitionToAddDeleteMethods", true);
+  return su_flag_patchb("AllowRedefinitionToAddDeleteMethods", &env->allow_redefinition, true);
 }
 
 enum su_error su_detour(struct su_env *env, const char *class_name, const char *method_name, const char *method_signature, jmethodID *original_method, void *function) {
@@ -239,5 +239,6 @@ enum su_error su_dispose(struct su_env *env) {
   }
 
   JVM_INVOKE(env->jvm, DetachCurrentThread);
-  return su_flag_patchb("AllowRedefinitionToAddDeleteMethods", false);
+
+  return su_flag_patchb("AllowRedefinitionToAddDeleteMethods", NULL, env->allow_redefinition);
 }

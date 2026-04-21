@@ -8,6 +8,8 @@
 #include <jni.h>
 #include <jvmti.h>
 
+#include <stdbool.h>
+
 struct su_env {
   enum su_error error;
 
@@ -19,6 +21,8 @@ struct su_env {
 
   jclass *targets;
   u2 targets_count;
+
+  bool allow_redefinition;
 };
 
 #ifdef __cplusplus

@@ -30,7 +30,7 @@ struct vm_type_entry {
 extern JNIIMPORT struct vm_struct_entry *gHotSpotVMStructs;
 extern JNIIMPORT struct vm_type_entry *gHotSpotVMTypes;
 
-enum su_error su_flag_patchb(const char *name, const bool value) {
+enum su_error su_flag_patchb(const char *name, bool *original, const bool value) {
   if (name == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
@@ -65,7 +65,7 @@ enum su_error su_flag_patchb(const char *name, const bool value) {
   }
 
   if (!flags || !num_flags || !flag_size)
-    return SU_JVM_FLAG_NOT_FOUND;
+    return SU_JVM_RUNTIME_DETOURING_NOT_SUPPORTED;
 
   for (size_t i = 0; i < num_flags; i++) {
     unsigned char *current = flags + (i * flag_size);
@@ -73,10 +73,14 @@ enum su_error su_flag_patchb(const char *name, const bool value) {
 
     if (current_name != NULL && strcmp(current_name, name) == 0) {
       bool *offset = *(bool **)(current + address_offset);
+
+      if (original != NULL)
+        (*original) = *offset;
+
       memset(offset, value, sizeof(bool));
       return SU_OK;
     }
   }
 
-  return SU_JVM_FLAG_NOT_FOUND;
+  return SU_JVM_RUNTIME_DETOURING_NOT_SUPPORTED;
 }
