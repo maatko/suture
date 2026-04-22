@@ -5,6 +5,8 @@
 # suture
 c powered hooking engine for the jvm
 
+[Documentation](https://maatko.github.io/suture/)
+
 ### usage
 
 ```c
