@@ -2,6 +2,10 @@
  <img width="200px" src="logo.png" alt="Logo" />
 </p>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT">
+</p>
+
 # suture
 c powered hooking engine for the jvm
 
