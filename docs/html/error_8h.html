@@ -92,6 +92,9 @@ $(function(){initNavTree('error_8h.html','',''); });
   <div class="headertitle"><div class="title">error.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Error codes and utility macros for Suture.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdlib.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for error.h:</div>
@@ -109,8 +112,11 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a738b05625e0e002e6cef773db6ef8cc3" id="r_a738b05625e0e002e6cef773db6ef8cc3"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a738b05625e0e002e6cef773db6ef8cc3">SU_TRY</a>(ACTION,  ERROR)</td></tr>
+<tr class="memdesc:a738b05625e0e002e6cef773db6ef8cc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes <code class="param">ACTION</code> and returns <code class="param">ERROR</code> immediately if it fails.  <br /></td></tr>
 <tr class="memitem:a2b5dc69e54277072e4697e97ca1a14d2" id="r_a2b5dc69e54277072e4697e97ca1a14d2"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a2b5dc69e54277072e4697e97ca1a14d2">SU_TRY_CATCH</a>(STATUS,  ACTION,  CATCH)</td></tr>
+<tr class="memdesc:a2b5dc69e54277072e4697e97ca1a14d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes <code class="param">ACTION</code>, stores the result in <code class="param">STATUS</code>, and jumps to <code class="param">CATCH</code> on failure.  <br /></td></tr>
 <tr class="memitem:acfa893690e1dfe2eae16d1dc6a3bdeea" id="r_acfa893690e1dfe2eae16d1dc6a3bdeea"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#acfa893690e1dfe2eae16d1dc6a3bdeea">SU_FREE</a>(PTR)</td></tr>
+<tr class="memdesc:acfa893690e1dfe2eae16d1dc6a3bdeea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees <code class="param">PTR</code> and sets it to <code>NULL</code>. No-op if already <code>NULL</code>.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -140,8 +146,11 @@ Enumerations</h2></td></tr>
 , <a class="el" href="#a620804d955cf16bcddaa85dc236b3131a8d25ba7ba8e1290c2cded2f438b6fec5">SU_JVM_GENERIC_FAILURE</a>
 <br />
  }</td></tr>
+<tr class="memdesc:a620804d955cf16bcddaa85dc236b3131"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return codes used throughout the Suture API.  <a href="#a620804d955cf16bcddaa85dc236b3131">More...</a><br /></td></tr>
 </table>
-<a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Error codes and utility macros for Suture. </p>
+</div><a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
 <a id="acfa893690e1dfe2eae16d1dc6a3bdeea" name="acfa893690e1dfe2eae16d1dc6a3bdeea"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acfa893690e1dfe2eae16d1dc6a3bdeea">&#9670;&#160;</a></span>SU_FREE</h2>
 
@@ -163,6 +172,14 @@ Enumerations</h2></td></tr>
 <div class="line">  }                    \</div>
 <div class="line">} <span class="keywordflow">while</span> (0)</div>
 </div><!-- fragment -->
+<p>Frees <code class="param">PTR</code> and sets it to <code>NULL</code>. No-op if already <code>NULL</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">PTR</td><td>Pointer to free. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a738b05625e0e002e6cef773db6ef8cc3" name="a738b05625e0e002e6cef773db6ef8cc3"></a>
@@ -186,8 +203,17 @@ Enumerations</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((ACTION) != <a class="code hl_enumvalue" href="#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e">SU_OK</a>) {    \</div>
 <div class="line">  <span class="keywordflow">return</span> ERROR;             \</div>
 <div class="line">}</div>
-<div class="ttc" id="aerror_8h_html_a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e"><div class="ttname"><a href="#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e">SU_OK</a></div><div class="ttdeci">@ SU_OK</div><div class="ttdef"><b>Definition</b> error.h:25</div></div>
+<div class="ttc" id="aerror_8h_html_a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e"><div class="ttname"><a href="#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e">SU_OK</a></div><div class="ttdeci">@ SU_OK</div><div class="ttdef"><b>Definition</b> error.h:49</div></div>
 </div><!-- fragment -->
+<p>Executes <code class="param">ACTION</code> and returns <code class="param">ERROR</code> immediately if it fails. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ACTION</td><td>Expression returning an <a class="el" href="#a620804d955cf16bcddaa85dc236b3131" title="su_error">su_error</a>. </td></tr>
+    <tr><td class="paramname">ERROR</td><td>Error code to propagate on failure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a2b5dc69e54277072e4697e97ca1a14d2" name="a2b5dc69e54277072e4697e97ca1a14d2"></a>
@@ -217,6 +243,16 @@ Enumerations</h2></td></tr>
 <div class="line">  <span class="keywordflow">goto</span> CATCH;                             \</div>
 <div class="line">}</div>
 </div><!-- fragment -->
+<p>Executes <code class="param">ACTION</code>, stores the result in <code class="param">STATUS</code>, and jumps to <code class="param">CATCH</code> on failure. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">STATUS</td><td>Lvalue of type <a class="el" href="#a620804d955cf16bcddaa85dc236b3131" title="su_error">su_error</a> that receives the result. </td></tr>
+    <tr><td class="paramname">ACTION</td><td>Expression returning an <a class="el" href="#a620804d955cf16bcddaa85dc236b3131" title="su_error">su_error</a>. </td></tr>
+    <tr><td class="paramname">CATCH</td><td>Label to jump to on failure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
@@ -231,26 +267,47 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Return codes used throughout the Suture API. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" name="a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e"></a>SU_OK&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" name="a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1"></a>SU_MISSING_REQUIRED_PARAMETERS&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5" name="a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5"></a>SU_MEMORY_ALLOCATION_FAILURE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131aa3828b3cfdc9bb99f9cf3d24a860e6cd" name="a620804d955cf16bcddaa85dc236b3131aa3828b3cfdc9bb99f9cf3d24a860e6cd"></a>SU_DETOUR_NOT_SUPPORTED&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a274c4a1473e3b4876d0608f577959b9e" name="a620804d955cf16bcddaa85dc236b3131a274c4a1473e3b4876d0608f577959b9e"></a>SU_DETOUR_INVALID_TARGET&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6" name="a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6"></a>SU_STREAM_INVALID_CHUNK&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a8c6489a2aa23f5fb6079f46233d4a1cc" name="a620804d955cf16bcddaa85dc236b3131a8c6489a2aa23f5fb6079f46233d4a1cc"></a>SU_STREAM_UNFINISHED_READ&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131afa668efc2b3240df19c7ea8528682a96" name="a620804d955cf16bcddaa85dc236b3131afa668efc2b3240df19c7ea8528682a96"></a>SU_STREAM_AT_END&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131ae469cbbef2f56e6050b5e77f8c4a4819" name="a620804d955cf16bcddaa85dc236b3131ae469cbbef2f56e6050b5e77f8c4a4819"></a>SU_JVM_ENVIRONMENT_STORAGE_FAILURE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131af5af609f13328ecd649b02907987ffea" name="a620804d955cf16bcddaa85dc236b3131af5af609f13328ecd649b02907987ffea"></a>SU_JVM_NO_VIRTUAL_MACHINES&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131ab2de6ee300f2e7d301afa8b271c04f9e" name="a620804d955cf16bcddaa85dc236b3131ab2de6ee300f2e7d301afa8b271c04f9e"></a>SU_JVM_JVMTI_ATTACH_FAILURE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a565e04528d36a53dfcba30af04df58e4" name="a620804d955cf16bcddaa85dc236b3131a565e04528d36a53dfcba30af04df58e4"></a>SU_JVM_JVMTI_DETACH_FAILURE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131ab60d383aaada13795792b13815e4cbe9" name="a620804d955cf16bcddaa85dc236b3131ab60d383aaada13795792b13815e4cbe9"></a>SU_JVM_JNI_ATTACH_FAILURE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a869487c13f8d2ba26db6f4e7dc4f5bbf" name="a620804d955cf16bcddaa85dc236b3131a869487c13f8d2ba26db6f4e7dc4f5bbf"></a>SU_JVM_FLAG_PATCH_FAILURE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a3648d54a221b97743abc7091f5adc1d4" name="a620804d955cf16bcddaa85dc236b3131a3648d54a221b97743abc7091f5adc1d4"></a>SU_JVM_RETRANSFORM_FAILURE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a6ea674999187df246c2bd673ef57911d" name="a620804d955cf16bcddaa85dc236b3131a6ea674999187df246c2bd673ef57911d"></a>SU_JVM_CAPABILITIES_FAILURE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a24dfcb2fcb08b93d26dc2e299c111ace" name="a620804d955cf16bcddaa85dc236b3131a24dfcb2fcb08b93d26dc2e299c111ace"></a>SU_JVM_INVALID_CLASS_MAGIC&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a0650d3240c73881dacace0fe5d8a3e09" name="a620804d955cf16bcddaa85dc236b3131a0650d3240c73881dacace0fe5d8a3e09"></a>SU_JVM_INVALID_CONSTANT_POOL&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a8d25ba7ba8e1290c2cded2f438b6fec5" name="a620804d955cf16bcddaa85dc236b3131a8d25ba7ba8e1290c2cded2f438b6fec5"></a>SU_JVM_GENERIC_FAILURE&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" name="a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e"></a>SU_OK&#160;</td><td class="fielddoc"><p>Operation completed successfully. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" name="a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1"></a>SU_MISSING_REQUIRED_PARAMETERS&#160;</td><td class="fielddoc"><p>One or more required parameters were NULL. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5" name="a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5"></a>SU_MEMORY_ALLOCATION_FAILURE&#160;</td><td class="fielddoc"><p>A heap allocation returned NULL. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131aa3828b3cfdc9bb99f9cf3d24a860e6cd" name="a620804d955cf16bcddaa85dc236b3131aa3828b3cfdc9bb99f9cf3d24a860e6cd"></a>SU_DETOUR_NOT_SUPPORTED&#160;</td><td class="fielddoc"><p>Detour is unsupported on this platform/target. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a274c4a1473e3b4876d0608f577959b9e" name="a620804d955cf16bcddaa85dc236b3131a274c4a1473e3b4876d0608f577959b9e"></a>SU_DETOUR_INVALID_TARGET&#160;</td><td class="fielddoc"><p>Target method is invalid or cannot be hooked. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6" name="a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6"></a>SU_STREAM_INVALID_CHUNK&#160;</td><td class="fielddoc"><p>A stream chunk failed validation. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a8c6489a2aa23f5fb6079f46233d4a1cc" name="a620804d955cf16bcddaa85dc236b3131a8c6489a2aa23f5fb6079f46233d4a1cc"></a>SU_STREAM_UNFINISHED_READ&#160;</td><td class="fielddoc"><p>Stream was closed before a read completed. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131afa668efc2b3240df19c7ea8528682a96" name="a620804d955cf16bcddaa85dc236b3131afa668efc2b3240df19c7ea8528682a96"></a>SU_STREAM_AT_END&#160;</td><td class="fielddoc"><p>Read attempted past the end of the stream. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131ae469cbbef2f56e6050b5e77f8c4a4819" name="a620804d955cf16bcddaa85dc236b3131ae469cbbef2f56e6050b5e77f8c4a4819"></a>SU_JVM_ENVIRONMENT_STORAGE_FAILURE&#160;</td><td class="fielddoc"><p>Failed to store the JVMTI environment. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131af5af609f13328ecd649b02907987ffea" name="a620804d955cf16bcddaa85dc236b3131af5af609f13328ecd649b02907987ffea"></a>SU_JVM_NO_VIRTUAL_MACHINES&#160;</td><td class="fielddoc"><p>No running JVM instances were found. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131ab2de6ee300f2e7d301afa8b271c04f9e" name="a620804d955cf16bcddaa85dc236b3131ab2de6ee300f2e7d301afa8b271c04f9e"></a>SU_JVM_JVMTI_ATTACH_FAILURE&#160;</td><td class="fielddoc"><p>Could not attach to the JVMTI environment. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a565e04528d36a53dfcba30af04df58e4" name="a620804d955cf16bcddaa85dc236b3131a565e04528d36a53dfcba30af04df58e4"></a>SU_JVM_JVMTI_DETACH_FAILURE&#160;</td><td class="fielddoc"><p>Could not detach from the JVMTI environment. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131ab60d383aaada13795792b13815e4cbe9" name="a620804d955cf16bcddaa85dc236b3131ab60d383aaada13795792b13815e4cbe9"></a>SU_JVM_JNI_ATTACH_FAILURE&#160;</td><td class="fielddoc"><p>Could not attach to the JNI environment. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a869487c13f8d2ba26db6f4e7dc4f5bbf" name="a620804d955cf16bcddaa85dc236b3131a869487c13f8d2ba26db6f4e7dc4f5bbf"></a>SU_JVM_FLAG_PATCH_FAILURE&#160;</td><td class="fielddoc"><p>Failed to patch a JVM flag. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a3648d54a221b97743abc7091f5adc1d4" name="a620804d955cf16bcddaa85dc236b3131a3648d54a221b97743abc7091f5adc1d4"></a>SU_JVM_RETRANSFORM_FAILURE&#160;</td><td class="fielddoc"><p>Class retransformation failed. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a6ea674999187df246c2bd673ef57911d" name="a620804d955cf16bcddaa85dc236b3131a6ea674999187df246c2bd673ef57911d"></a>SU_JVM_CAPABILITIES_FAILURE&#160;</td><td class="fielddoc"><p>Failed to acquire required JVMTI capabilities. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a24dfcb2fcb08b93d26dc2e299c111ace" name="a620804d955cf16bcddaa85dc236b3131a24dfcb2fcb08b93d26dc2e299c111ace"></a>SU_JVM_INVALID_CLASS_MAGIC&#160;</td><td class="fielddoc"><p>Class file magic number is invalid. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a0650d3240c73881dacace0fe5d8a3e09" name="a620804d955cf16bcddaa85dc236b3131a0650d3240c73881dacace0fe5d8a3e09"></a>SU_JVM_INVALID_CONSTANT_POOL&#160;</td><td class="fielddoc"><p>Class constant pool is malformed. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a8d25ba7ba8e1290c2cded2f438b6fec5" name="a620804d955cf16bcddaa85dc236b3131a8d25ba7ba8e1290c2cded2f438b6fec5"></a>SU_JVM_GENERIC_FAILURE&#160;</td><td class="fielddoc"><p>Unspecified JVM error. </p>
+</td></tr>
 </table>
 
 </div>

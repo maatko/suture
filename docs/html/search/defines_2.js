@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['jvm_5ffree_0',['JVM_FREE',['../types_8h.html#a6fbb69e1e2895c5afb4f55214404a256',1,'types.h']]],
-  ['jvm_5finvoke_1',['JVM_INVOKE',['../types_8h.html#ade3c502e395202e42390ab44da5c29b9',1,'types.h']]],
-  ['jvm_5ftry_2',['JVM_TRY',['../types_8h.html#aa999d0a244523f5ad5da26b63f46005f',1,'types.h']]],
-  ['jvm_5ftry_5fcatch_3',['JVM_TRY_CATCH',['../types_8h.html#a4a593456923ae4c3c51385fd36a7d212',1,'types.h']]]
+  ['su_5ffree_0',['SU_FREE',['../error_8h.html#acfa893690e1dfe2eae16d1dc6a3bdeea',1,'SU_FREE:&#160;error.h'],['../types_8h.html#acfa893690e1dfe2eae16d1dc6a3bdeea',1,'SU_FREE:&#160;types.h']]],
+  ['su_5ftry_1',['SU_TRY',['../error_8h.html#a738b05625e0e002e6cef773db6ef8cc3',1,'SU_TRY:&#160;error.h'],['../types_8h.html#a738b05625e0e002e6cef773db6ef8cc3',1,'SU_TRY:&#160;types.h']]],
+  ['su_5ftry_5fcatch_2',['SU_TRY_CATCH',['../error_8h.html#a2b5dc69e54277072e4697e97ca1a14d2',1,'SU_TRY_CATCH:&#160;error.h'],['../types_8h.html#a2b5dc69e54277072e4697e97ca1a14d2',1,'SU_TRY_CATCH:&#160;types.h']]]
 ];

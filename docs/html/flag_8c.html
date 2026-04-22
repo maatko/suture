@@ -111,6 +111,7 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:af996d6d1836f7938f06ed8580b4c739b" id="r_af996d6d1836f7938f06ed8580b4c739b"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#af996d6d1836f7938f06ed8580b4c739b">su_flag_patchb</a> (const char *name, bool *original, const bool value)</td></tr>
+<tr class="memdesc:af996d6d1836f7938f06ed8580b4c739b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Patches a named JVM boolean flag.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -137,10 +138,21 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>value</em></span>&#160;)</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>value</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Patches a named JVM boolean flag. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Name of the flag to patch. </td></tr>
+    <tr><td class="paramname">original</td><td>Out – receives the flag's original value, or <code>NULL</code> to discard. </td></tr>
+    <tr><td class="paramname">value</td><td>New value to write. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success, otherwise an error code. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

@@ -106,10 +106,15 @@ Include dependency graph for suture.c:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a2452f978b129f759ca4eae8c69970bed" id="r_a2452f978b129f759ca4eae8c69970bed"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a2452f978b129f759ca4eae8c69970bed">su_init</a> (struct <a class="el" href="structsu__env.html">su_env</a> *env)</td></tr>
+<tr class="memdesc:a2452f978b129f759ca4eae8c69970bed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialises a Suture environment and acquires a JVMTI capability set.  <br /></td></tr>
 <tr class="memitem:aebe09794f140a85ff595b1c09aff7aa5" id="r_aebe09794f140a85ff595b1c09aff7aa5"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#aebe09794f140a85ff595b1c09aff7aa5">su_detour</a> (struct <a class="el" href="structsu__env.html">su_env</a> *env, const char *class_name, const char *method_name, const char *method_signature, jmethodID *original_method, void *function)</td></tr>
+<tr class="memdesc:aebe09794f140a85ff595b1c09aff7aa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a method detour by class/method name and signature.  <br /></td></tr>
 <tr class="memitem:a55d993679177f1b6a60c05c0ceae6673" id="r_a55d993679177f1b6a60c05c0ceae6673"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a55d993679177f1b6a60c05c0ceae6673">su_mdetour</a> (struct <a class="el" href="structsu__env.html">su_env</a> *env, jmethodID method, jmethodID *original_method, void *function)</td></tr>
+<tr class="memdesc:a55d993679177f1b6a60c05c0ceae6673"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a method detour directly from a <code>jmethodID</code>.  <br /></td></tr>
 <tr class="memitem:ab1b73ff6d14db37da1d510f5dea63c33" id="r_ab1b73ff6d14db37da1d510f5dea63c33"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#ab1b73ff6d14db37da1d510f5dea63c33">su_transform</a> (const struct <a class="el" href="structsu__env.html">su_env</a> *env)</td></tr>
+<tr class="memdesc:ab1b73ff6d14db37da1d510f5dea63c33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies all registered hooks by redefining the target classes.  <br /></td></tr>
 <tr class="memitem:a8e54938185b20c50290e893d382ff78a" id="r_a8e54938185b20c50290e893d382ff78a"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a8e54938185b20c50290e893d382ff78a">su_dispose</a> (struct <a class="el" href="structsu__env.html">su_env</a> *env)</td></tr>
+<tr class="memdesc:a8e54938185b20c50290e893d382ff78a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources associated with the environment.  <br /></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="aebe09794f140a85ff595b1c09aff7aa5" name="aebe09794f140a85ff595b1c09aff7aa5"></a>
@@ -150,6 +155,20 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Registers a method detour by class/method name and signature. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">env</td><td>Initialised environment. </td></tr>
+    <tr><td class="paramname">class_name</td><td>JNI-style class name (e.g. <code>"java/lang/String"</code>). </td></tr>
+    <tr><td class="paramname">method_name</td><td>Name of the method to hook. </td></tr>
+    <tr><td class="paramname">method_signature</td><td>JNI method descriptor (e.g. <code>"()V"</code>). </td></tr>
+    <tr><td class="paramname">original_method</td><td>Out – receives the trampoline to the original method. </td></tr>
+    <tr><td class="paramname">function</td><td>Replacement function with a matching signature. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success, otherwise an error code. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -177,6 +196,15 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Releases all resources associated with the environment. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">env</td><td>Environment to tear down. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success, otherwise an error code. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -199,6 +227,15 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Initialises a Suture environment and acquires a JVMTI capability set. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">env</td><td>Uninitialised environment to set up. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success, otherwise an error code. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -235,6 +272,18 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Registers a method detour directly from a <code>jmethodID</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">env</td><td>Initialised environment. </td></tr>
+    <tr><td class="paramname">method</td><td>Method to hook. </td></tr>
+    <tr><td class="paramname">original_method</td><td>Out – receives the trampoline to the original method. </td></tr>
+    <tr><td class="paramname">function</td><td>Replacement function with a matching signature. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success, otherwise an error code. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -257,6 +306,15 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Applies all registered hooks by redefining the target classes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">env</td><td>Initialised environment with at least one hook registered. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success, otherwise an error code. </dd></dl>
 
 </div>
 </div>

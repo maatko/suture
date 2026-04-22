@@ -93,6 +93,9 @@ $(function(){initNavTree('structsu__env.html','','structsu__env-members'); });
 </div><!--header-->
 <div class="contents">
 
+<p>Holds the runtime state for a Suture instrumentation session.  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="suture_8h_source.html">suture.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for su_env:</div>
@@ -106,12 +109,15 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a9a9a8065e08e25b7dee7ca21b7ac2746" id="r_a9a9a8065e08e25b7dee7ca21b7ac2746"><td class="memItemLeft">JavaVM *&#160;</td><td class="memItemRight"><a class="el" href="#a9a9a8065e08e25b7dee7ca21b7ac2746">jvm</a></td></tr>
 <tr class="memitem:a9c10b6036c7c3929589914a191f3fc88" id="r_a9c10b6036c7c3929589914a191f3fc88"><td class="memItemLeft">jvmtiEnv *&#160;</td><td class="memItemRight"><a class="el" href="#a9c10b6036c7c3929589914a191f3fc88">jvmti</a></td></tr>
 <tr class="memitem:a2bd2d301538dcf03cd93211850a0ea6a" id="r_a2bd2d301538dcf03cd93211850a0ea6a"><td class="memItemLeft">struct <a class="el" href="structsu__hook.html">su_hook</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a2bd2d301538dcf03cd93211850a0ea6a">hooks</a></td></tr>
-<tr class="memitem:a67eb83aa246e599ba3114e4e5940c50f" id="r_a67eb83aa246e599ba3114e4e5940c50f"><td class="memItemLeft"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a>&#160;</td><td class="memItemRight"><a class="el" href="#a67eb83aa246e599ba3114e4e5940c50f">hooks_count</a></td></tr>
+<tr class="memitem:a67eb83aa246e599ba3114e4e5940c50f" id="r_a67eb83aa246e599ba3114e4e5940c50f"><td class="memItemLeft">u2&#160;</td><td class="memItemRight"><a class="el" href="#a67eb83aa246e599ba3114e4e5940c50f">hooks_count</a></td></tr>
 <tr class="memitem:a1f2830ba293d98351baa4d1be639c982" id="r_a1f2830ba293d98351baa4d1be639c982"><td class="memItemLeft">jclass *&#160;</td><td class="memItemRight"><a class="el" href="#a1f2830ba293d98351baa4d1be639c982">targets</a></td></tr>
-<tr class="memitem:ac46bffbce505cbec34ffef9d0475697c" id="r_ac46bffbce505cbec34ffef9d0475697c"><td class="memItemLeft"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac46bffbce505cbec34ffef9d0475697c">targets_count</a></td></tr>
+<tr class="memitem:ac46bffbce505cbec34ffef9d0475697c" id="r_ac46bffbce505cbec34ffef9d0475697c"><td class="memItemLeft">u2&#160;</td><td class="memItemRight"><a class="el" href="#ac46bffbce505cbec34ffef9d0475697c">targets_count</a></td></tr>
 <tr class="memitem:a73c781749383eb836d4ae2081b0db3c5" id="r_a73c781749383eb836d4ae2081b0db3c5"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a73c781749383eb836d4ae2081b0db3c5">allow_redefinition</a></td></tr>
 </table>
-<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Holds the runtime state for a Suture instrumentation session. </p>
+<p>Must be zero-initialized before passing to <a class="el" href="suture_8h.html#a2452f978b129f759ca4eae8c69970bed" title="su_init">su_init</a>. </p>
+</div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="a73c781749383eb836d4ae2081b0db3c5" name="a73c781749383eb836d4ae2081b0db3c5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a73c781749383eb836d4ae2081b0db3c5">&#9670;&#160;</a></span>allow_redefinition</h2>
 
@@ -123,6 +129,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Permit class redefinition via JVMTI. </p>
 
 </div>
 </div>
@@ -137,6 +144,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Last error code set by the library. </p>
 
 </div>
 </div>
@@ -151,6 +159,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Array of registered method hooks. </p>
 
 </div>
 </div>
@@ -161,10 +170,11 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> su_env::hooks_count</td>
+          <td class="memname">u2 su_env::hooks_count</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Number of entries in <code class="param">hooks</code>. </p>
 
 </div>
 </div>
@@ -179,6 +189,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Target JVM instance. </p>
 
 </div>
 </div>
@@ -193,6 +204,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>JVMTI environment obtained from the JVM. </p>
 
 </div>
 </div>
@@ -207,6 +219,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Array of classes scheduled for redefinition. </p>
 
 </div>
 </div>
@@ -217,10 +230,11 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> su_env::targets_count</td>
+          <td class="memname">u2 su_env::targets_count</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Number of entries in <code class="param">targets</code>. </p>
 
 </div>
 </div>

@@ -9,5 +9,5 @@ digraph "su_transform_build"
   Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node2 [id="Node000002",label="su_transform_class\l_file_load_hook",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$transform_8c.html#a8f7a9b34bca61546b12febba87dbd90d",tooltip=" "];
   Node2 -> Node3 [id="edge2_Node000002_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node3 [id="Node000003",label="su_init",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$suture_8c.html#a2452f978b129f759ca4eae8c69970bed",tooltip=" "];
+  Node3 [id="Node000003",label="su_init",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$suture_8c.html#a2452f978b129f759ca4eae8c69970bed",tooltip="Initialises a Suture environment and acquires a JVMTI capability set."];
 }

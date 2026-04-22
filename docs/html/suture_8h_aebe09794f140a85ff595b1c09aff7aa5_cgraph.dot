@@ -5,7 +5,7 @@ digraph "su_detour"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node1 [id="Node000001",label="su_detour",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip=" "];
+  Node1 [id="Node000001",label="su_detour",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Registers a method detour by class/method name and signature."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
   Node2 [id="Node000002",label="su_hook_original_name",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$hook_8c.html#a56b0a371b5ac82d62fef76ba494b52f0",tooltip=" "];
 }
