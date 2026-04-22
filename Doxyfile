@@ -2,6 +2,7 @@
 PROJECT_NAME           = "suture"
 PROJECT_NUMBER         = 1.0
 OUTPUT_DIRECTORY       = docs/
+HTML_OUTPUT            = .
 
 
 # Input sources
