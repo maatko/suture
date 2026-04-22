@@ -19,7 +19,7 @@ includes = files(
 	'include/suture.h', 'include/suture/types.h',
 	'include/suture/error.h', 'include/suture/hook.h',
 	'include/suture/flag.h', 'include/suture/transform.h',
-	'include/suture/stream.h'
+	'include/suture/stream.h', 'include/suture/opcodes.h'
 )
 
 suture = static_library(
