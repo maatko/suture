@@ -18,7 +18,6 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -92,9 +91,12 @@ $(function(){initNavTree('hook_8h.html','',''); });
   <div class="headertitle"><div class="title">hook.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Method hooking interface for JVM bytecode interception.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="error_8h_source.html">error.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="transform_8h_source.html">transform.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="stream_8h_source.html">stream.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="transform_8h_source.html">transform.h</a>&quot;</code><br />
 <code>#include &lt;jni.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for hook.h:</div>
@@ -112,18 +114,24 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:su_5Fhook" id="r_su_5Fhook"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structsu__hook.html">su_hook</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes a method hook and its associated state.  <a href="structsu__hook.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:a33dd036dde7ab6d62d8e56fd713394e5" id="r_a33dd036dde7ab6d62d8e56fd713394e5"><td class="memItemLeft">enum &#160;</td><td class="memItemRight"><a class="el" href="#a33dd036dde7ab6d62d8e56fd713394e5">su_hook_type</a> { <a class="el" href="#a33dd036dde7ab6d62d8e56fd713394e5ad1684a393ef5f4ba6ddb39ad7eb9e27e">SU_HOOK_DETOUR</a>
  }</td></tr>
+<tr class="memdesc:a33dd036dde7ab6d62d8e56fd713394e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supported hook strategies.  <a href="#a33dd036dde7ab6d62d8e56fd713394e5">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a6c2a11be4ea944d08e8fa2719869a637" id="r_a6c2a11be4ea944d08e8fa2719869a637"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6c2a11be4ea944d08e8fa2719869a637">su_hook_detour</a> (const struct <a class="el" href="structsu__hook.html">su_hook</a> *hook, struct <a class="el" href="structsu__transform.html">su_transform</a> *transform, struct <a class="el" href="structsu__stream.html">su_stream</a> *stream)</td></tr>
+<tr class="memdesc:a6c2a11be4ea944d08e8fa2719869a637"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a detour hook to a JVM method via bytecode transformation.  <br /></td></tr>
 <tr class="memitem:a56b0a371b5ac82d62fef76ba494b52f0" id="r_a56b0a371b5ac82d62fef76ba494b52f0"><td class="memItemLeft">char *&#160;</td><td class="memItemRight"><a class="el" href="#a56b0a371b5ac82d62fef76ba494b52f0">su_hook_original_name</a> (const char *name)</td></tr>
+<tr class="memdesc:a56b0a371b5ac82d62fef76ba494b52f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derives the original method name from a hooked method name.  <br /></td></tr>
 </table>
-<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Method hooking interface for JVM bytecode interception. </p>
+</div><a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
 <a id="a33dd036dde7ab6d62d8e56fd713394e5" name="a33dd036dde7ab6d62d8e56fd713394e5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a33dd036dde7ab6d62d8e56fd713394e5">&#9670;&#160;</a></span>su_hook_type</h2>
 
@@ -135,8 +143,11 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Supported hook strategies. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a33dd036dde7ab6d62d8e56fd713394e5ad1684a393ef5f4ba6ddb39ad7eb9e27e" name="a33dd036dde7ab6d62d8e56fd713394e5ad1684a393ef5f4ba6ddb39ad7eb9e27e"></a>SU_HOOK_DETOUR&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a33dd036dde7ab6d62d8e56fd713394e5ad1684a393ef5f4ba6ddb39ad7eb9e27e" name="a33dd036dde7ab6d62d8e56fd713394e5ad1684a393ef5f4ba6ddb39ad7eb9e27e"></a>SU_HOOK_DETOUR&#160;</td><td class="fielddoc"><p>Redirects method execution to a detour function. </p>
+</td></tr>
 </table>
 
 </div>
@@ -165,6 +176,24 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Applies a detour hook to a JVM method via bytecode transformation. </p>
+<p>Transforms the target method's bytecode to redirect execution to the detour specified in <code class="param">hook</code>, writing the result into <code class="param">stream</code> via <code class="param">transform</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hook</td><td>Hook descriptor identifying the target method and detour. Must not be NULL. </td></tr>
+    <tr><td class="paramname">transform</td><td>Bytecode transform context to apply. Must not be NULL. </td></tr>
+    <tr><td class="paramname">stream</td><td>Output stream to receive the transformed bytecode. Must not be NULL.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" title="SU_MISSING_REQUIRED_PARAMETERS">SU_MISSING_REQUIRED_PARAMETERS</a> if any parameter is NULL. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a274c4a1473e3b4876d0608f577959b9e" title="SU_DETOUR_INVALID_TARGET">SU_DETOUR_INVALID_TARGET</a> if the target method could not be resolved. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa3828b3cfdc9bb99f9cf3d24a860e6cd" title="SU_DETOUR_NOT_SUPPORTED">SU_DETOUR_NOT_SUPPORTED</a> if the hook type is unsupported. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -192,6 +221,16 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Derives the original method name from a hooked method name. </p>
+<p>Generates the synthesized name used internally to retain access to the pre-hook method after a detour is installed.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Source method name. Must not be NULL.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Heap-allocated string with the derived name, or NULL on allocation failure. The caller is responsible for freeing the returned string. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

@@ -18,7 +18,6 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -93,6 +92,9 @@ $(function(){initNavTree('structsu__chunk.html','','structsu__chunk-members'); }
 </div><!--header-->
 <div class="contents">
 
+<p>A doubly-linked list node wrapping an <a class="el" href="structsu__stream.html" title="su_stream">su_stream</a> for chunked processing.  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="stream_8h_source.html">stream.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for su_chunk:</div>
@@ -106,7 +108,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a4a732045d9e6117a4063d36631c566c5" id="r_a4a732045d9e6117a4063d36631c566c5"><td class="memItemLeft">struct <a class="el" href="structsu__chunk.html">su_chunk</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a4a732045d9e6117a4063d36631c566c5">next</a></td></tr>
 <tr class="memitem:afe7c591c67cbedf606dcad4e2cd057ad" id="r_afe7c591c67cbedf606dcad4e2cd057ad"><td class="memItemLeft">struct <a class="el" href="structsu__chunk.html">su_chunk</a> *&#160;</td><td class="memItemRight"><a class="el" href="#afe7c591c67cbedf606dcad4e2cd057ad">prev</a></td></tr>
 </table>
-<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A doubly-linked list node wrapping an <a class="el" href="structsu__stream.html" title="su_stream">su_stream</a> for chunked processing. </p>
+</div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="a4a732045d9e6117a4063d36631c566c5" name="a4a732045d9e6117a4063d36631c566c5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4a732045d9e6117a4063d36631c566c5">&#9670;&#160;</a></span>next</h2>
 
@@ -118,6 +122,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Next chunk in the list, or NULL if last. </p>
 
 </div>
 </div>
@@ -132,6 +137,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Previous chunk in the list, or NULL if first. </p>
 
 </div>
 </div>
@@ -146,6 +152,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Embedded stream for this chunk's data. </p>
 
 </div>
 </div>

@@ -18,7 +18,6 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -92,6 +91,9 @@ $(function(){initNavTree('transform_8h.html','',''); });
   <div class="headertitle"><div class="title">transform.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>JVM class file parsing, mutation, and bytecode transform interface.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="error_8h_source.html">error.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="stream_8h_source.html">stream.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="types_8h_source.html">types.h</a>&quot;</code><br />
@@ -113,18 +115,28 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:su_5Fmethod" id="r_su_5Fmethod"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structsu__method.html">su_method</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a single method entry within a transformed class.  <a href="structsu__method.html#details">More...</a><br /></td></tr>
 <tr class="memitem:su_5Ftransform" id="r_su_5Ftransform"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structsu__transform.html">su_transform</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Holds the full mutable state of a class file under transformation.  <a href="structsu__transform.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a8f7a9b34bca61546b12febba87dbd90d" id="r_a8f7a9b34bca61546b12febba87dbd90d"><td class="memItemLeft">void JNICALL&#160;</td><td class="memItemRight"><a class="el" href="#a8f7a9b34bca61546b12febba87dbd90d">su_transform_class_file_load_hook</a> (jvmtiEnv *jvmti, JNIEnv *jni, jclass class_being_redefined, jobject loader, const char *name, jobject protection_domain, jint class_data_len, const unsigned char *class_data, jint *new_class_data_len, unsigned char **new_class_data)</td></tr>
-<tr class="memitem:a321360ca57e5bf4898fc65b3a063d18a" id="r_a321360ca57e5bf4898fc65b3a063d18a"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a321360ca57e5bf4898fc65b3a063d18a">su_transform_init</a> (struct <a class="el" href="structsu__transform.html">su_transform</a> *transform, u1 *buffer, u2 buffer_length)</td></tr>
-<tr class="memitem:a73abaa6e7110c36d2ee47edda3f6aaf0" id="r_a73abaa6e7110c36d2ee47edda3f6aaf0"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a73abaa6e7110c36d2ee47edda3f6aaf0">su_const_add_utf8</a> (struct <a class="el" href="structsu__transform.html">su_transform</a> *transform, const char *utf8, u2 *cp_index)</td></tr>
-<tr class="memitem:a17c797f9c8ad33cd789f35d339990920" id="r_a17c797f9c8ad33cd789f35d339990920"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a17c797f9c8ad33cd789f35d339990920">su_add_method</a> (struct <a class="el" href="structsu__transform.html">su_transform</a> *transform, const char *name, const char *desc, u2 access_flags, struct <a class="el" href="structsu__stream.html">su_stream</a> **stream)</td></tr>
-<tr class="memitem:add3c7ef2afc085a07d7d0c625d9a87a9" id="r_add3c7ef2afc085a07d7d0c625d9a87a9"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#add3c7ef2afc085a07d7d0c625d9a87a9">su_transform_build</a> (const struct <a class="el" href="structsu__transform.html">su_transform</a> *transform, u1 **buffer, u2 *buffer_length)</td></tr>
+<tr class="memdesc:a8f7a9b34bca61546b12febba87dbd90d"><td class="mdescLeft">&#160;</td><td class="mdescRight">JVMTI class file load hook that intercepts and retransforms loaded classes.  <br /></td></tr>
+<tr class="memitem:a321360ca57e5bf4898fc65b3a063d18a" id="r_a321360ca57e5bf4898fc65b3a063d18a"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a321360ca57e5bf4898fc65b3a063d18a">su_transform_init</a> (struct <a class="el" href="structsu__transform.html">su_transform</a> *transform, <a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a> *buffer, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> buffer_length)</td></tr>
+<tr class="memdesc:a321360ca57e5bf4898fc65b3a063d18a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses a raw class file buffer into a mutable <a class="el" href="structsu__transform.html" title="su_transform">su_transform</a> context.  <br /></td></tr>
+<tr class="memitem:a73abaa6e7110c36d2ee47edda3f6aaf0" id="r_a73abaa6e7110c36d2ee47edda3f6aaf0"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a73abaa6e7110c36d2ee47edda3f6aaf0">su_const_add_utf8</a> (struct <a class="el" href="structsu__transform.html">su_transform</a> *transform, const char *utf8, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> *cp_index)</td></tr>
+<tr class="memdesc:a73abaa6e7110c36d2ee47edda3f6aaf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interns a UTF-8 string into the transform's constant pool.  <br /></td></tr>
+<tr class="memitem:a17c797f9c8ad33cd789f35d339990920" id="r_a17c797f9c8ad33cd789f35d339990920"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a17c797f9c8ad33cd789f35d339990920">su_add_method</a> (struct <a class="el" href="structsu__transform.html">su_transform</a> *transform, const char *name, const char *desc, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> access_flags, struct <a class="el" href="structsu__stream.html">su_stream</a> **stream)</td></tr>
+<tr class="memdesc:a17c797f9c8ad33cd789f35d339990920"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends a new method to the transform and returns its bytecode stream.  <br /></td></tr>
+<tr class="memitem:add3c7ef2afc085a07d7d0c625d9a87a9" id="r_add3c7ef2afc085a07d7d0c625d9a87a9"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#add3c7ef2afc085a07d7d0c625d9a87a9">su_transform_build</a> (const struct <a class="el" href="structsu__transform.html">su_transform</a> *transform, <a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a> **buffer, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> *buffer_length)</td></tr>
+<tr class="memdesc:add3c7ef2afc085a07d7d0c625d9a87a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialises a completed transform back into a raw class file buffer.  <br /></td></tr>
 <tr class="memitem:a51543c0e6b53920ea4843894ae5cd5b4" id="r_a51543c0e6b53920ea4843894ae5cd5b4"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a51543c0e6b53920ea4843894ae5cd5b4">su_transform_dispose</a> (struct <a class="el" href="structsu__transform.html">su_transform</a> *transform)</td></tr>
+<tr class="memdesc:a51543c0e6b53920ea4843894ae5cd5b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources owned by a transform context.  <br /></td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>JVM class file parsing, mutation, and bytecode transform interface. </p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="a17c797f9c8ad33cd789f35d339990920" name="a17c797f9c8ad33cd789f35d339990920"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a17c797f9c8ad33cd789f35d339990920">&#9670;&#160;</a></span>su_add_method()</h2>
 
@@ -149,7 +161,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>access_flags</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>access_flags</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -158,6 +170,23 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Appends a new method to the transform and returns its bytecode stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">transform</td><td>Transform context. Must not be NULL. </td></tr>
+    <tr><td class="paramname">name</td><td>Method name. Must not be NULL. </td></tr>
+    <tr><td class="paramname">desc</td><td>JNI method descriptor. Must not be NULL. </td></tr>
+    <tr><td class="paramname">access_flags</td><td>JVM access flags (e.g. <code>ACC_PUBLIC</code> | <code>ACC_STATIC</code>). </td></tr>
+    <tr><td class="paramname">stream</td><td>Out parameter receiving the method's writable bytecode stream.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" title="SU_MISSING_REQUIRED_PARAMETERS">SU_MISSING_REQUIRED_PARAMETERS</a> if any pointer parameter is NULL. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5" title="SU_MEMORY_ALLOCATION_FAILURE">SU_MEMORY_ALLOCATION_FAILURE</a> if the method or its stream cannot be allocated. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -190,10 +219,26 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2 *</td>          <td class="paramname"><span class="paramname"><em>cp_index</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> *</td>          <td class="paramname"><span class="paramname"><em>cp_index</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Interns a UTF-8 string into the transform's constant pool. </p>
+<p>If an identical entry already exists, its index is returned without duplication.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">transform</td><td>Transform context. Must not be NULL. </td></tr>
+    <tr><td class="paramname">utf8</td><td>Null-terminated string to intern. Must not be NULL. </td></tr>
+    <tr><td class="paramname">cp_index</td><td>Out parameter receiving the constant pool index. Must not be NULL.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" title="SU_MISSING_REQUIRED_PARAMETERS">SU_MISSING_REQUIRED_PARAMETERS</a> if any parameter is NULL. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5" title="SU_MEMORY_ALLOCATION_FAILURE">SU_MEMORY_ALLOCATION_FAILURE</a> if the pool cannot be expanded. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -221,15 +266,31 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u1 **</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a> **</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2 *</td>          <td class="paramname"><span class="paramname"><em>buffer_length</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> *</td>          <td class="paramname"><span class="paramname"><em>buffer_length</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Serialises a completed transform back into a raw class file buffer. </p>
+<p>The returned <code class="param">buffer</code> is heap-allocated and must be freed by the caller via <a class="el" href="error_8h.html#acfa893690e1dfe2eae16d1dc6a3bdeea" title="SU_FREE">SU_FREE</a>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">transform</td><td>Completed transform context. Must not be NULL. </td></tr>
+    <tr><td class="paramname">buffer</td><td>Out parameter receiving the serialised class file bytes. Must not be NULL. </td></tr>
+    <tr><td class="paramname">buffer_length</td><td>Out parameter receiving the length of <code class="param">buffer</code> in bytes. Must not be NULL.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" title="SU_MISSING_REQUIRED_PARAMETERS">SU_MISSING_REQUIRED_PARAMETERS</a> if any parameter is NULL. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5" title="SU_MEMORY_ALLOCATION_FAILURE">SU_MEMORY_ALLOCATION_FAILURE</a> if the output buffer cannot be allocated. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -309,6 +370,24 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>JVMTI class file load hook that intercepts and retransforms loaded classes. </p>
+<p>Registered with JVMTI's <code>ClassFileLoadHook</code> event. Invoked for every class load or retransformation, allowing Suture to rewrite bytecode before the JVM resolves it.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">jvmti</td><td>JVMTI environment. </td></tr>
+    <tr><td class="paramname">jni</td><td>JNI environment. </td></tr>
+    <tr><td class="paramname">class_being_redefined</td><td>Class being redefined, or NULL on initial load. </td></tr>
+    <tr><td class="paramname">loader</td><td>Class loader, or NULL for the bootstrap loader. </td></tr>
+    <tr><td class="paramname">name</td><td>Internal class name (e.g. <code>"java/lang/Object"</code>). </td></tr>
+    <tr><td class="paramname">protection_domain</td><td>Protection domain of the class, or NULL. </td></tr>
+    <tr><td class="paramname">class_data_len</td><td>Length in bytes of <code class="param">class_data</code>. </td></tr>
+    <tr><td class="paramname">class_data</td><td>Original class file bytes. </td></tr>
+    <tr><td class="paramname">new_class_data_len</td><td>Out parameter for the length of the rewritten class data. </td></tr>
+    <tr><td class="paramname">new_class_data</td><td>Out parameter for the rewritten class file bytes. </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -336,6 +415,15 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Releases all resources owned by a transform context. </p>
+<p>Frees all chunks, methods, and constant pool entries. Does not free <code class="param">transform</code> itself.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">transform</td><td>Transform context to dispose. No-op if NULL. </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -358,15 +446,34 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u1 *</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a> *</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>buffer_length</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>buffer_length</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Parses a raw class file buffer into a mutable <a class="el" href="structsu__transform.html" title="su_transform">su_transform</a> context. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">transform</td><td>Transform context to initialise. Must not be NULL. </td></tr>
+    <tr><td class="paramname">buffer</td><td>Raw class file bytes. Must not be NULL. </td></tr>
+    <tr><td class="paramname">buffer_length</td><td>Length of <code class="param">buffer</code> in bytes.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" title="SU_MISSING_REQUIRED_PARAMETERS">SU_MISSING_REQUIRED_PARAMETERS</a> if <code class="param">transform</code> or <code class="param">buffer</code> is NULL. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5" title="SU_MEMORY_ALLOCATION_FAILURE">SU_MEMORY_ALLOCATION_FAILURE</a> if internal allocation fails. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a24dfcb2fcb08b93d26dc2e299c111ace" title="SU_JVM_INVALID_CLASS_MAGIC">SU_JVM_INVALID_CLASS_MAGIC</a> if <code class="param">buffer</code> is not a valid class file. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a0650d3240c73881dacace0fe5d8a3e09" title="SU_JVM_INVALID_CONSTANT_POOL">SU_JVM_INVALID_CONSTANT_POOL</a> if the constant pool is malformed. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

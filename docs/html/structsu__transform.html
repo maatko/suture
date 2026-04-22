@@ -18,7 +18,6 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -93,6 +92,9 @@ $(function(){initNavTree('structsu__transform.html','','structsu__transform-memb
 </div><!--header-->
 <div class="contents">
 
+<p>Holds the full mutable state of a class file under transformation.  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="transform_8h_source.html">transform.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for su_transform:</div>
@@ -104,11 +106,13 @@ Collaboration diagram for su_transform:</div>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a9296827b8f050e50c44a17ab840cde0b" id="r_a9296827b8f050e50c44a17ab840cde0b"><td class="memItemLeft">struct <a class="el" href="structsu__chunk.html">su_chunk</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a9296827b8f050e50c44a17ab840cde0b">chunks</a></td></tr>
 <tr class="memitem:a07d8c4ef0e9ff30b63ca330c8c755170" id="r_a07d8c4ef0e9ff30b63ca330c8c755170"><td class="memItemLeft">struct <a class="el" href="structsu__method.html">su_method</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a07d8c4ef0e9ff30b63ca330c8c755170">methods</a></td></tr>
-<tr class="memitem:a71c1880fbd92dc2ec0bc6c1a005a9d1b" id="r_a71c1880fbd92dc2ec0bc6c1a005a9d1b"><td class="memItemLeft">u2&#160;</td><td class="memItemRight"><a class="el" href="#a71c1880fbd92dc2ec0bc6c1a005a9d1b">methods_count</a></td></tr>
+<tr class="memitem:a71c1880fbd92dc2ec0bc6c1a005a9d1b" id="r_a71c1880fbd92dc2ec0bc6c1a005a9d1b"><td class="memItemLeft"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a>&#160;</td><td class="memItemRight"><a class="el" href="#a71c1880fbd92dc2ec0bc6c1a005a9d1b">methods_count</a></td></tr>
 <tr class="memitem:a4990f122ff5151f472dd2ea47d1f4119" id="r_a4990f122ff5151f472dd2ea47d1f4119"><td class="memItemLeft">void **&#160;</td><td class="memItemRight"><a class="el" href="#a4990f122ff5151f472dd2ea47d1f4119">constant_pool</a></td></tr>
-<tr class="memitem:ac3427e9fb97536be34a9af055f950933" id="r_ac3427e9fb97536be34a9af055f950933"><td class="memItemLeft">u2&#160;</td><td class="memItemRight"><a class="el" href="#ac3427e9fb97536be34a9af055f950933">constant_pool_count</a></td></tr>
+<tr class="memitem:ac3427e9fb97536be34a9af055f950933" id="r_ac3427e9fb97536be34a9af055f950933"><td class="memItemLeft"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac3427e9fb97536be34a9af055f950933">constant_pool_count</a></td></tr>
 </table>
-<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Holds the full mutable state of a class file under transformation. </p>
+</div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="a9296827b8f050e50c44a17ab840cde0b" name="a9296827b8f050e50c44a17ab840cde0b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9296827b8f050e50c44a17ab840cde0b">&#9670;&#160;</a></span>chunks</h2>
 
@@ -120,6 +124,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Linked list of raw class file byte chunks. </p>
 
 </div>
 </div>
@@ -134,6 +139,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Array of constant pool entries indexed by CP index. </p>
 
 </div>
 </div>
@@ -144,10 +150,11 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">u2 su_transform::constant_pool_count</td>
+          <td class="memname"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> su_transform::constant_pool_count</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Number of entries in <code>constant_pool</code>. </p>
 
 </div>
 </div>
@@ -162,6 +169,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Array of methods parsed from or added to the class. </p>
 
 </div>
 </div>
@@ -172,10 +180,11 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">u2 su_transform::methods_count</td>
+          <td class="memname"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> su_transform::methods_count</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Number of entries in <code>methods</code>. </p>
 
 </div>
 </div>

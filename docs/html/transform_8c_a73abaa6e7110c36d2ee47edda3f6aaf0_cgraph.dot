@@ -5,11 +5,11 @@ digraph "su_const_add_utf8"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node1 [id="Node000001",label="su_const_add_utf8",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip=" "];
+  Node1 [id="Node000001",label="su_const_add_utf8",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Interns a UTF-8 string into the transform's constant pool."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="su_stream_w1",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$stream_8c.html#ad8cb06d95d4f58f298dbaa19b42fc8de",tooltip=" "];
+  Node2 [id="Node000002",label="su_stream_w1",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$stream_8c.html#ad8cb06d95d4f58f298dbaa19b42fc8de",tooltip="Writes a u1 (1 byte) into stream at offset."];
   Node1 -> Node3 [id="edge2_Node000001_Node000003",color="steelblue1",style="solid",tooltip=" "];
-  Node3 [id="Node000003",label="su_stream_w2",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$stream_8c.html#af0e13b640a69677501af98db42cb8c3d",tooltip=" "];
+  Node3 [id="Node000003",label="su_stream_w2",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$stream_8c.html#af0e13b640a69677501af98db42cb8c3d",tooltip="Writes a u2 (2 bytes) into stream at offset."];
   Node1 -> Node4 [id="edge3_Node000001_Node000004",color="steelblue1",style="solid",tooltip=" "];
-  Node4 [id="Node000004",label="su_stream_wn",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$stream_8c.html#a680987ef4e75b78d5c6416291925c724",tooltip=" "];
+  Node4 [id="Node000004",label="su_stream_wn",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$stream_8c.html#a680987ef4e75b78d5c6416291925c724",tooltip="Writes size bytes from buffer into stream at offset."];
 }

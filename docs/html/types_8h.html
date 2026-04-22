@@ -18,7 +18,6 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -92,7 +91,10 @@ $(function(){initNavTree('types_8h.html','',''); });
   <div class="headertitle"><div class="title">types.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;stdlib.h&gt;</code><br />
+
+<p>Primitive type aliases and JVM/JVMTI utility macros.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for types.h:</div>
 <div class="dyncontent">
@@ -108,85 +110,114 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a738b05625e0e002e6cef773db6ef8cc3" id="r_a738b05625e0e002e6cef773db6ef8cc3"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a738b05625e0e002e6cef773db6ef8cc3">SU_TRY</a>(ACTION,  ERROR)</td></tr>
-<tr class="memdesc:a738b05625e0e002e6cef773db6ef8cc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes <code class="param">ACTION</code> and returns <code class="param">ERROR</code> immediately if it fails.  <br /></td></tr>
-<tr class="memitem:a2b5dc69e54277072e4697e97ca1a14d2" id="r_a2b5dc69e54277072e4697e97ca1a14d2"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a2b5dc69e54277072e4697e97ca1a14d2">SU_TRY_CATCH</a>(STATUS,  ACTION,  CATCH)</td></tr>
-<tr class="memdesc:a2b5dc69e54277072e4697e97ca1a14d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes <code class="param">ACTION</code>, stores the result in <code class="param">STATUS</code>, and jumps to <code class="param">CATCH</code> on failure.  <br /></td></tr>
-<tr class="memitem:acfa893690e1dfe2eae16d1dc6a3bdeea" id="r_acfa893690e1dfe2eae16d1dc6a3bdeea"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#acfa893690e1dfe2eae16d1dc6a3bdeea">SU_FREE</a>(PTR)</td></tr>
-<tr class="memdesc:acfa893690e1dfe2eae16d1dc6a3bdeea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees <code class="param">PTR</code> and sets it to <code>NULL</code>. No-op if already <code>NULL</code>.  <br /></td></tr>
+<tr class="memitem:ade3c502e395202e42390ab44da5c29b9" id="r_ade3c502e395202e42390ab44da5c29b9"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#ade3c502e395202e42390ab44da5c29b9">JVM_INVOKE</a>(ENV,  FUNCTION, ...)</td></tr>
+<tr class="memdesc:ade3c502e395202e42390ab44da5c29b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invokes a JNI or JVMTI interface function through its environment pointer.  <br /></td></tr>
+<tr class="memitem:aa999d0a244523f5ad5da26b63f46005f" id="r_aa999d0a244523f5ad5da26b63f46005f"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#aa999d0a244523f5ad5da26b63f46005f">JVM_TRY</a>(ACTION,  OK,  ERROR)</td></tr>
+<tr class="memdesc:aa999d0a244523f5ad5da26b63f46005f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes an action and returns an error code if it does not match the expected result.  <br /></td></tr>
+<tr class="memitem:a4a593456923ae4c3c51385fd36a7d212" id="r_a4a593456923ae4c3c51385fd36a7d212"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a4a593456923ae4c3c51385fd36a7d212">JVM_TRY_CATCH</a>(STATUS,  ACTION,  OK,  ERROR,  CATCH)</td></tr>
+<tr class="memdesc:a4a593456923ae4c3c51385fd36a7d212"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes an action and jumps to a catch label if it does not match the expected result.  <br /></td></tr>
+<tr class="memitem:a6fbb69e1e2895c5afb4f55214404a256" id="r_a6fbb69e1e2895c5afb4f55214404a256"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a6fbb69e1e2895c5afb4f55214404a256">JVM_FREE</a>(JVMTI,  PTR)</td></tr>
+<tr class="memdesc:a6fbb69e1e2895c5afb4f55214404a256"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocates a JVMTI-managed pointer and sets it to NULL.  <br /></td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:a620804d955cf16bcddaa85dc236b3131" id="r_a620804d955cf16bcddaa85dc236b3131"><td class="memItemLeft">enum &#160;</td><td class="memItemRight"><a class="el" href="#a620804d955cf16bcddaa85dc236b3131">su_error</a> { <br />
-&#160;&#160;<a class="el" href="#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e">SU_OK</a> = 0
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1">SU_MISSING_REQUIRED_PARAMETERS</a>
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5">SU_MEMORY_ALLOCATION_FAILURE</a>
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131aa3828b3cfdc9bb99f9cf3d24a860e6cd">SU_DETOUR_NOT_SUPPORTED</a>
-, <br />
-&#160;&#160;<a class="el" href="#a620804d955cf16bcddaa85dc236b3131a274c4a1473e3b4876d0608f577959b9e">SU_DETOUR_INVALID_TARGET</a>
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6">SU_STREAM_INVALID_CHUNK</a>
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131a8c6489a2aa23f5fb6079f46233d4a1cc">SU_STREAM_UNFINISHED_READ</a>
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131afa668efc2b3240df19c7ea8528682a96">SU_STREAM_AT_END</a>
-, <br />
-&#160;&#160;<a class="el" href="#a620804d955cf16bcddaa85dc236b3131ae469cbbef2f56e6050b5e77f8c4a4819">SU_JVM_ENVIRONMENT_STORAGE_FAILURE</a>
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131af5af609f13328ecd649b02907987ffea">SU_JVM_NO_VIRTUAL_MACHINES</a>
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131ab2de6ee300f2e7d301afa8b271c04f9e">SU_JVM_JVMTI_ATTACH_FAILURE</a>
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131a565e04528d36a53dfcba30af04df58e4">SU_JVM_JVMTI_DETACH_FAILURE</a>
-, <br />
-&#160;&#160;<a class="el" href="#a620804d955cf16bcddaa85dc236b3131ab60d383aaada13795792b13815e4cbe9">SU_JVM_JNI_ATTACH_FAILURE</a>
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131a869487c13f8d2ba26db6f4e7dc4f5bbf">SU_JVM_FLAG_PATCH_FAILURE</a>
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131a3648d54a221b97743abc7091f5adc1d4">SU_JVM_RETRANSFORM_FAILURE</a>
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131a6ea674999187df246c2bd673ef57911d">SU_JVM_CAPABILITIES_FAILURE</a>
-, <br />
-&#160;&#160;<a class="el" href="#a620804d955cf16bcddaa85dc236b3131a24dfcb2fcb08b93d26dc2e299c111ace">SU_JVM_INVALID_CLASS_MAGIC</a>
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131a0650d3240c73881dacace0fe5d8a3e09">SU_JVM_INVALID_CONSTANT_POOL</a>
-, <a class="el" href="#a620804d955cf16bcddaa85dc236b3131a8d25ba7ba8e1290c2cded2f438b6fec5">SU_JVM_GENERIC_FAILURE</a>
-<br />
- }</td></tr>
-<tr class="memdesc:a620804d955cf16bcddaa85dc236b3131"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return codes used throughout the Suture API.  <a href="#a620804d955cf16bcddaa85dc236b3131">More...</a><br /></td></tr>
+<tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ad9f4cdb6757615aae2fad89dab3c5470" id="r_ad9f4cdb6757615aae2fad89dab3c5470"><td class="memItemLeft">typedef uint8_t&#160;</td><td class="memItemRight"><a class="el" href="#ad9f4cdb6757615aae2fad89dab3c5470">u1</a></td></tr>
+<tr class="memitem:a732cde1300aafb73b0ea6c2558a7a54f" id="r_a732cde1300aafb73b0ea6c2558a7a54f"><td class="memItemLeft">typedef uint16_t&#160;</td><td class="memItemRight"><a class="el" href="#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td></tr>
+<tr class="memitem:ae5be1f726785414dd1b77d60df074c9d" id="r_ae5be1f726785414dd1b77d60df074c9d"><td class="memItemLeft">typedef uint32_t&#160;</td><td class="memItemRight"><a class="el" href="#ae5be1f726785414dd1b77d60df074c9d">u4</a></td></tr>
+<tr class="memitem:ae4d1c3d548028e31400378ec81026110" id="r_ae4d1c3d548028e31400378ec81026110"><td class="memItemLeft">typedef uint64_t&#160;</td><td class="memItemRight"><a class="el" href="#ae4d1c3d548028e31400378ec81026110">u8</a></td></tr>
 </table>
-<a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
-<a id="acfa893690e1dfe2eae16d1dc6a3bdeea" name="acfa893690e1dfe2eae16d1dc6a3bdeea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acfa893690e1dfe2eae16d1dc6a3bdeea">&#9670;&#160;</a></span>SU_FREE</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Primitive type aliases and JVM/JVMTI utility macros. </p>
+</div><a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
+<a id="a6fbb69e1e2895c5afb4f55214404a256" name="a6fbb69e1e2895c5afb4f55214404a256"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fbb69e1e2895c5afb4f55214404a256">&#9670;&#160;</a></span>JVM_FREE</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define SU_FREE</td>
+          <td class="memname">#define JVM_FREE</td>
           <td>(</td>
-          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>PTR</em></span></td><td>)</td>
+          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>JVMTI</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>PTR</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                   \</div>
-<div class="line">  if ((PTR) != NULL) { \</div>
-<div class="line">    free((PTR));       \</div>
-<div class="line">    (PTR) = NULL;      \</div>
-<div class="line">  }                    \</div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                   \</div>
+<div class="line">  if ((PTR) != NULL) {                                 \</div>
+<div class="line">    (*JVMTI)-&gt;Deallocate(JVMTI, (<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *)PTR); \</div>
+<div class="line">    (PTR) = NULL;                                      \</div>
+<div class="line">  }                                                    \</div>
 <div class="line">} <span class="keywordflow">while</span> (0)</div>
 </div><!-- fragment -->
-<p>Frees <code class="param">PTR</code> and sets it to <code>NULL</code>. No-op if already <code>NULL</code>. </p>
+<p>Deallocates a JVMTI-managed pointer and sets it to NULL. </p>
+<p>Uses <code>jvmtiEnv::Deallocate</code> rather than <code>free</code>, as JVMTI memory must be released through the originating environment. No-op if <code class="param">PTR</code> is already NULL.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">PTR</td><td>Pointer to free. </td></tr>
+    <tr><td class="paramname">JVMTI</td><td>Active <code>jvmtiEnv*</code> environment used to release the memory. </td></tr>
+    <tr><td class="paramname">PTR</td><td>Pointer to deallocate. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a738b05625e0e002e6cef773db6ef8cc3" name="a738b05625e0e002e6cef773db6ef8cc3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a738b05625e0e002e6cef773db6ef8cc3">&#9670;&#160;</a></span>SU_TRY</h2>
+<a id="ade3c502e395202e42390ab44da5c29b9" name="ade3c502e395202e42390ab44da5c29b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade3c502e395202e42390ab44da5c29b9">&#9670;&#160;</a></span>JVM_INVOKE</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define SU_TRY</td>
+          <td class="memname">#define JVM_INVOKE</td>
+          <td>(</td>
+          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>ENV</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>FUNCTION</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em></em></span>...&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">(*(ENV))-&gt;FUNCTION((ENV), ##__VA_ARGS__)</div>
+</div><!-- fragment -->
+<p>Invokes a JNI or JVMTI interface function through its environment pointer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ENV</td><td>JNI (<code>JNIEnv*</code>) or JVMTI (<code>jvmtiEnv*</code>) environment pointer. </td></tr>
+    <tr><td class="paramname">FUNCTION</td><td>Interface function name (e.g. <code>FindClass</code>, <code>GetMethodID</code>). </td></tr>
+    <tr><td class="paramname">...</td><td>Arguments forwarded to <code class="param">FUNCTION</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa999d0a244523f5ad5da26b63f46005f" name="aa999d0a244523f5ad5da26b63f46005f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa999d0a244523f5ad5da26b63f46005f">&#9670;&#160;</a></span>JVM_TRY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define JVM_TRY</td>
           <td>(</td>
           <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>ACTION</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>OK</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -195,30 +226,30 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((ACTION) != <a class="code hl_enumvalue" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e">SU_OK</a>) {    \</div>
-<div class="line">  <span class="keywordflow">return</span> ERROR;             \</div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((ACTION) != OK) {            \</div>
+<div class="line">  return (ERROR);                \</div>
 <div class="line">}</div>
-<div class="ttc" id="aerror_8h_html_a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e"><div class="ttname"><a href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e">SU_OK</a></div><div class="ttdeci">@ SU_OK</div><div class="ttdef"><b>Definition</b> error.h:49</div></div>
 </div><!-- fragment -->
-<p>Executes <code class="param">ACTION</code> and returns <code class="param">ERROR</code> immediately if it fails. </p>
+<p>Executes an action and returns an error code if it does not match the expected result. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ACTION</td><td>Expression returning an <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131" title="su_error">su_error</a>. </td></tr>
-    <tr><td class="paramname">ERROR</td><td>Error code to propagate on failure. </td></tr>
+    <tr><td class="paramname">ACTION</td><td>Expression to evaluate. </td></tr>
+    <tr><td class="paramname">OK</td><td>Expected success value to compare against. </td></tr>
+    <tr><td class="paramname">ERROR</td><td>Error code to return on mismatch. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a2b5dc69e54277072e4697e97ca1a14d2" name="a2b5dc69e54277072e4697e97ca1a14d2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b5dc69e54277072e4697e97ca1a14d2">&#9670;&#160;</a></span>SU_TRY_CATCH</h2>
+<a id="a4a593456923ae4c3c51385fd36a7d212" name="a4a593456923ae4c3c51385fd36a7d212"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a593456923ae4c3c51385fd36a7d212">&#9670;&#160;</a></span>JVM_TRY_CATCH</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define SU_TRY_CATCH</td>
+          <td class="memname">#define JVM_TRY_CATCH</td>
           <td>(</td>
           <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>STATUS</em></span>, </td>
         </tr>
@@ -230,19 +261,32 @@ Enumerations</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>OK</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>ERROR</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>CATCH</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> (((STATUS) = (ACTION)) != <a class="code hl_enumvalue" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e">SU_OK</a>) {     \</div>
-<div class="line">  <span class="keywordflow">goto</span> CATCH;                             \</div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((ACTION) != OK) {                                 \</div>
+<div class="line">  (STATUS) = (ERROR);                                 \</div>
+<div class="line">  <span class="keywordflow">goto</span> CATCH;                                         \</div>
 <div class="line">}</div>
 </div><!-- fragment -->
-<p>Executes <code class="param">ACTION</code>, stores the result in <code class="param">STATUS</code>, and jumps to <code class="param">CATCH</code> on failure. </p>
+<p>Executes an action and jumps to a catch label if it does not match the expected result. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">STATUS</td><td>Lvalue of type <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131" title="su_error">su_error</a> that receives the result. </td></tr>
-    <tr><td class="paramname">ACTION</td><td>Expression returning an <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131" title="su_error">su_error</a>. </td></tr>
+    <tr><td class="paramname">STATUS</td><td>Variable to store the error code on failure. </td></tr>
+    <tr><td class="paramname">ACTION</td><td>Expression to evaluate. </td></tr>
+    <tr><td class="paramname">OK</td><td>Expected success value to compare against. </td></tr>
+    <tr><td class="paramname">ERROR</td><td>Error code assigned to <code class="param">STATUS</code> on mismatch. </td></tr>
     <tr><td class="paramname">CATCH</td><td>Label to jump to on failure. </td></tr>
   </table>
   </dd>
@@ -250,60 +294,64 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
-<a id="a620804d955cf16bcddaa85dc236b3131" name="a620804d955cf16bcddaa85dc236b3131"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a620804d955cf16bcddaa85dc236b3131">&#9670;&#160;</a></span>su_error</h2>
+<a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
+<a id="ad9f4cdb6757615aae2fad89dab3c5470" name="ad9f4cdb6757615aae2fad89dab3c5470"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9f4cdb6757615aae2fad89dab3c5470">&#9670;&#160;</a></span>u1</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a></td>
+          <td class="memname">typedef uint8_t <a class="el" href="#ad9f4cdb6757615aae2fad89dab3c5470">u1</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>1-byte unsigned integer — maps to JVM <code><a class="el" href="#ad9f4cdb6757615aae2fad89dab3c5470">u1</a></code>. </p>
 
-<p>Return codes used throughout the Suture API. </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" name="a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e"></a>SU_OK&#160;</td><td class="fielddoc"><p>Operation completed successfully. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" name="a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1"></a>SU_MISSING_REQUIRED_PARAMETERS&#160;</td><td class="fielddoc"><p>One or more required parameters were NULL. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5" name="a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5"></a>SU_MEMORY_ALLOCATION_FAILURE&#160;</td><td class="fielddoc"><p>A heap allocation returned NULL. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131aa3828b3cfdc9bb99f9cf3d24a860e6cd" name="a620804d955cf16bcddaa85dc236b3131aa3828b3cfdc9bb99f9cf3d24a860e6cd"></a>SU_DETOUR_NOT_SUPPORTED&#160;</td><td class="fielddoc"><p>Detour is unsupported on this platform/target. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a274c4a1473e3b4876d0608f577959b9e" name="a620804d955cf16bcddaa85dc236b3131a274c4a1473e3b4876d0608f577959b9e"></a>SU_DETOUR_INVALID_TARGET&#160;</td><td class="fielddoc"><p>Target method is invalid or cannot be hooked. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6" name="a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6"></a>SU_STREAM_INVALID_CHUNK&#160;</td><td class="fielddoc"><p>A stream chunk failed validation. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a8c6489a2aa23f5fb6079f46233d4a1cc" name="a620804d955cf16bcddaa85dc236b3131a8c6489a2aa23f5fb6079f46233d4a1cc"></a>SU_STREAM_UNFINISHED_READ&#160;</td><td class="fielddoc"><p>Stream was closed before a read completed. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131afa668efc2b3240df19c7ea8528682a96" name="a620804d955cf16bcddaa85dc236b3131afa668efc2b3240df19c7ea8528682a96"></a>SU_STREAM_AT_END&#160;</td><td class="fielddoc"><p>Read attempted past the end of the stream. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131ae469cbbef2f56e6050b5e77f8c4a4819" name="a620804d955cf16bcddaa85dc236b3131ae469cbbef2f56e6050b5e77f8c4a4819"></a>SU_JVM_ENVIRONMENT_STORAGE_FAILURE&#160;</td><td class="fielddoc"><p>Failed to store the JVMTI environment. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131af5af609f13328ecd649b02907987ffea" name="a620804d955cf16bcddaa85dc236b3131af5af609f13328ecd649b02907987ffea"></a>SU_JVM_NO_VIRTUAL_MACHINES&#160;</td><td class="fielddoc"><p>No running JVM instances were found. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131ab2de6ee300f2e7d301afa8b271c04f9e" name="a620804d955cf16bcddaa85dc236b3131ab2de6ee300f2e7d301afa8b271c04f9e"></a>SU_JVM_JVMTI_ATTACH_FAILURE&#160;</td><td class="fielddoc"><p>Could not attach to the JVMTI environment. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a565e04528d36a53dfcba30af04df58e4" name="a620804d955cf16bcddaa85dc236b3131a565e04528d36a53dfcba30af04df58e4"></a>SU_JVM_JVMTI_DETACH_FAILURE&#160;</td><td class="fielddoc"><p>Could not detach from the JVMTI environment. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131ab60d383aaada13795792b13815e4cbe9" name="a620804d955cf16bcddaa85dc236b3131ab60d383aaada13795792b13815e4cbe9"></a>SU_JVM_JNI_ATTACH_FAILURE&#160;</td><td class="fielddoc"><p>Could not attach to the JNI environment. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a869487c13f8d2ba26db6f4e7dc4f5bbf" name="a620804d955cf16bcddaa85dc236b3131a869487c13f8d2ba26db6f4e7dc4f5bbf"></a>SU_JVM_FLAG_PATCH_FAILURE&#160;</td><td class="fielddoc"><p>Failed to patch a JVM flag. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a3648d54a221b97743abc7091f5adc1d4" name="a620804d955cf16bcddaa85dc236b3131a3648d54a221b97743abc7091f5adc1d4"></a>SU_JVM_RETRANSFORM_FAILURE&#160;</td><td class="fielddoc"><p>Class retransformation failed. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a6ea674999187df246c2bd673ef57911d" name="a620804d955cf16bcddaa85dc236b3131a6ea674999187df246c2bd673ef57911d"></a>SU_JVM_CAPABILITIES_FAILURE&#160;</td><td class="fielddoc"><p>Failed to acquire required JVMTI capabilities. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a24dfcb2fcb08b93d26dc2e299c111ace" name="a620804d955cf16bcddaa85dc236b3131a24dfcb2fcb08b93d26dc2e299c111ace"></a>SU_JVM_INVALID_CLASS_MAGIC&#160;</td><td class="fielddoc"><p>Class file magic number is invalid. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a0650d3240c73881dacace0fe5d8a3e09" name="a620804d955cf16bcddaa85dc236b3131a0650d3240c73881dacace0fe5d8a3e09"></a>SU_JVM_INVALID_CONSTANT_POOL&#160;</td><td class="fielddoc"><p>Class constant pool is malformed. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a620804d955cf16bcddaa85dc236b3131a8d25ba7ba8e1290c2cded2f438b6fec5" name="a620804d955cf16bcddaa85dc236b3131a8d25ba7ba8e1290c2cded2f438b6fec5"></a>SU_JVM_GENERIC_FAILURE&#160;</td><td class="fielddoc"><p>Unspecified JVM error. </p>
-</td></tr>
-</table>
+</div>
+</div>
+<a id="a732cde1300aafb73b0ea6c2558a7a54f" name="a732cde1300aafb73b0ea6c2558a7a54f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a732cde1300aafb73b0ea6c2558a7a54f">&#9670;&#160;</a></span>u2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef uint16_t <a class="el" href="#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>2-byte unsigned integer — maps to JVM <code><a class="el" href="#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></code>. </p>
+
+</div>
+</div>
+<a id="ae5be1f726785414dd1b77d60df074c9d" name="ae5be1f726785414dd1b77d60df074c9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5be1f726785414dd1b77d60df074c9d">&#9670;&#160;</a></span>u4</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef uint32_t <a class="el" href="#ae5be1f726785414dd1b77d60df074c9d">u4</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>4-byte unsigned integer — maps to JVM <code><a class="el" href="#ae5be1f726785414dd1b77d60df074c9d">u4</a></code>. </p>
+
+</div>
+</div>
+<a id="ae4d1c3d548028e31400378ec81026110" name="ae4d1c3d548028e31400378ec81026110"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4d1c3d548028e31400378ec81026110">&#9670;&#160;</a></span>u8</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef uint64_t <a class="el" href="#ae4d1c3d548028e31400378ec81026110">u8</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>8-byte unsigned integer — maps to JVM <code><a class="el" href="#ae4d1c3d548028e31400378ec81026110">u8</a></code>. </p>
 
 </div>
 </div>

@@ -18,7 +18,6 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -111,7 +110,7 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:af996d6d1836f7938f06ed8580b4c739b" id="r_af996d6d1836f7938f06ed8580b4c739b"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#af996d6d1836f7938f06ed8580b4c739b">su_flag_patchb</a> (const char *name, bool *original, const bool value)</td></tr>
-<tr class="memdesc:af996d6d1836f7938f06ed8580b4c739b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Patches a named JVM boolean flag.  <br /></td></tr>
+<tr class="memdesc:af996d6d1836f7938f06ed8580b4c739b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Patches a JVM boolean flag by name.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -143,16 +142,21 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Patches a named JVM boolean flag. </p>
+<p>Patches a JVM boolean flag by name. </p>
+<p>Walks the HotSpot VM structs to locate the named flag in the JVM flag table and overwrites its value. Supports both legacy (<code>Flag</code>) and modern (<code>JVMFlag</code>) layouts.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">name</td><td>Name of the flag to patch. </td></tr>
-    <tr><td class="paramname">original</td><td>Out – receives the flag's original value, or <code>NULL</code> to discard. </td></tr>
-    <tr><td class="paramname">value</td><td>New value to write. </td></tr>
+    <tr><td class="paramname">name</td><td>Name of the JVM flag to patch. Must not be NULL. </td></tr>
+    <tr><td class="paramname">original</td><td>If non-NULL, receives the flag's original value before patching. </td></tr>
+    <tr><td class="paramname">value</td><td>New boolean value to write to the flag.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success, otherwise an error code. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" title="SU_MISSING_REQUIRED_PARAMETERS">SU_MISSING_REQUIRED_PARAMETERS</a> if <code class="param">name</code> is NULL. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa3828b3cfdc9bb99f9cf3d24a860e6cd" title="SU_DETOUR_NOT_SUPPORTED">SU_DETOUR_NOT_SUPPORTED</a> if the flag table or target flag could not be located. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

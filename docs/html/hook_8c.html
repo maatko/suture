@@ -18,7 +18,6 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -119,7 +118,9 @@ Macros</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a6c2a11be4ea944d08e8fa2719869a637" id="r_a6c2a11be4ea944d08e8fa2719869a637"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6c2a11be4ea944d08e8fa2719869a637">su_hook_detour</a> (const struct <a class="el" href="structsu__hook.html">su_hook</a> *hook, struct <a class="el" href="structsu__transform.html">su_transform</a> *transform, struct <a class="el" href="structsu__stream.html">su_stream</a> *stream)</td></tr>
+<tr class="memdesc:a6c2a11be4ea944d08e8fa2719869a637"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a detour hook to a JVM method via bytecode transformation.  <br /></td></tr>
 <tr class="memitem:a56b0a371b5ac82d62fef76ba494b52f0" id="r_a56b0a371b5ac82d62fef76ba494b52f0"><td class="memItemLeft">char *&#160;</td><td class="memItemRight"><a class="el" href="#a56b0a371b5ac82d62fef76ba494b52f0">su_hook_original_name</a> (const char *name)</td></tr>
+<tr class="memdesc:a56b0a371b5ac82d62fef76ba494b52f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derives the original method name from a hooked method name.  <br /></td></tr>
 </table>
 <a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
 <a id="a638658b616d4e7c16078f606224dc9ba" name="a638658b616d4e7c16078f606224dc9ba"></a>
@@ -314,6 +315,24 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Applies a detour hook to a JVM method via bytecode transformation. </p>
+<p>Transforms the target method's bytecode to redirect execution to the detour specified in <code class="param">hook</code>, writing the result into <code class="param">stream</code> via <code class="param">transform</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hook</td><td>Hook descriptor identifying the target method and detour. Must not be NULL. </td></tr>
+    <tr><td class="paramname">transform</td><td>Bytecode transform context to apply. Must not be NULL. </td></tr>
+    <tr><td class="paramname">stream</td><td>Output stream to receive the transformed bytecode. Must not be NULL.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" title="SU_MISSING_REQUIRED_PARAMETERS">SU_MISSING_REQUIRED_PARAMETERS</a> if any parameter is NULL. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a274c4a1473e3b4876d0608f577959b9e" title="SU_DETOUR_INVALID_TARGET">SU_DETOUR_INVALID_TARGET</a> if the target method could not be resolved. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa3828b3cfdc9bb99f9cf3d24a860e6cd" title="SU_DETOUR_NOT_SUPPORTED">SU_DETOUR_NOT_SUPPORTED</a> if the hook type is unsupported. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -341,6 +360,16 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Derives the original method name from a hooked method name. </p>
+<p>Generates the synthesized name used internally to retain access to the pre-hook method after a detour is installed.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Source method name. Must not be NULL.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Heap-allocated string with the derived name, or NULL on allocation failure. The caller is responsible for freeing the returned string. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

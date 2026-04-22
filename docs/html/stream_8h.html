@@ -18,7 +18,6 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -92,6 +91,9 @@ $(function(){initNavTree('stream_8h.html','',''); });
   <div class="headertitle"><div class="title">stream.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Byte-level stream I/O and chunked buffer interface.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="error_8h_source.html">error.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="types_8h_source.html">types.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -110,23 +112,38 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:su_5Fstream" id="r_su_5Fstream"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structsu__stream.html">su_stream</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Byte buffer with cursor-based access.  <a href="structsu__stream.html#details">More...</a><br /></td></tr>
 <tr class="memitem:su_5Fchunk" id="r_su_5Fchunk"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structsu__chunk.html">su_chunk</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A doubly-linked list node wrapping an <a class="el" href="structsu__stream.html" title="su_stream">su_stream</a> for chunked processing.  <a href="structsu__chunk.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a7dca3f4cfb7e703eedf05eb6a06db554" id="r_a7dca3f4cfb7e703eedf05eb6a06db554"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7dca3f4cfb7e703eedf05eb6a06db554">su_stream_rn</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, u1 *buffer, u2 size, u2 offset)</td></tr>
-<tr class="memitem:af1351833345205bc39e402a3ccc49356" id="r_af1351833345205bc39e402a3ccc49356"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#af1351833345205bc39e402a3ccc49356">su_stream_r1</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, u1 *value, u2 offset)</td></tr>
-<tr class="memitem:a80cf790ae38aa4cd2eb14a0c9cf1ded2" id="r_a80cf790ae38aa4cd2eb14a0c9cf1ded2"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a80cf790ae38aa4cd2eb14a0c9cf1ded2">su_stream_r2</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, u2 *value, u2 offset)</td></tr>
-<tr class="memitem:a42aa208e2f9810e17a78222611a7e870" id="r_a42aa208e2f9810e17a78222611a7e870"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a42aa208e2f9810e17a78222611a7e870">su_stream_r4</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, u4 *value, u2 offset)</td></tr>
-<tr class="memitem:a605f90825469a1cd75e81a9ef07444b3" id="r_a605f90825469a1cd75e81a9ef07444b3"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a605f90825469a1cd75e81a9ef07444b3">su_stream_r8</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, u8 *value, u2 offset)</td></tr>
-<tr class="memitem:aefb1478d412d840ece4f48be4722f7e5" id="r_aefb1478d412d840ece4f48be4722f7e5"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#aefb1478d412d840ece4f48be4722f7e5">su_stream_wn</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, const u1 *buffer, u2 size, u2 offset)</td></tr>
-<tr class="memitem:af00e7a0335ad4f1dd8decfe4bce8f190" id="r_af00e7a0335ad4f1dd8decfe4bce8f190"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#af00e7a0335ad4f1dd8decfe4bce8f190">su_stream_w1</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, u1 value, u2 offset)</td></tr>
-<tr class="memitem:a78555498034f673718d1399c5d361ae4" id="r_a78555498034f673718d1399c5d361ae4"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a78555498034f673718d1399c5d361ae4">su_stream_w2</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, u2 value, u2 offset)</td></tr>
-<tr class="memitem:a37bb42387429eba2f39de1fc397e82d1" id="r_a37bb42387429eba2f39de1fc397e82d1"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a37bb42387429eba2f39de1fc397e82d1">su_stream_w4</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, u4 value, u2 offset)</td></tr>
-<tr class="memitem:a5e548b999970499c37f3e69e9be33847" id="r_a5e548b999970499c37f3e69e9be33847"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a5e548b999970499c37f3e69e9be33847">su_stream_w8</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, u8 value, u2 offset)</td></tr>
+<tr class="memitem:a7dca3f4cfb7e703eedf05eb6a06db554" id="r_a7dca3f4cfb7e703eedf05eb6a06db554"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7dca3f4cfb7e703eedf05eb6a06db554">su_stream_rn</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, <a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a> *buffer, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> size, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> offset)</td></tr>
+<tr class="memdesc:a7dca3f4cfb7e703eedf05eb6a06db554"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads <code class="param">size</code> bytes from <code class="param">stream</code> at <code class="param">offset</code> into <code class="param">buffer</code>.  <br /></td></tr>
+<tr class="memitem:af1351833345205bc39e402a3ccc49356" id="r_af1351833345205bc39e402a3ccc49356"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#af1351833345205bc39e402a3ccc49356">su_stream_r1</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, <a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a> *value, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> offset)</td></tr>
+<tr class="memdesc:af1351833345205bc39e402a3ccc49356"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a <code><a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a></code> (1 byte) from <code class="param">stream</code> at <code class="param">offset</code>.  <br /></td></tr>
+<tr class="memitem:a80cf790ae38aa4cd2eb14a0c9cf1ded2" id="r_a80cf790ae38aa4cd2eb14a0c9cf1ded2"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a80cf790ae38aa4cd2eb14a0c9cf1ded2">su_stream_r2</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> *value, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> offset)</td></tr>
+<tr class="memdesc:a80cf790ae38aa4cd2eb14a0c9cf1ded2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a <code><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></code> (2 bytes) from <code class="param">stream</code> at <code class="param">offset</code>.  <br /></td></tr>
+<tr class="memitem:a42aa208e2f9810e17a78222611a7e870" id="r_a42aa208e2f9810e17a78222611a7e870"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a42aa208e2f9810e17a78222611a7e870">su_stream_r4</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, <a class="el" href="types_8h.html#ae5be1f726785414dd1b77d60df074c9d">u4</a> *value, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> offset)</td></tr>
+<tr class="memdesc:a42aa208e2f9810e17a78222611a7e870"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a <code><a class="el" href="types_8h.html#ae5be1f726785414dd1b77d60df074c9d">u4</a></code> (4 bytes) from <code class="param">stream</code> at <code class="param">offset</code>.  <br /></td></tr>
+<tr class="memitem:a605f90825469a1cd75e81a9ef07444b3" id="r_a605f90825469a1cd75e81a9ef07444b3"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a605f90825469a1cd75e81a9ef07444b3">su_stream_r8</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, <a class="el" href="types_8h.html#ae4d1c3d548028e31400378ec81026110">u8</a> *value, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> offset)</td></tr>
+<tr class="memdesc:a605f90825469a1cd75e81a9ef07444b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a <code><a class="el" href="types_8h.html#ae4d1c3d548028e31400378ec81026110">u8</a></code> (8 bytes) from <code class="param">stream</code> at <code class="param">offset</code>.  <br /></td></tr>
+<tr class="memitem:aefb1478d412d840ece4f48be4722f7e5" id="r_aefb1478d412d840ece4f48be4722f7e5"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#aefb1478d412d840ece4f48be4722f7e5">su_stream_wn</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, const <a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a> *buffer, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> size, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> offset)</td></tr>
+<tr class="memdesc:aefb1478d412d840ece4f48be4722f7e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes <code class="param">size</code> bytes from <code class="param">buffer</code> into <code class="param">stream</code> at <code class="param">offset</code>.  <br /></td></tr>
+<tr class="memitem:af00e7a0335ad4f1dd8decfe4bce8f190" id="r_af00e7a0335ad4f1dd8decfe4bce8f190"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#af00e7a0335ad4f1dd8decfe4bce8f190">su_stream_w1</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, <a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a> value, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> offset)</td></tr>
+<tr class="memdesc:af00e7a0335ad4f1dd8decfe4bce8f190"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a <code><a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a></code> (1 byte) into <code class="param">stream</code> at <code class="param">offset</code>.  <br /></td></tr>
+<tr class="memitem:a78555498034f673718d1399c5d361ae4" id="r_a78555498034f673718d1399c5d361ae4"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a78555498034f673718d1399c5d361ae4">su_stream_w2</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> value, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> offset)</td></tr>
+<tr class="memdesc:a78555498034f673718d1399c5d361ae4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a <code><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></code> (2 bytes) into <code class="param">stream</code> at <code class="param">offset</code>.  <br /></td></tr>
+<tr class="memitem:a37bb42387429eba2f39de1fc397e82d1" id="r_a37bb42387429eba2f39de1fc397e82d1"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a37bb42387429eba2f39de1fc397e82d1">su_stream_w4</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, <a class="el" href="types_8h.html#ae5be1f726785414dd1b77d60df074c9d">u4</a> value, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> offset)</td></tr>
+<tr class="memdesc:a37bb42387429eba2f39de1fc397e82d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a <code><a class="el" href="types_8h.html#ae5be1f726785414dd1b77d60df074c9d">u4</a></code> (4 bytes) into <code class="param">stream</code> at <code class="param">offset</code>.  <br /></td></tr>
+<tr class="memitem:a5e548b999970499c37f3e69e9be33847" id="r_a5e548b999970499c37f3e69e9be33847"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a5e548b999970499c37f3e69e9be33847">su_stream_w8</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, <a class="el" href="types_8h.html#ae4d1c3d548028e31400378ec81026110">u8</a> value, <a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> offset)</td></tr>
+<tr class="memdesc:a5e548b999970499c37f3e69e9be33847"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a <code><a class="el" href="types_8h.html#ae4d1c3d548028e31400378ec81026110">u8</a></code> (8 bytes) into <code class="param">stream</code> at <code class="param">offset</code>.  <br /></td></tr>
 <tr class="memitem:a42210039601fef25af3c0b33e901b400" id="r_a42210039601fef25af3c0b33e901b400"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a42210039601fef25af3c0b33e901b400">su_stream_chunk</a> (struct <a class="el" href="structsu__stream.html">su_stream</a> *stream, struct <a class="el" href="structsu__chunk.html">su_chunk</a> **chunks, struct <a class="el" href="structsu__chunk.html">su_chunk</a> **chunk_out)</td></tr>
+<tr class="memdesc:a42210039601fef25af3c0b33e901b400"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances the stream by one chunk, allocating and appending a new <a class="el" href="structsu__chunk.html" title="su_chunk">su_chunk</a>.  <br /></td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Byte-level stream I/O and chunked buffer interface. </p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="a42210039601fef25af3c0b33e901b400" name="a42210039601fef25af3c0b33e901b400"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a42210039601fef25af3c0b33e901b400">&#9670;&#160;</a></span>su_stream_chunk()</h2>
 
@@ -150,6 +167,20 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Advances the stream by one chunk, allocating and appending a new <a class="el" href="structsu__chunk.html" title="su_chunk">su_chunk</a>. </p>
+<p>Allocates a new chunk, links it into the <code class="param">chunks</code> list, and updates <code class="param">stream</code> to point to the new chunk's embedded stream for subsequent operations.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Current stream to advance from. Must not be NULL. </td></tr>
+    <tr><td class="paramname">chunks</td><td>Head of the chunk linked list. Must not be NULL. </td></tr>
+    <tr><td class="paramname">chunk_out</td><td>Out parameter receiving the newly allocated chunk. Must not be NULL.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5" title="SU_MEMORY_ALLOCATION_FAILURE">SU_MEMORY_ALLOCATION_FAILURE</a> if the new chunk could not be allocated. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -172,15 +203,28 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u1 *</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a> *</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Reads a <code><a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a></code> (1 byte) from <code class="param">stream</code> at <code class="param">offset</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Source stream. Must not be NULL. </td></tr>
+    <tr><td class="paramname">value</td><td>Out parameter for the read value. Must not be NULL. </td></tr>
+    <tr><td class="paramname">offset</td><td>Byte offset within the stream.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6" title="SU_STREAM_INVALID_CHUNK">SU_STREAM_INVALID_CHUNK</a> if the read exceeds stream bounds. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -203,15 +247,28 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2 *</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a> *</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Reads a <code><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></code> (2 bytes) from <code class="param">stream</code> at <code class="param">offset</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Source stream. Must not be NULL. </td></tr>
+    <tr><td class="paramname">value</td><td>Out parameter for the read value. Must not be NULL. </td></tr>
+    <tr><td class="paramname">offset</td><td>Byte offset within the stream.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6" title="SU_STREAM_INVALID_CHUNK">SU_STREAM_INVALID_CHUNK</a> if the read exceeds stream bounds. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -234,15 +291,28 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u4 *</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#ae5be1f726785414dd1b77d60df074c9d">u4</a> *</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Reads a <code><a class="el" href="types_8h.html#ae5be1f726785414dd1b77d60df074c9d">u4</a></code> (4 bytes) from <code class="param">stream</code> at <code class="param">offset</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Source stream. Must not be NULL. </td></tr>
+    <tr><td class="paramname">value</td><td>Out parameter for the read value. Must not be NULL. </td></tr>
+    <tr><td class="paramname">offset</td><td>Byte offset within the stream.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6" title="SU_STREAM_INVALID_CHUNK">SU_STREAM_INVALID_CHUNK</a> if the read exceeds stream bounds. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -265,15 +335,28 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u8 *</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#ae4d1c3d548028e31400378ec81026110">u8</a> *</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Reads a <code><a class="el" href="types_8h.html#ae4d1c3d548028e31400378ec81026110">u8</a></code> (8 bytes) from <code class="param">stream</code> at <code class="param">offset</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Source stream. Must not be NULL. </td></tr>
+    <tr><td class="paramname">value</td><td>Out parameter for the read value. Must not be NULL. </td></tr>
+    <tr><td class="paramname">offset</td><td>Byte offset within the stream.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6" title="SU_STREAM_INVALID_CHUNK">SU_STREAM_INVALID_CHUNK</a> if the read exceeds stream bounds. </dd></dl>
 
 </div>
 </div>
@@ -291,20 +374,34 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u1 *</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a> *</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>size</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>size</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Reads <code class="param">size</code> bytes from <code class="param">stream</code> at <code class="param">offset</code> into <code class="param">buffer</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Source stream. Must not be NULL. </td></tr>
+    <tr><td class="paramname">buffer</td><td>Destination buffer. Must not be NULL. </td></tr>
+    <tr><td class="paramname">size</td><td>Number of bytes to read. </td></tr>
+    <tr><td class="paramname">offset</td><td>Byte offset within the stream to read from.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6" title="SU_STREAM_INVALID_CHUNK">SU_STREAM_INVALID_CHUNK</a> if the read exceeds stream bounds. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -327,15 +424,28 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u1</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a></td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Writes a <code><a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a></code> (1 byte) into <code class="param">stream</code> at <code class="param">offset</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Target stream. Must not be NULL. </td></tr>
+    <tr><td class="paramname">value</td><td>Value to write. </td></tr>
+    <tr><td class="paramname">offset</td><td>Byte offset within the stream.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6" title="SU_STREAM_INVALID_CHUNK">SU_STREAM_INVALID_CHUNK</a> if the write exceeds stream bounds. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -358,15 +468,28 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Writes a <code><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></code> (2 bytes) into <code class="param">stream</code> at <code class="param">offset</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Target stream. Must not be NULL. </td></tr>
+    <tr><td class="paramname">value</td><td>Value to write. </td></tr>
+    <tr><td class="paramname">offset</td><td>Byte offset within the stream.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6" title="SU_STREAM_INVALID_CHUNK">SU_STREAM_INVALID_CHUNK</a> if the write exceeds stream bounds. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -389,15 +512,28 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u4</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#ae5be1f726785414dd1b77d60df074c9d">u4</a></td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Writes a <code><a class="el" href="types_8h.html#ae5be1f726785414dd1b77d60df074c9d">u4</a></code> (4 bytes) into <code class="param">stream</code> at <code class="param">offset</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Target stream. Must not be NULL. </td></tr>
+    <tr><td class="paramname">value</td><td>Value to write. </td></tr>
+    <tr><td class="paramname">offset</td><td>Byte offset within the stream.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6" title="SU_STREAM_INVALID_CHUNK">SU_STREAM_INVALID_CHUNK</a> if the write exceeds stream bounds. </dd></dl>
 
 </div>
 </div>
@@ -415,15 +551,28 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u8</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#ae4d1c3d548028e31400378ec81026110">u8</a></td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Writes a <code><a class="el" href="types_8h.html#ae4d1c3d548028e31400378ec81026110">u8</a></code> (8 bytes) into <code class="param">stream</code> at <code class="param">offset</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Target stream. Must not be NULL. </td></tr>
+    <tr><td class="paramname">value</td><td>Value to write. </td></tr>
+    <tr><td class="paramname">offset</td><td>Byte offset within the stream.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6" title="SU_STREAM_INVALID_CHUNK">SU_STREAM_INVALID_CHUNK</a> if the write exceeds stream bounds. </dd></dl>
 
 </div>
 </div>
@@ -441,20 +590,34 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const u1 *</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="types_8h.html#ad9f4cdb6757615aae2fad89dab3c5470">u1</a> *</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>size</em></span>, </td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>size</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u2</td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="types_8h.html#a732cde1300aafb73b0ea6c2558a7a54f">u2</a></td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Writes <code class="param">size</code> bytes from <code class="param">buffer</code> into <code class="param">stream</code> at <code class="param">offset</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Source stream. Must not be NULL. </td></tr>
+    <tr><td class="paramname">buffer</td><td>Source buffer to write from. Must not be NULL. </td></tr>
+    <tr><td class="paramname">size</td><td>Number of bytes to write. </td></tr>
+    <tr><td class="paramname">offset</td><td>Byte offset within the stream to write to.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a1bf2fffc933efc501a411538fcaa56a6" title="SU_STREAM_INVALID_CHUNK">SU_STREAM_INVALID_CHUNK</a> if the write exceeds stream bounds. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

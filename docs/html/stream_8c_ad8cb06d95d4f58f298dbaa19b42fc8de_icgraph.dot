@@ -5,15 +5,15 @@ digraph "su_stream_w1"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="RL";
-  Node1 [id="Node000001",label="su_stream_w1",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip=" "];
+  Node1 [id="Node000001",label="su_stream_w1",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Writes a u1 (1 byte) into stream at offset."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="su_const_add_utf8",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$transform_8c.html#a73abaa6e7110c36d2ee47edda3f6aaf0",tooltip=" "];
+  Node2 [id="Node000002",label="su_const_add_utf8",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$transform_8c.html#a73abaa6e7110c36d2ee47edda3f6aaf0",tooltip="Interns a UTF-8 string into the transform's constant pool."];
   Node2 -> Node3 [id="edge2_Node000002_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node3 [id="Node000003",label="su_add_method",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$transform_8c.html#aadefbd8882d95bfb78c13a5c7fe46058",tooltip=" "];
+  Node3 [id="Node000003",label="su_add_method",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$transform_8c.html#aadefbd8882d95bfb78c13a5c7fe46058",tooltip="Appends a new method to the transform and returns its bytecode stream."];
   Node3 -> Node4 [id="edge3_Node000003_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node4 [id="Node000004",label="su_hook_detour",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$hook_8c.html#a6c2a11be4ea944d08e8fa2719869a637",tooltip=" "];
+  Node4 [id="Node000004",label="su_hook_detour",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$hook_8c.html#a6c2a11be4ea944d08e8fa2719869a637",tooltip="Applies a detour hook to a JVM method via bytecode transformation."];
   Node4 -> Node5 [id="edge4_Node000004_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node5 [id="Node000005",label="su_transform_class\l_file_load_hook",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$transform_8c.html#a8f7a9b34bca61546b12febba87dbd90d",tooltip=" "];
+  Node5 [id="Node000005",label="su_transform_class\l_file_load_hook",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$transform_8c.html#a8f7a9b34bca61546b12febba87dbd90d",tooltip="JVMTI class file load hook that intercepts and retransforms loaded classes."];
   Node5 -> Node6 [id="edge5_Node000005_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node6 [id="Node000006",label="su_init",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$suture_8c.html#a2452f978b129f759ca4eae8c69970bed",tooltip="Initialises a Suture environment and acquires a JVMTI capability set."];
+  Node6 [id="Node000006",label="su_init",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$suture_8c.html#a2452f978b129f759ca4eae8c69970bed",tooltip="Initialises a Suture environment, attaching to the running JVM and acquiring JVMTI capabilities."];
 }

@@ -5,11 +5,11 @@ digraph "su_stream_r4"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="RL";
-  Node1 [id="Node000001",label="su_stream_r4",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip=" "];
+  Node1 [id="Node000001",label="su_stream_r4",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Reads a u4 (4 bytes) from stream at offset."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="su_transform_init",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$transform_8c.html#abdaebb0cb6f9d8a36daea20ed4f9a3b3",tooltip=" "];
+  Node2 [id="Node000002",label="su_transform_init",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$transform_8c.html#abdaebb0cb6f9d8a36daea20ed4f9a3b3",tooltip="Parses a raw class file buffer into a mutable su_transform context."];
   Node2 -> Node3 [id="edge2_Node000002_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node3 [id="Node000003",label="su_transform_class\l_file_load_hook",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$transform_8c.html#a8f7a9b34bca61546b12febba87dbd90d",tooltip=" "];
+  Node3 [id="Node000003",label="su_transform_class\l_file_load_hook",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$transform_8c.html#a8f7a9b34bca61546b12febba87dbd90d",tooltip="JVMTI class file load hook that intercepts and retransforms loaded classes."];
   Node3 -> Node4 [id="edge3_Node000003_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node4 [id="Node000004",label="su_init",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$suture_8c.html#a2452f978b129f759ca4eae8c69970bed",tooltip="Initialises a Suture environment and acquires a JVMTI capability set."];
+  Node4 [id="Node000004",label="su_init",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$suture_8c.html#a2452f978b129f759ca4eae8c69970bed",tooltip="Initialises a Suture environment, attaching to the running JVM and acquiring JVMTI capabilities."];
 }

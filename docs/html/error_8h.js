@@ -17,7 +17,6 @@ var error_8h =
       [ "SU_JVM_JVMTI_ATTACH_FAILURE", "error_8h.html#a620804d955cf16bcddaa85dc236b3131ab2de6ee300f2e7d301afa8b271c04f9e", null ],
       [ "SU_JVM_JVMTI_DETACH_FAILURE", "error_8h.html#a620804d955cf16bcddaa85dc236b3131a565e04528d36a53dfcba30af04df58e4", null ],
       [ "SU_JVM_JNI_ATTACH_FAILURE", "error_8h.html#a620804d955cf16bcddaa85dc236b3131ab60d383aaada13795792b13815e4cbe9", null ],
-      [ "SU_JVM_FLAG_PATCH_FAILURE", "error_8h.html#a620804d955cf16bcddaa85dc236b3131a869487c13f8d2ba26db6f4e7dc4f5bbf", null ],
       [ "SU_JVM_RETRANSFORM_FAILURE", "error_8h.html#a620804d955cf16bcddaa85dc236b3131a3648d54a221b97743abc7091f5adc1d4", null ],
       [ "SU_JVM_CAPABILITIES_FAILURE", "error_8h.html#a620804d955cf16bcddaa85dc236b3131a6ea674999187df246c2bd673ef57911d", null ],
       [ "SU_JVM_INVALID_CLASS_MAGIC", "error_8h.html#a620804d955cf16bcddaa85dc236b3131a24dfcb2fcb08b93d26dc2e299c111ace", null ],

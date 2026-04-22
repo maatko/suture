@@ -18,7 +18,6 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -106,15 +105,15 @@ Include dependency graph for suture.c:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a2452f978b129f759ca4eae8c69970bed" id="r_a2452f978b129f759ca4eae8c69970bed"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a2452f978b129f759ca4eae8c69970bed">su_init</a> (struct <a class="el" href="structsu__env.html">su_env</a> *env)</td></tr>
-<tr class="memdesc:a2452f978b129f759ca4eae8c69970bed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialises a Suture environment and acquires a JVMTI capability set.  <br /></td></tr>
+<tr class="memdesc:a2452f978b129f759ca4eae8c69970bed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialises a Suture environment, attaching to the running JVM and acquiring JVMTI capabilities.  <br /></td></tr>
 <tr class="memitem:aebe09794f140a85ff595b1c09aff7aa5" id="r_aebe09794f140a85ff595b1c09aff7aa5"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#aebe09794f140a85ff595b1c09aff7aa5">su_detour</a> (struct <a class="el" href="structsu__env.html">su_env</a> *env, const char *class_name, const char *method_name, const char *method_signature, jmethodID *original_method, void *function)</td></tr>
-<tr class="memdesc:aebe09794f140a85ff595b1c09aff7aa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a method detour by class/method name and signature.  <br /></td></tr>
+<tr class="memdesc:aebe09794f140a85ff595b1c09aff7aa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a detour on a method identified by class name, method name, and signature.  <br /></td></tr>
 <tr class="memitem:a55d993679177f1b6a60c05c0ceae6673" id="r_a55d993679177f1b6a60c05c0ceae6673"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a55d993679177f1b6a60c05c0ceae6673">su_mdetour</a> (struct <a class="el" href="structsu__env.html">su_env</a> *env, jmethodID method, jmethodID *original_method, void *function)</td></tr>
-<tr class="memdesc:a55d993679177f1b6a60c05c0ceae6673"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a method detour directly from a <code>jmethodID</code>.  <br /></td></tr>
+<tr class="memdesc:a55d993679177f1b6a60c05c0ceae6673"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a detour on a method identified by an existing <code>jmethodID</code>.  <br /></td></tr>
 <tr class="memitem:ab1b73ff6d14db37da1d510f5dea63c33" id="r_ab1b73ff6d14db37da1d510f5dea63c33"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#ab1b73ff6d14db37da1d510f5dea63c33">su_transform</a> (const struct <a class="el" href="structsu__env.html">su_env</a> *env)</td></tr>
-<tr class="memdesc:ab1b73ff6d14db37da1d510f5dea63c33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies all registered hooks by redefining the target classes.  <br /></td></tr>
+<tr class="memdesc:ab1b73ff6d14db37da1d510f5dea63c33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies all registered detours by triggering a JVMTI class retransformation.  <br /></td></tr>
 <tr class="memitem:a8e54938185b20c50290e893d382ff78a" id="r_a8e54938185b20c50290e893d382ff78a"><td class="memItemLeft">enum <a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131">su_error</a>&#160;</td><td class="memItemRight"><a class="el" href="#a8e54938185b20c50290e893d382ff78a">su_dispose</a> (struct <a class="el" href="structsu__env.html">su_env</a> *env)</td></tr>
-<tr class="memdesc:a8e54938185b20c50290e893d382ff78a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources associated with the environment.  <br /></td></tr>
+<tr class="memdesc:a8e54938185b20c50290e893d382ff78a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detaches from JVMTI and releases all resources owned by the environment.  <br /></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="aebe09794f140a85ff595b1c09aff7aa5" name="aebe09794f140a85ff595b1c09aff7aa5"></a>
@@ -156,19 +155,26 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Registers a method detour by class/method name and signature. </p>
+<p>Registers a detour on a method identified by class name, method name, and signature. </p>
+<p>Resolves the target method via JNI and schedules a bytecode detour to redirect execution to <code class="param">function</code>. The original method remains accessible via <code class="param">original_method</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">env</td><td>Initialised environment. </td></tr>
-    <tr><td class="paramname">class_name</td><td>JNI-style class name (e.g. <code>"java/lang/String"</code>). </td></tr>
-    <tr><td class="paramname">method_name</td><td>Name of the method to hook. </td></tr>
-    <tr><td class="paramname">method_signature</td><td>JNI method descriptor (e.g. <code>"()V"</code>). </td></tr>
-    <tr><td class="paramname">original_method</td><td>Out – receives the trampoline to the original method. </td></tr>
-    <tr><td class="paramname">function</td><td>Replacement function with a matching signature. </td></tr>
+    <tr><td class="paramname">env</td><td>Initialised Suture environment. Must not be NULL. </td></tr>
+    <tr><td class="paramname">class_name</td><td>Fully qualified class name (e.g. <code>"java/lang/Object"</code>). Must not be NULL. </td></tr>
+    <tr><td class="paramname">method_name</td><td>Name of the method to detour. Must not be NULL. </td></tr>
+    <tr><td class="paramname">method_signature</td><td>JNI method descriptor (e.g. <code>"(I)V"</code>). Must not be NULL. </td></tr>
+    <tr><td class="paramname">original_method</td><td>Out parameter receiving the original method ID. May be NULL. </td></tr>
+    <tr><td class="paramname">function</td><td>Detour function pointer to redirect execution to. Must not be NULL.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success, otherwise an error code. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" title="SU_MISSING_REQUIRED_PARAMETERS">SU_MISSING_REQUIRED_PARAMETERS</a> if any required parameter is NULL. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a274c4a1473e3b4876d0608f577959b9e" title="SU_DETOUR_INVALID_TARGET">SU_DETOUR_INVALID_TARGET</a> if the class or method could not be resolved. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5" title="SU_MEMORY_ALLOCATION_FAILURE">SU_MEMORY_ALLOCATION_FAILURE</a> if the hook could not be registered. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -197,14 +203,19 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Releases all resources associated with the environment. </p>
+<p>Detaches from JVMTI and releases all resources owned by the environment. </p>
+<p>Frees all hooks, targets, and JVMTI state. Does not free <code class="param">env</code> itself. After this call, <code class="param">env</code> must not be used without re-initialising via <a class="el" href="#a2452f978b129f759ca4eae8c69970bed" title="su_init">su_init</a>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">env</td><td>Environment to tear down. </td></tr>
+    <tr><td class="paramname">env</td><td>Environment to dispose. Must not be NULL.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success, otherwise an error code. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" title="SU_MISSING_REQUIRED_PARAMETERS">SU_MISSING_REQUIRED_PARAMETERS</a> if <code class="param">env</code> is NULL. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a565e04528d36a53dfcba30af04df58e4" title="SU_JVM_JVMTI_DETACH_FAILURE">SU_JVM_JVMTI_DETACH_FAILURE</a> if the JVMTI environment could not be cleanly detached. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -228,14 +239,23 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Initialises a Suture environment and acquires a JVMTI capability set. </p>
+<p>Initialises a Suture environment, attaching to the running JVM and acquiring JVMTI capabilities. </p>
+<p>Must be called before any other Suture function. Locates the active JVM, attaches a JVMTI environment, and registers the class file load hook.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">env</td><td>Uninitialised environment to set up. </td></tr>
+    <tr><td class="paramname">env</td><td>Environment to initialise. Must not be NULL.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success, otherwise an error code. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" title="SU_MISSING_REQUIRED_PARAMETERS">SU_MISSING_REQUIRED_PARAMETERS</a> if <code class="param">env</code> is NULL. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131af5af609f13328ecd649b02907987ffea" title="SU_JVM_NO_VIRTUAL_MACHINES">SU_JVM_NO_VIRTUAL_MACHINES</a> if no running JVM could be found. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131ab2de6ee300f2e7d301afa8b271c04f9e" title="SU_JVM_JVMTI_ATTACH_FAILURE">SU_JVM_JVMTI_ATTACH_FAILURE</a> if the JVMTI environment could not be attached. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a6ea674999187df246c2bd673ef57911d" title="SU_JVM_CAPABILITIES_FAILURE">SU_JVM_CAPABILITIES_FAILURE</a> if required JVMTI capabilities could not be acquired. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -273,17 +293,24 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Registers a method detour directly from a <code>jmethodID</code>. </p>
+<p>Registers a detour on a method identified by an existing <code>jmethodID</code>. </p>
+<p>Equivalent to <a class="el" href="#aebe09794f140a85ff595b1c09aff7aa5" title="su_detour">su_detour</a> but takes a pre-resolved <code>jmethodID</code> directly, bypassing JNI class and method lookup.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">env</td><td>Initialised environment. </td></tr>
-    <tr><td class="paramname">method</td><td>Method to hook. </td></tr>
-    <tr><td class="paramname">original_method</td><td>Out – receives the trampoline to the original method. </td></tr>
-    <tr><td class="paramname">function</td><td>Replacement function with a matching signature. </td></tr>
+    <tr><td class="paramname">env</td><td>Initialised Suture environment. Must not be NULL. </td></tr>
+    <tr><td class="paramname">method</td><td>Resolved method ID to detour. Must not be NULL. </td></tr>
+    <tr><td class="paramname">original_method</td><td>Out parameter receiving the original method ID. May be NULL. </td></tr>
+    <tr><td class="paramname">function</td><td>Detour function pointer to redirect execution to. Must not be NULL.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success, otherwise an error code. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" title="SU_MISSING_REQUIRED_PARAMETERS">SU_MISSING_REQUIRED_PARAMETERS</a> if <code class="param">env</code> or <code class="param">function</code> is NULL. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a274c4a1473e3b4876d0608f577959b9e" title="SU_DETOUR_INVALID_TARGET">SU_DETOUR_INVALID_TARGET</a> if <code class="param">method</code> could not be resolved to a class. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131af357fda80c0f576f2dad97bd58d4f5a5" title="SU_MEMORY_ALLOCATION_FAILURE">SU_MEMORY_ALLOCATION_FAILURE</a> if the hook could not be registered. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -307,14 +334,19 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Applies all registered hooks by redefining the target classes. </p>
+<p>Applies all registered detours by triggering a JVMTI class retransformation. </p>
+<p>Retransforms every class in <code>env-&gt;targets</code>, causing the JVMTI class file load hook to rewrite their bytecode with the registered detours applied.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">env</td><td>Initialised environment with at least one hook registered. </td></tr>
+    <tr><td class="paramname">env</td><td>Initialised Suture environment with at least one registered hook. Must not be NULL.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success, otherwise an error code. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131aa1dd28245e60d4006350de9ba2880a0e" title="SU_OK">SU_OK</a> on success. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131ae769388c5c50356375aa5fe5e99bd4f1" title="SU_MISSING_REQUIRED_PARAMETERS">SU_MISSING_REQUIRED_PARAMETERS</a> if <code class="param">env</code> is NULL. </dd>
+<dd>
+<a class="el" href="error_8h.html#a620804d955cf16bcddaa85dc236b3131a3648d54a221b97743abc7091f5adc1d4" title="SU_JVM_RETRANSFORM_FAILURE">SU_JVM_RETRANSFORM_FAILURE</a> if JVMTI retransformation fails. </dd></dl>
 
 </div>
 </div>

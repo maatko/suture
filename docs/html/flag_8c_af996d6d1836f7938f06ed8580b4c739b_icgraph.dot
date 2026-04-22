@@ -5,9 +5,9 @@ digraph "su_flag_patchb"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="RL";
-  Node1 [id="Node000001",label="su_flag_patchb",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Patches a named JVM boolean flag."];
+  Node1 [id="Node000001",label="su_flag_patchb",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Patches a JVM boolean flag by name."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="su_dispose",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$suture_8c.html#a8e54938185b20c50290e893d382ff78a",tooltip="Releases all resources associated with the environment."];
+  Node2 [id="Node000002",label="su_dispose",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$suture_8c.html#a8e54938185b20c50290e893d382ff78a",tooltip="Detaches from JVMTI and releases all resources owned by the environment."];
   Node1 -> Node3 [id="edge2_Node000001_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node3 [id="Node000003",label="su_init",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$suture_8c.html#a2452f978b129f759ca4eae8c69970bed",tooltip="Initialises a Suture environment and acquires a JVMTI capability set."];
+  Node3 [id="Node000003",label="su_init",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$suture_8c.html#a2452f978b129f759ca4eae8c69970bed",tooltip="Initialises a Suture environment, attaching to the running JVM and acquiring JVMTI capabilities."];
 }
