@@ -12,14 +12,15 @@ jni = dependency('jni', version: '>=1.8', modules: ['jvm'], required: true)
 sources = files(
 	'src/suture.c', 'src/hook.c',
 	'src/flag.c', 'src/transform.c',
-	'src/stream.c'
+	'src/stream.c', 'src/disasm.c'
 )
 
 includes = files(
 	'include/suture.h', 'include/suture/types.h',
 	'include/suture/error.h', 'include/suture/hook.h',
 	'include/suture/flag.h', 'include/suture/transform.h',
-	'include/suture/stream.h', 'include/suture/opcodes.h'
+	'include/suture/stream.h', 'include/suture/opcodes.h',
+	'include/suture/disasm.h'
 )
 
 suture = static_library(
