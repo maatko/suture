@@ -22,6 +22,40 @@ static enum su_error su_attach_thread(JavaVM *jvm, void **env, bool *has_attache
   return res != JNI_OK ? SU_JVM_JNI_ATTACH_FAILURE : SU_OK;
 }
 
+static enum su_error su_get_class(struct su_env *env, const char *class_name, struct su_class **klass) {
+  if (env == NULL || class_name == NULL || klass == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
+
+  for (u2 i = 0; i < env->classes_count; i++) {
+    struct su_class *current_class = &env->classes[i];
+    if (strcmp(current_class->name, class_name) == 0) {
+      *klass = current_class;
+      return SU_OK;
+    }
+  }
+
+  JNIEnv *jni = NULL;
+  su_attach_thread(env->jvm, (void **)&jni, NULL); // todo: handle the return response
+
+  void *buffer = realloc(env->classes, sizeof(struct su_class) * (env->classes_count + 1));
+  if (buffer == NULL)
+    return SU_MEMORY_ALLOCATION_FAILURE;
+
+  env->classes = (struct su_class *)buffer;
+
+  struct su_class *current_class = &env->classes[env->classes_count];
+  memset(current_class, 0, sizeof(struct su_class));
+
+  current_class->name = strdup(class_name);
+
+  const jclass handle = JVM_INVOKE(jni, FindClass, class_name);
+  current_class->handle = JVM_INVOKE(jni, NewGlobalRef, (jobject)handle);
+
+  *klass = current_class;
+  env->classes_count++;
+  return SU_OK;
+}
+
 enum su_error su_init(struct su_env *env) {
   if (env == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
@@ -62,65 +96,24 @@ enum su_error su_detour(struct su_env *env, const char *class_name, const char *
   if (class_name[0] == '<')
     return SU_DETOUR_INVALID_TARGET;
 
-  void *hooks_data = realloc(env->hooks, (env->hooks_count + 1) * sizeof(struct su_hook));
+  struct su_class *klass = NULL;
+  su_get_class(env, class_name, &klass); // todo: check for error return response code.
+
+  void *hooks_data = realloc(klass->hooks, (klass->hooks_count + 1) * sizeof(struct su_hook));
   if (hooks_data == NULL)
     return SU_MEMORY_ALLOCATION_FAILURE;
 
-  env->hooks = (struct su_hook *)hooks_data;
+  klass->hooks = (struct su_hook *)hooks_data;
 
-  struct su_hook *hook = &env->hooks[env->hooks_count];
+  struct su_hook *hook = &klass->hooks[klass->hooks_count];
   hook->type = SU_HOOK_DETOUR;
-  hook->name = strdup(method_name),
-  hook->signature = strdup(method_signature),
-  hook->class_name = strdup(class_name),
-  hook->original_name = su_hook_original_name(class_name),
-  hook->original = original_method,
-  hook->detour = function;
+  hook->name = strdup(method_name);
+  hook->signature = strdup(method_signature);
+  hook->jump = su_hook_original_name(class_name);
+  hook->original = original_method;
+  hook->function = function;
 
-  env->hooks_count++;
-
-  for (u2 i = 0; i < env->targets_count; i++) {
-    const jclass klass = env->targets[i];
-
-    char *class_signature;
-    JVM_TRY(JVM_INVOKE(env->jvmti, GetClassSignature, klass, &class_signature, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
-
-    class_signature[strlen(class_signature) - 1] = '\0';
-    if (strcmp(class_signature + 1, class_name) == 0) {
-      hook->klass = klass;
-      JVM_FREE(env->jvmti, class_signature);
-      return SU_OK;
-    }
-
-    JVM_FREE(env->jvmti, class_signature);
-  }
-
-  JNIEnv *jni;
-  bool attached;
-
-  SU_TRY(su_attach_thread(env->jvm, (void **)&jni, &attached), SU_JVM_JNI_ATTACH_FAILURE);
-
-  void *targets_data = realloc(env->targets, (env->targets_count + 1) * sizeof(jclass));
-  if (targets_data == NULL) {
-    if (attached)
-      JVM_INVOKE(env->jvm, DetachCurrentThread);
-
-    return SU_MEMORY_ALLOCATION_FAILURE;
-  }
-
-  env->targets = (jclass *)targets_data;
-
-  jclass klass = JVM_INVOKE(jni, FindClass, class_name);
-  klass = (jclass)JVM_INVOKE(jni, NewGlobalRef, klass);
-
-  env->targets[env->targets_count] = klass;
-  hook->klass = klass;
-
-  env->targets_count++;
-
-  if (attached)
-    JVM_INVOKE(env->jvm, DetachCurrentThread);
-
+  klass->hooks_count++;
   return SU_OK;
 }
 
@@ -156,40 +149,49 @@ enum su_error su_transform(const struct su_env *env) {
     return SU_MISSING_REQUIRED_PARAMETERS;
 
   JNIEnv *jni = NULL;
-  bool attached;
+  SU_TRY(su_attach_thread(env->jvm, (void **)&jni, NULL), SU_JVM_JNI_ATTACH_FAILURE);
 
-  SU_TRY(su_attach_thread(env->jvm, (void **)&jni, &attached), SU_JVM_JNI_ATTACH_FAILURE);
+  jclass *targets = malloc(sizeof(jclass) * env->classes_count);
+  if (targets == NULL)
+    return SU_MEMORY_ALLOCATION_FAILURE;
+
+  for (u2 i = 0; i < env->classes_count; i++)
+    targets[i] = env->classes[i].handle;
 
   enum su_error status = SU_OK;
   JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, SetEnvironmentLocalStorage, env), JVMTI_ERROR_NONE, SU_JVM_ENVIRONMENT_STORAGE_FAILURE, exit);
-  JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, RetransformClasses, env->hooks_count, env->targets), JVMTI_ERROR_NONE, SU_JVM_RETRANSFORM_FAILURE, exit);
+  JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, RetransformClasses, env->classes_count, targets), JVMTI_ERROR_NONE, SU_JVM_RETRANSFORM_FAILURE, exit);
+
+  SU_FREE(targets);
 
   if (env->error != SU_OK)
     return env->error;
 
-  // this could be done better, loop through targets, and get methods
-  // for all those targets and batch the `RegisterNatives` call.
-  for (u2 i = 0; i < env->hooks_count; i++) {
-    const struct su_hook *hook = &env->hooks[i];
+  for (u2 i = 0; i < env->classes_count; i++) {
+    const struct su_class *klass = &env->classes[i];
 
-    JNINativeMethod method = {
-      .name = hook->name,
-      .signature = hook->signature,
-      .fnPtr = hook->detour
-    };
+    JNINativeMethod *methods = malloc(sizeof(struct su_class) * klass->hooks_count);
+    if (methods == NULL)
+      return SU_MEMORY_ALLOCATION_FAILURE;
 
-    JVM_TRY_CATCH(status, JVM_INVOKE(jni, RegisterNatives, hook->klass, &method, 1), JVMTI_ERROR_NONE, SU_JVM_RETRANSFORM_FAILURE, exit);
+    for (u2 j = 0; j < klass->hooks_count; j++) {
+      const struct su_hook *hook = &klass->hooks[j];
 
-    const jclass klass = JVM_INVOKE(jni, FindClass, hook->class_name);
-    if (hook->original != NULL)
-      (*hook->original) = JVM_INVOKE(jni, GetMethodID, klass, hook->original_name, hook->signature);
+      JNINativeMethod *method = &methods[j];
+      method->name = hook->name;
+      method->signature = hook->signature;
+      method->fnPtr = hook->function;
+
+      const jclass transformed_class = JVM_INVOKE(jni, FindClass, klass->name);
+      if (hook->original != NULL)
+        *hook->original = JVM_INVOKE(jni, GetMethodID, transformed_class, hook->jump, hook->signature); // todo: in trampoline hooks, signature is not the same as original method signature
+    }
+
+    JVM_TRY_CATCH(status, JVM_INVOKE(jni, RegisterNatives, klass->handle, methods, klass->hooks_count), JVMTI_ERROR_NONE, SU_JVM_RETRANSFORM_FAILURE, exit);
+    SU_FREE(methods);
   }
 
 exit:
-
-  if (attached)
-    JVM_TRY(JVM_INVOKE(env->jvm, DetachCurrentThread), JNI_OK, SU_JVM_JVMTI_DETACH_FAILURE);
-
   return status;
 }
 
@@ -197,48 +199,44 @@ enum su_error su_dispose(struct su_env *env) {
   if (env == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
-  if (env->hooks != NULL) {
-    jvmtiClassDefinition *definitions = malloc(sizeof(jvmtiClassDefinition) * env->hooks_count);
+  if (env->classes != NULL) {
+    jvmtiClassDefinition *definitions = malloc(sizeof(jvmtiClassDefinition) * env->classes_count);
     if (definitions == NULL)
       return SU_MEMORY_ALLOCATION_FAILURE;
-
-    JNIEnv *jni;
-    bool attached;
 
     const jvmtiEventCallbacks callbacks = { 0 };
     JVM_INVOKE(env->jvmti, SetEventCallbacks, &callbacks, sizeof(callbacks));
     JVM_INVOKE(env->jvmti, SetEventNotificationMode, JVMTI_DISABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL);
 
-    su_attach_thread(env->jvm, (void **)&jni, &attached);
+    JNIEnv *jni;
+    su_attach_thread(env->jvm, (void **)&jni, NULL);
 
-    for (u2 i = 0; i < env->hooks_count; i++) {
-      struct su_hook *hook = &env->hooks[i];
+    for (u2 i = 0; i < env->classes_count; i++) {
+      struct su_class *klass = &env->classes[i];
 
-      definitions[i].klass = JVM_INVOKE(jni, FindClass, hook->class_name);
-      definitions[i].class_byte_count = hook->original_length;
-      definitions[i].class_bytes = hook->original_bytes;
+      definitions[i].klass = JVM_INVOKE(jni, FindClass, klass->name);
+      definitions[i].class_byte_count = klass->bytes_length;
+      definitions[i].class_bytes = klass->bytes;
 
-      SU_FREE(hook->name);
-      SU_FREE(hook->signature);
-      SU_FREE(hook->class_name);
-      SU_FREE(hook->original_name);
+      for (u2 j = 0; j < klass->hooks_count; j++) {
+        struct su_hook *hook = &klass->hooks[j];
+
+        SU_FREE(hook->name);
+        SU_FREE(hook->signature);
+        SU_FREE(hook->jump);
+      }
+      SU_FREE(klass->hooks);
+
+      SU_FREE(klass->name);
+      JVM_INVOKE(jni, DeleteGlobalRef, klass->handle);
     }
 
-    JVM_INVOKE(env->jvmti, RedefineClasses, env->hooks_count, definitions);
+    JVM_INVOKE(env->jvmti, RedefineClasses, env->classes_count, definitions);
 
     SU_FREE(definitions);
-    SU_FREE(env->hooks);
-
-    for (u2 i = 0; i < env->targets_count; i++)
-      JVM_INVOKE(jni, DeleteGlobalRef, env->targets[i]);
-
-    SU_FREE(env->targets);
-
-    if (attached)
-      JVM_INVOKE(env->jvm, DetachCurrentThread);
+    SU_FREE(env->classes);
   }
 
   JVM_INVOKE(env->jvm, DetachCurrentThread);
-
   return su_flag_patchb("AllowRedefinitionToAddDeleteMethods", NULL, env->allow_redefinition);
 }

@@ -16,11 +16,8 @@ struct su_env {
   JavaVM *jvm;
   jvmtiEnv *jvmti;
 
-  struct su_hook *hooks;
-  u2 hooks_count;
-
-  jclass *targets;
-  u2 targets_count;
+  struct su_class *classes;
+  u2 classes_count;
 
   bool allow_redefinition;
 };

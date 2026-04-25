@@ -3,9 +3,10 @@
 
 #include "error.h"
 #include "stream.h"
-#include "transform.h"
 
 #include <jni.h>
+
+struct su_transform;
 
 enum su_hook_type {
   SU_HOOK_DETOUR
@@ -16,15 +17,10 @@ struct su_hook {
 
   char *name;
   char *signature;
-  char *class_name;
-  char *original_name;
+  char *jump;
 
-  jclass klass;
   jmethodID *original;
-  void *detour;
-
-  unsigned char *original_bytes;
-  jint original_length;
+  void *function;
 };
 
 #ifdef __cplusplus

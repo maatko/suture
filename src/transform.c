@@ -26,8 +26,8 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
   struct su_env *env = NULL;
   enum su_error status = SU_OK;
 
-  u1 *t_buffer;
-  u2 t_length;
+  u1 *transformed_buffer;
+  u2 transformed_buffer_len;
 
   if (JVM_INVOKE(jvmti, GetEnvironmentLocalStorage, (void **)&env) != JVMTI_ERROR_NONE)
     return;
@@ -42,43 +42,44 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
 
   memcpy(old_bytes, class_data, class_data_len);
 
-  struct su_transform transform = { 0 };
-  SU_TRY_CATCH(status, su_transform_init(&transform, (u1 *)class_data, (u2)class_data_len), exit);
-
-  for (u2 i = 0; i < env->hooks_count; i++) {
-    struct su_hook *hook = &env->hooks[i];
-    if (strcmp(name, hook->class_name) != 0)
+  for (u2 i = 0; i < env->classes_count; i++) {
+    struct su_class *klass = &env->classes[i];
+    if (strcmp(name, klass->name) != 0)
       continue;
 
-    hook->original_bytes = old_bytes;
-    hook->original_length = class_data_len;
+    struct su_transform transform = { 0 };
+    SU_TRY_CATCH(status, su_transform_init(&transform, (u1 *)class_data, (u2)class_data_len), exit);
 
-    const u2 methods_count = transform.methods_count;
-    for (u2 j = 0; j < methods_count; j++) {
-      const struct su_method *method = &transform.methods[j];
-      if (strcmp(hook->name, method->name) != 0 || strcmp(hook->signature, method->desc) != 0)
-        continue;
+    klass->bytes = old_bytes;
+    klass->bytes_length = class_data_len;
 
-      switch (hook->type) {
-        case SU_HOOK_DETOUR:
-          SU_TRY_CATCH(status, su_hook_detour(hook, &transform, &method->chunk->stream), exit);
-          break;
+    for (u2 j = 0; j < klass->hooks_count; j++) {
+      const struct su_hook *hook = &klass->hooks[j];
+      for (u2 k = 0; k < transform.methods_count; k++) {
+        const struct su_method *method = &transform.methods[k];
+        if (strcmp(hook->name, method->name) != 0 || strcmp(hook->signature, method->desc) != 0)
+          continue;
+
+        switch (hook->type) {
+          case SU_HOOK_DETOUR:
+            SU_TRY_CATCH(status, su_hook_detour(hook, &transform, &method->chunk->stream), exit);
+            break;
+        }
+        break;
       }
-
-      break;
     }
 
-    SU_TRY_CATCH(status, su_transform_build(&transform, &t_buffer, &t_length), exit);
+    SU_TRY_CATCH(status, su_transform_build(&transform, &transformed_buffer, &transformed_buffer_len), exit);
 
     unsigned char *jvmti_buffer = NULL;
-    JVM_TRY_CATCH(status, JVM_INVOKE(jvmti, Allocate, t_length, &jvmti_buffer), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE, exit);
+    JVM_TRY_CATCH(status, JVM_INVOKE(jvmti, Allocate, transformed_buffer_len, &jvmti_buffer), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE, exit);
 
-    memcpy(jvmti_buffer, t_buffer, t_length);
+    memcpy(jvmti_buffer, transformed_buffer, transformed_buffer_len);
 
-    (*new_class_data) = jvmti_buffer;
-    (*new_class_data_len) = t_length;
+    *new_class_data = jvmti_buffer;
+    *new_class_data_len = transformed_buffer_len;
 
-    free(t_buffer);
+    free(transformed_buffer);
     su_transform_dispose(&transform);
   }
 

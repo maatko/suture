@@ -1,5 +1,6 @@
 #include <suture/hook.h>
 #include <suture/opcodes.h>
+#include <suture/transform.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -35,7 +36,7 @@ enum su_error su_hook_detour(const struct su_hook *hook, struct su_transform *tr
   SU_TRY_CATCH(status, su_stream_w2(stream, 0, 0), exit);
 
   struct su_stream *new_stream;
-  SU_TRY_CATCH(status, su_add_method(transform, hook->original_name, hook->signature, ACC_PRIVATE | (flags & ACC_STATIC ? ACC_STATIC : ACC_FINAL), &new_stream), exit);
+  SU_TRY_CATCH(status, su_add_method(transform, hook->jump, hook->signature, ACC_PRIVATE | (flags & ACC_STATIC ? ACC_STATIC : ACC_FINAL), &new_stream), exit);
   SU_TRY_CATCH(status, su_stream_wn(new_stream, attributes, attributes_length, 0), exit);
 
 exit:
