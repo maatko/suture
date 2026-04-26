@@ -2,10 +2,12 @@
 
 #include <suture.h>
 #include <suture/stream.h>
+#include <suture/tracker.h>
 #include <suture/types.h>
 
 #include <assert.h>
-#include <string.h>
+
+#include "internal.h"
 
 #define CONSTANT_Class 7
 #define CONSTANT_Fieldref 9
@@ -33,19 +35,19 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
     return;
 
   unsigned char *old_bytes = NULL;
-  JVM_INVOKE(jvmti, Allocate, class_data_len, &old_bytes);
-
-  if (old_bytes == NULL) {
-    env->error = SU_MEMORY_ALLOCATION_FAILURE;
-    return;
-  }
-
-  memcpy(old_bytes, class_data, class_data_len);
-
   for (u2 i = 0; i < env->classes_count; i++) {
     struct su_class *klass = &env->classes[i];
     if (strcmp(name, klass->name) != 0)
       continue;
+
+    JVM_INVOKE(jvmti, Allocate, class_data_len, &old_bytes);
+
+    if (old_bytes == NULL) {
+      env->error = SU_MEMORY_ALLOCATION_FAILURE;
+      return;
+    }
+
+    memcpy(old_bytes, class_data, class_data_len);
 
     struct su_transform transform = { 0 };
     SU_TRY_CATCH(status, su_transform_init(&transform, (u1 *)class_data, (u2)class_data_len), exit);
@@ -351,9 +353,13 @@ void su_transform_dispose(struct su_transform *transform) {
   if (transform == NULL)
     return;
 
-  for (u2 i = 0; i < transform->constant_pool_count; i++)
-    SU_FREE(transform->constant_pool[i]);
-  SU_FREE(transform->constant_pool);
+  if (transform->constant_pool != NULL) {
+    for (u2 i = 0; i < transform->constant_pool_count; i++) {
+      if (transform->constant_pool[i] != NULL)
+        SU_FREE(transform->constant_pool[i]);
+    }
+    SU_FREE(transform->constant_pool);
+  }
 
   struct su_chunk *chunk = transform->chunks;
   while (chunk != NULL) {

@@ -1,9 +1,9 @@
 #include <suture/hook.h>
 #include <suture/opcodes.h>
 #include <suture/transform.h>
+#include <suture/tracker.h>
 
-#include <stdlib.h>
-#include <string.h>
+#include "internal.h"
 
 enum su_error su_hook_detour(const struct su_hook *hook, struct su_transform *transform, struct su_stream *stream) {
   u1 *attributes = NULL;
@@ -44,7 +44,7 @@ exit:
   return status;
 }
 
-char *su_hook_original_name(const char *name) {
+char *su_hook_jump_name(const char *name) {
   if (name == NULL)
     return NULL;
 

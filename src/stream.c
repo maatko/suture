@@ -1,5 +1,6 @@
 #include <suture/stream.h>
-#include <string.h>
+
+#include "internal.h"
 
 #if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 #  define bswap_16(x) (x)
@@ -133,7 +134,7 @@ enum su_error su_stream_wn(struct su_stream *stream, const u1 *buffer, const u2 
 enum su_error su_stream_w1(struct su_stream *stream, const u1 value, const u2 offset) {
   if (stream == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
-    
+
   const u2 type_size = sizeof(u1);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
     const size_t length = stream->cursor + type_size + offset;
@@ -202,7 +203,7 @@ enum su_error su_stream_w4(struct su_stream *stream, const u4 value, const u2 of
 enum su_error su_stream_w8(struct su_stream *stream, const u8 value, const u2 offset) {
   if (stream == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
-    
+
   const u2 type_size = sizeof(u8);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
     const size_t length = stream->cursor + type_size + offset;

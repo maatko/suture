@@ -1,10 +1,12 @@
 #include <suture.h>
 
 #include <suture/flag.h>
+#include <suture/tracker.h>
 #include <suture/transform.h>
 
 #include <stdbool.h>
-#include <string.h>
+
+#include "internal.h"
 
 static enum su_error su_attach_thread(JavaVM *jvm, void **env, bool *has_attached) {
   if (jvm == NULL)
@@ -17,7 +19,7 @@ static enum su_error su_attach_thread(JavaVM *jvm, void **env, bool *has_attache
     res = JVM_INVOKE(jvm, AttachCurrentThreadAsDaemon, env, NULL);
 
   if (NULL != has_attached)
-    (*has_attached) = attach;
+    *has_attached = attach;
 
   return res != JNI_OK ? SU_JVM_JNI_ATTACH_FAILURE : SU_OK;
 }
@@ -51,6 +53,8 @@ static enum su_error su_get_class(struct su_env *env, const char *class_name, st
   const jclass handle = JVM_INVOKE(jni, FindClass, class_name);
   current_class->handle = JVM_INVOKE(jni, NewGlobalRef, (jobject)handle);
 
+  JVM_INVOKE(jni, DeleteLocalRef, handle);
+
   *klass = current_class;
   env->classes_count++;
   return SU_OK;
@@ -61,6 +65,8 @@ enum su_error su_init(struct su_env *env) {
     return SU_MISSING_REQUIRED_PARAMETERS;
 
   memset(env, 0, sizeof(struct su_env));
+  env->classes = NULL;
+  env->classes_count = 0;
 
   jsize count;
   JNIEnv *jni;
@@ -109,7 +115,7 @@ enum su_error su_detour(struct su_env *env, const char *class_name, const char *
   hook->type = SU_HOOK_DETOUR;
   hook->name = strdup(method_name);
   hook->signature = strdup(method_signature);
-  hook->jump = su_hook_original_name(class_name);
+  hook->jump = su_hook_jump_name(class_name);
   hook->original = original_method;
   hook->function = function;
 
@@ -167,10 +173,11 @@ enum su_error su_transform(const struct su_env *env) {
   if (env->error != SU_OK)
     return env->error;
 
+  JNINativeMethod *methods = NULL;
   for (u2 i = 0; i < env->classes_count; i++) {
     const struct su_class *klass = &env->classes[i];
 
-    JNINativeMethod *methods = malloc(sizeof(struct su_class) * klass->hooks_count);
+    methods = malloc(sizeof(struct su_class) * klass->hooks_count);
     if (methods == NULL)
       return SU_MEMORY_ALLOCATION_FAILURE;
 
@@ -187,11 +194,17 @@ enum su_error su_transform(const struct su_env *env) {
         *hook->original = JVM_INVOKE(jni, GetMethodID, transformed_class, hook->jump, hook->signature); // todo: in trampoline hooks, signature is not the same as original method signature
     }
 
-    JVM_TRY_CATCH(status, JVM_INVOKE(jni, RegisterNatives, klass->handle, methods, klass->hooks_count), JVMTI_ERROR_NONE, SU_JVM_RETRANSFORM_FAILURE, exit);
+    JVM_TRY_CATCH(status, JVM_INVOKE(jni, RegisterNatives, klass->handle, methods, klass->hooks_count), JVMTI_ERROR_NONE, SU_JVM_RETRANSFORM_FAILURE, exit_loop);
     SU_FREE(methods);
   }
 
+exit_loop:
+  if (methods != NULL)
+    SU_FREE(methods);
 exit:
+  if (targets != NULL)
+    SU_FREE(targets);
+
   return status;
 }
 
@@ -232,6 +245,12 @@ enum su_error su_dispose(struct su_env *env) {
     }
 
     JVM_INVOKE(env->jvmti, RedefineClasses, env->classes_count, definitions);
+
+    for (u2 i = 0; i < env->classes_count; i++) {
+      struct su_class *klass = &env->classes[i];
+      if (klass->bytes != NULL)
+        JVM_FREE(env->jvmti, klass->bytes);
+    }
 
     SU_FREE(definitions);
     SU_FREE(env->classes);

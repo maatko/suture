@@ -2,7 +2,6 @@
 #define SUTURE_H
 
 #include <suture/error.h>
-#include <suture/hook.h>
 #include <suture/types.h>
 
 #include <jni.h>

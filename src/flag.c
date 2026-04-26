@@ -3,7 +3,8 @@
 #include <jni.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <string.h>
+
+#include "internal.h"
 
 struct vm_struct_entry {
   const char *type_name;
@@ -68,14 +69,14 @@ enum su_error su_flag_patchb(const char *name, bool *original, const bool value)
     return SU_DETOUR_NOT_SUPPORTED;
 
   for (size_t i = 0; i < num_flags; i++) {
-    unsigned char *current = flags + (i * flag_size);
+    unsigned char *current = flags + i * flag_size;
     const char *current_name = *(const char **)(current + name_offset);
 
     if (current_name != NULL && strcmp(current_name, name) == 0) {
       bool *offset = *(bool **)(current + address_offset);
 
       if (original != NULL)
-        (*original) = *offset;
+        *original = *offset;
 
       memset(offset, value, sizeof(bool));
       return SU_OK;

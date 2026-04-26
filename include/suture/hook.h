@@ -29,7 +29,7 @@ extern "C" {
 
 enum su_error su_hook_detour(const struct su_hook *hook, struct su_transform *transform, struct su_stream *stream);
 
-char *su_hook_original_name(const char *name);
+char *su_hook_jump_name(const char *name);
 
 #ifdef __cplusplus
 }

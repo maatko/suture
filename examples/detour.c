@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include <suture.h>
+#include <suture/tracker.h>
 
 static jmethodID original_click_mouse;
 
@@ -48,6 +49,10 @@ static DWORD WINAPI ThreadMain(LPVOID lpParams) {
 
 exit:
   su_dispose(&env);
+
+  if (print_leaks())
+    Sleep(2500);
+
   FreeLibraryAndExitThread((HINSTANCE)lpParams, 0);
 }
 
