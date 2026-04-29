@@ -12,10 +12,10 @@ static DWORD WINAPI ThreadMain(LPVOID lpParams) {
     goto exit;
   }
 
-  // if (su_trampoline(&env, "ave", "ax", "()V", click_mouse_detour) != SU_OK) {
-  //   fprintf(stderr, "Failed to register method detour hook\n");
-  //   goto exit;
-  // }
+  if (su_trampoline(&env, "ave", "ax", "()V", click_mouse_detour) != SU_OK) {
+    fprintf(stderr, "Failed to register method detour hook\n");
+    goto exit;
+  }
 
   if (su_transform(&env) != SU_OK) {
     fprintf(stderr, "Failed to apply the class transforms\n");

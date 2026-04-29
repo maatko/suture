@@ -66,6 +66,9 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
           case SU_HOOK_DETOUR:
             SU_TRY_CATCH(status, su_hook_detour(hook, &transform, &method->chunk->stream), exit);
             break;
+          case SU_HOOK_TRAMPOLINE:
+            // todo implement the trampoline hook
+            break;
         }
         break;
       }
@@ -258,7 +261,7 @@ enum su_error su_const_add_utf8(struct su_transform *transform, const char *utf8
   transform->constant_pool[transform->constant_pool_count] = NULL;
 
   if (cp_index != NULL)
-    (*cp_index) = transform->constant_pool_count;
+    *cp_index = transform->constant_pool_count;
 
   transform->constant_pool_count++;
 exit:

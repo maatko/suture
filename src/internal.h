@@ -6,9 +6,9 @@
 #include <jni.h>
 #include <jvmti.h>
 
-#define SU_TRY(ACTION, ERROR) \
-  if ((ACTION) != SU_OK) {    \
-    return ERROR;             \
+#define SU_TRY(STATUS, ACTION) \
+  if ((STATUS = ACTION) != SU_OK) {   \
+    return STATUS;                    \
   }
 
 #define SU_TRY_CATCH(STATUS, ACTION, CATCH) \

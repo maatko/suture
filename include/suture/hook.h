@@ -9,7 +9,8 @@
 struct su_transform;
 
 enum su_hook_type {
-  SU_HOOK_DETOUR
+  SU_HOOK_DETOUR,
+  SU_HOOK_TRAMPOLINE
 };
 
 struct su_hook {
@@ -19,7 +20,7 @@ struct su_hook {
   char *signature;
   char *jump;
 
-  jmethodID *original;
+  jmethodID *native;
   void *function;
 };
 
