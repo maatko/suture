@@ -2,11 +2,12 @@
 #define SUTURE_HOOK_H
 
 #include "error.h"
-#include "stream.h"
+#include "disasm.h"
 
 #include <jni.h>
 
 struct su_transform;
+struct su_method;
 
 enum su_hook_type {
   SU_HOOK_DETOUR,
@@ -28,7 +29,9 @@ struct su_hook {
 extern "C" {
 #endif
 
-enum su_error su_hook_detour(const struct su_hook *hook, struct su_transform *transform, struct su_stream *stream);
+enum su_error su_hook_detour(const struct su_hook *hook, struct su_transform *transform, struct su_method* method);
+
+enum su_error su_hook_trampoline(const struct su_hook *hook, struct su_transform *transform, struct su_method* method);
 
 char *su_hook_jump_name(const char *name);
 

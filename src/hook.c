@@ -1,46 +1,44 @@
 #include <suture/hook.h>
-#include <suture/opcodes.h>
-#include <suture/transform.h>
 #include <suture/tracker.h>
+#include <suture/transform.h>
 
 #include "internal.h"
 
-enum su_error su_hook_detour(const struct su_hook *hook, struct su_transform *transform, struct su_stream *stream) {
-  u1 *attributes = NULL;
+static struct su_attribute *su_hook_get_code_attribute(const struct su_method *method) {
+  for (u2 i = 0; i < method->attributes_count; i++) {
+    struct su_attribute *attribute = &method->attributes[i];
+    if (strcmp(attribute->name, "Code") == 0)
+      return attribute;
+  }
+  return NULL;
+}
 
-  const u2 attributes_offset = sizeof(u2) * 3;
-  const u2 attributes_length = stream->length - attributes_offset;
+enum su_error su_hook_detour(const struct su_hook *hook, struct su_transform *transform, struct su_method *method) {
+  return SU_OK;
+}
 
-  attributes = (u1 *)malloc(sizeof(u1) * attributes_length);
-  if (attributes == NULL)
-    return SU_MEMORY_ALLOCATION_FAILURE;
-
-  memcpy(attributes, stream->buffer + attributes_offset, attributes_length);
-
-  stream->cursor = 0;
-  u2 flags, name_index, desc_index;
+enum su_error su_hook_trampoline(const struct su_hook *hook, struct su_transform *transform, struct su_method *method) {
+  const struct su_attribute *code_attribute = su_hook_get_code_attribute(method);
+  if (code_attribute == NULL)
+    return SU_CLASS_CODE_MISSING;
 
   enum su_error status = SU_OK;
-  SU_TRY_CATCH(status, su_stream_r2(stream, &flags, 0), exit);
-  SU_TRY_CATCH(status, su_stream_r2(stream, &name_index, 0), exit);
-  SU_TRY_CATCH(status, su_stream_r2(stream, &desc_index, 0), exit);
+  struct su_stream code_stream = code_attribute->chunk->stream;
 
-  SU_FREE(stream->buffer);
+  code_stream.cursor = 0;
 
-  stream->length = 0;
-  stream->cursor = 0;
+  u2 max_stack, max_local;
+  SU_TRY(status, su_stream_r2(&code_stream, &max_stack, sizeof(u2) + sizeof(u4)));
+  SU_TRY(status, su_stream_r2(&code_stream, &max_local, 0));
 
-  SU_TRY_CATCH(status, su_stream_w2(stream, flags | ACC_NATIVE, 0), exit);
-  SU_TRY_CATCH(status, su_stream_w2(stream, name_index, 0), exit);
-  SU_TRY_CATCH(status, su_stream_w2(stream, desc_index, 0), exit);
-  SU_TRY_CATCH(status, su_stream_w2(stream, 0, 0), exit);
+  printf("max_stack: %d, max_local: %d\n", max_stack, max_local);
 
-  struct su_stream *new_stream;
-  SU_TRY_CATCH(status, su_add_method(transform, hook->jump, hook->signature, ACC_PRIVATE | (flags & ACC_STATIC ? ACC_STATIC : ACC_FINAL), &new_stream), exit);
-  SU_TRY_CATCH(status, su_stream_wn(new_stream, attributes, attributes_length, 0), exit);
+  u4 code_length;
+  SU_TRY(status, su_stream_r4(&code_stream, &code_length, 0));
 
-exit:
-  SU_FREE(attributes);
+  struct su_insn *instructions = NULL;
+  SU_TRY(status, su_disasm_parse(&instructions, transform->constant_pool, transform->constant_pool_count, &code_stream, code_length));
+
   return status;
 }
 
@@ -48,7 +46,7 @@ char *su_hook_jump_name(const char *name) {
   if (name == NULL)
     return NULL;
 
-  const char *prefix = "__su_original__";
+  const char *prefix = "__suture_jump__";
   const size_t length = strlen(prefix) + strlen(name);
 
   char *original_name = malloc(length + 1);

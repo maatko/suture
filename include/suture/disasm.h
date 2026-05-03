@@ -2,8 +2,8 @@
 #define SUTURE_DISASM_H
 
 #include "error.h"
-#include "types.h"
 #include "stream.h"
+#include "types.h"
 
 enum su_insn_type {
   SU_INSN,
@@ -36,7 +36,7 @@ struct su_insn {
 extern "C" {
 #endif
 
-enum su_error su_disasm_parse(struct su_insn** instructions, struct su_stream* code);
+enum su_error su_disasm_parse(struct su_insn **instructions, void **constant_pool, u2 constant_pool_count, struct su_stream *code, u4 code_length);
 
 #ifdef __cplusplus
 }

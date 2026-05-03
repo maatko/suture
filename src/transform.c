@@ -58,16 +58,16 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
     for (u2 j = 0; j < klass->hooks_count; j++) {
       const struct su_hook *hook = &klass->hooks[j];
       for (u2 k = 0; k < transform.methods_count; k++) {
-        const struct su_method *method = &transform.methods[k];
+        struct su_method *method = &transform.methods[k];
         if (strcmp(hook->name, method->name) != 0 || strcmp(hook->signature, method->desc) != 0)
           continue;
 
         switch (hook->type) {
           case SU_HOOK_DETOUR:
-            SU_TRY_CATCH(status, su_hook_detour(hook, &transform, &method->chunk->stream), exit);
+            SU_TRY_CATCH(status, su_hook_detour(hook, &transform, method), exit);
             break;
           case SU_HOOK_TRAMPOLINE:
-            // todo implement the trampoline hook
+            SU_TRY_CATCH(status, su_hook_trampoline(hook, &transform, method), exit);
             break;
         }
         break;
@@ -101,7 +101,7 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, cons
 
   enum su_error status = SU_OK;
 
-  memset((void *)transform, 0, sizeof(struct su_transform));
+  memset(transform, 0, sizeof(struct su_transform));
   transform->chunks = NULL;
 
   struct su_stream stream = {
@@ -207,22 +207,36 @@ enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, cons
     u2 desc_index;
     SU_TRY_CATCH(status, su_stream_r2(&stream, &desc_index, 0), exit);
 
+    struct su_method *method = &transform->methods[i];
+
     u2 attributes_count;
     SU_TRY_CATCH(status, su_stream_r2(&stream, &attributes_count, 0), exit);
-
-    for (u2 j = 0; j < attributes_count; j++) {
-      u4 attributes_length;
-      SU_TRY_CATCH(status, su_stream_r4(&stream, &attributes_length, sizeof(u2)), exit);
-
-      stream.cursor += attributes_length;
-    }
 
     struct su_chunk *current_chunk = NULL;
     SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, &current_chunk), exit);
 
-    transform->methods[i].name = strdup((char *)transform->constant_pool[name_index]);
-    transform->methods[i].desc = strdup((char *)transform->constant_pool[desc_index]);
-    transform->methods[i].chunk = current_chunk;
+    struct su_attribute *attributes = calloc(attributes_count, sizeof(struct su_attribute));
+    method->attributes_count = attributes_count;
+
+    for (u2 j = 0; j < attributes_count; j++) {
+      u2 attribute_name;
+      SU_TRY_CATCH(status, su_stream_r2(&stream, &attribute_name, 0), exit);
+
+      u4 attributes_length;
+      SU_TRY_CATCH(status, su_stream_r4(&stream, &attributes_length, 0), exit);
+
+      stream.cursor += attributes_length;
+
+      struct su_attribute *attribute = &attributes[j];
+      attribute->name = transform->constant_pool[attribute_name];
+
+      SU_TRY_CATCH(status, su_stream_chunk(&stream, &transform->chunks, &attribute->chunk), exit);
+    }
+
+    method->name = strdup(transform->constant_pool[name_index]);
+    method->desc = strdup(transform->constant_pool[desc_index]);
+    method->chunk = current_chunk;
+    method->attributes = attributes;
   }
 
   u2 attributes_count;
@@ -275,7 +289,7 @@ enum su_error su_add_method(struct su_transform *transform, const char *name, co
   if (larger_buffer == NULL)
     return SU_MEMORY_ALLOCATION_FAILURE;
 
-  struct su_chunk *method_chunk = (struct su_chunk *)malloc(sizeof(struct su_chunk));
+  struct su_chunk *method_chunk = malloc(sizeof(struct su_chunk));
   if (method_chunk == NULL) {
     free(larger_buffer);
     return SU_MEMORY_ALLOCATION_FAILURE;
@@ -315,40 +329,27 @@ exit:
 }
 
 enum su_error su_transform_build(const struct su_transform *transform, u1 **buffer, u2 *buffer_length) {
+  enum su_error status = SU_OK;
   if (transform == NULL || buffer == NULL || buffer_length == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
-  u2 sz = 0;
-  u1 *buff = NULL;
-
   struct su_chunk *const_pool_chunk = transform->chunks->next;
   const_pool_chunk->stream.cursor = 0;
-  su_stream_w2(&const_pool_chunk->stream, transform->constant_pool_count, 0);
+
+  SU_TRY(status, su_stream_w2(&const_pool_chunk->stream, transform->constant_pool_count, 0));
 
   struct su_chunk *first_method_chunk = transform->methods->chunk;
   first_method_chunk->stream.cursor = 0;
-  su_stream_w2(&first_method_chunk->stream, transform->methods_count, 0);
 
-  const struct su_chunk *chunk = transform->chunks;
-  while (chunk != NULL) {
-    const u2 chunk_length = chunk->stream.length;
+  SU_TRY(status, su_stream_w2(&first_method_chunk->stream, transform->methods_count, 0));
 
-    void *expanded_buff = realloc(buff, sz + chunk_length);
-    if (expanded_buff == NULL) {
-      free(buff);
-      return SU_MEMORY_ALLOCATION_FAILURE;
-    }
+  u1 *chunks_buffer = NULL;
+  u2 chunks_buffer_size = 0;
 
-    buff = (u1 *)expanded_buff;
-    if (chunk_length > 0)
-      memcpy(buff + sz, chunk->stream.buffer, chunk_length);
+  SU_TRY(status, su_stream_chunk_build(transform->chunks, &chunks_buffer, &chunks_buffer_size));
 
-    sz += chunk_length;
-    chunk = chunk->next;
-  }
-
-  (*buffer) = buff;
-  (*buffer_length) = sz;
+  *buffer = chunks_buffer;
+  *buffer_length = chunks_buffer_size;
   return SU_OK;
 }
 
@@ -376,8 +377,10 @@ void su_transform_dispose(struct su_transform *transform) {
   transform->chunks = NULL;
 
   for (u2 i = 0; i < transform->methods_count; i++) {
-    SU_FREE(transform->methods[i].name);
-    SU_FREE(transform->methods[i].desc);
+    struct su_method *method = &transform->methods[i];
+    SU_FREE(method->name);
+    SU_FREE(method->desc);
+    SU_FREE(method->attributes);
   }
   SU_FREE(transform->methods);
 }

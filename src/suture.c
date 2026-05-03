@@ -308,6 +308,8 @@ enum su_error su_dispose(struct su_env *env) {
     SU_FREE(env->classes);
   }
 
+  JVM_INVOKE(env->jvmti, ForceGarbageCollection);
   JVM_INVOKE(env->jvm, DetachCurrentThread);
+
   return su_flag_patchb("AllowRedefinitionToAddDeleteMethods", NULL, env->allow_redefinition);
 }

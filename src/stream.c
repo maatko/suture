@@ -49,7 +49,7 @@ enum su_error su_stream_r1(struct su_stream *stream, u1 *value, const u2 offset)
     return SU_STREAM_AT_END;
 
   stream->cursor += offset;
-  (*value) = (u1)stream->buffer[stream->cursor];
+  *value = stream->buffer[stream->cursor];
 
   stream->cursor += type_size;
   return SU_OK;
@@ -148,7 +148,7 @@ enum su_error su_stream_w1(struct su_stream *stream, const u1 value, const u2 of
   }
 
   stream->cursor += offset;
-  *(u1 *)(stream->buffer + stream->cursor) = value;
+  *(stream->buffer + stream->cursor) = value;
   stream->cursor += type_size;
 
   return SU_OK;
@@ -240,7 +240,7 @@ enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks
     memcpy(buffer, stream->buffer + stream->chunk, chunk_size);
   }
 
-  struct su_chunk *chunk = (struct su_chunk *)malloc(sizeof(struct su_chunk));
+  struct su_chunk *chunk = malloc(sizeof(struct su_chunk));
   if (chunk == NULL) {
     free(buffer);
     return SU_MEMORY_ALLOCATION_FAILURE;
@@ -258,10 +258,10 @@ enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks
 
   stream->chunk = stream->cursor;
 
-  if ((*chunks) == NULL) {
-    (*chunks) = chunk;
+  if (*chunks == NULL) {
+    *chunks = chunk;
     if (chunk_out != NULL)
-      (*chunk_out) = chunk;
+      *chunk_out = chunk;
     return SU_OK;
   }
 
@@ -273,7 +273,37 @@ enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks
   last_chunk->next = chunk;
 
   if (chunk_out != NULL)
-    (*chunk_out) = chunk;
+    *chunk_out = chunk;
 
+  return SU_OK;
+}
+
+enum su_error su_stream_chunk_build(const struct su_chunk *chunks, u1 **buffer, u2 *buffer_size) {
+  if (chunks == NULL || buffer == NULL || buffer_size == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
+
+  u2 sz = 0;
+  u1 *buff = NULL;
+
+  const struct su_chunk *chunk = chunks;
+  while (chunk != NULL) {
+    const u2 chunk_length = chunk->stream.length;
+
+    void *expanded_buff = realloc(buff, sz + chunk_length);
+    if (expanded_buff == NULL) {
+      free(buff);
+      return SU_MEMORY_ALLOCATION_FAILURE;
+    }
+
+    buff = (u1 *)expanded_buff;
+    if (chunk_length > 0)
+      memcpy(buff + sz, chunk->stream.buffer, chunk_length);
+
+    sz += chunk_length;
+    chunk = chunk->next;
+  }
+
+  *buffer = buff;
+  *buffer_size = sz;
   return SU_OK;
 }

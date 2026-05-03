@@ -2,28 +2,37 @@
 #define SUTURE_TRANSFORM_H
 
 #include "error.h"
+#include "hook.h"
 #include "stream.h"
 #include "types.h"
-#include "hook.h"
 
 #include <jni.h>
 #include <jvmti.h>
 
-struct su_class {
-  char* name;
-  jclass handle;
-
-  struct su_hook* hooks;
-  u2 hooks_count;
-
-  unsigned char* bytes;
-  jint bytes_length;
+struct su_attribute {
+  char *name;
+  struct su_chunk *chunk;
 };
 
 struct su_method {
   char *name;
   char *desc;
+
   struct su_chunk *chunk;
+
+  struct su_attribute *attributes;
+  u2 attributes_count;
+};
+
+struct su_class {
+  char *name;
+  jclass handle;
+
+  struct su_hook *hooks;
+  u2 hooks_count;
+
+  unsigned char *bytes;
+  jint bytes_length;
 };
 
 struct su_transform {
