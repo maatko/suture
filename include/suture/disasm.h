@@ -25,8 +25,8 @@ struct su_insn {
 
   u1 opcode;
   union {
-    u2 var;
-  } parameter;
+    void *data;
+  };
 
   struct su_insn *next;
   struct su_insn *prev;

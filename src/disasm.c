@@ -1,4 +1,5 @@
 #include <suture/disasm.h>
+#include <suture/opcodes.h>
 
 #include "internal.h"
 
@@ -9,14 +10,16 @@ enum su_error su_disasm_parse(struct su_insn **instructions, void **constant_poo
 
   u2 pc = 0;
   while (pc < code_length) {
-    u1 current_byte;
-    SU_TRY(status, su_stream_r1(code, &current_byte, 0));
+    u1 instruction;
+    SU_TRY(status, su_stream_r1(code, &instruction, 0));
 
-    switch (current_byte) {
-      case 0X2A:
+    switch (instruction) {
+      case 0x2A:
+        break;
+      case 0xBc:
         break;
       default:
-        printf("Failed to pares instruction %#X\n", current_byte);
+        printf("Failed to pares instruction %#X\n", instruction);
         return SU_CLASS_CODE_UNRECOGNIZED_INSTRUCTION;
     }
     pc++;
