@@ -1,5 +1,6 @@
 #include <suture/stream.h>
-#include <string.h>
+
+#include "internal.h"
 
 #if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 #  define bswap_16(x) (x)
@@ -23,7 +24,7 @@
 #  include <byteswap.h>
 #endif
 
-enum su_error su_stream_rn(struct su_stream *stream, u1 *buffer, const u2 size, const u2 offset) {
+enum su_error su_stream_rn(struct su_stream *stream, u1 *buffer, const u4 size, const u4 offset) {
   if (stream == NULL || buffer == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
@@ -38,27 +39,27 @@ enum su_error su_stream_rn(struct su_stream *stream, u1 *buffer, const u2 size, 
   return SU_OK;
 }
 
-enum su_error su_stream_r1(struct su_stream *stream, u1 *value, const u2 offset) {
+enum su_error su_stream_r1(struct su_stream *stream, u1 *value, const u4 offset) {
   if (stream == NULL || value == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
-  const u2 type_size = sizeof(u1);
+  const u4 type_size = sizeof(u1);
   if (type_size > stream->length - stream->cursor ||
       offset > stream->length - stream->cursor - type_size)
     return SU_STREAM_AT_END;
 
   stream->cursor += offset;
-  (*value) = (u1)stream->buffer[stream->cursor];
+  *value = stream->buffer[stream->cursor];
 
   stream->cursor += type_size;
   return SU_OK;
 }
 
-enum su_error su_stream_r2(struct su_stream *stream, u2 *value, const u2 offset) {
+enum su_error su_stream_r2(struct su_stream *stream, u2 *value, const u4 offset) {
   if (stream == NULL || value == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
-  const u2 type_size = sizeof(u2);
+  const u4 type_size = sizeof(u2);
   if (type_size > stream->length - stream->cursor ||
       offset > stream->length - stream->cursor - type_size)
     return SU_STREAM_AT_END;
@@ -72,11 +73,11 @@ enum su_error su_stream_r2(struct su_stream *stream, u2 *value, const u2 offset)
   return SU_OK;
 }
 
-enum su_error su_stream_r4(struct su_stream *stream, u4 *value, const u2 offset) {
+enum su_error su_stream_r4(struct su_stream *stream, u4 *value, const u4 offset) {
   if (stream == NULL || value == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
-  const u2 type_size = sizeof(u4);
+  const u4 type_size = sizeof(u4);
   if (type_size > stream->length - stream->cursor ||
       offset > stream->length - stream->cursor - type_size)
     return SU_STREAM_AT_END;
@@ -90,11 +91,11 @@ enum su_error su_stream_r4(struct su_stream *stream, u4 *value, const u2 offset)
   return SU_OK;
 }
 
-enum su_error su_stream_r8(struct su_stream *stream, u8 *value, const u2 offset) {
+enum su_error su_stream_r8(struct su_stream *stream, u8 *value, const u4 offset) {
   if (stream == NULL || value == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
-  const u2 type_size = sizeof(u8);
+  const u4 type_size = sizeof(u8);
   if (type_size > stream->length - stream->cursor ||
       offset > stream->length - stream->cursor - type_size)
     return SU_STREAM_AT_END;
@@ -108,19 +109,22 @@ enum su_error su_stream_r8(struct su_stream *stream, u8 *value, const u2 offset)
   return SU_OK;
 }
 
-enum su_error su_stream_wn(struct su_stream *stream, const u1 *buffer, const u2 size, const u2 offset) {
+enum su_error su_stream_wn(struct su_stream *stream, const u1 *buffer, const u4 size, const u4 offset) {
   if (stream == NULL || buffer == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
   if (size > stream->length - stream->cursor || offset > stream->length - stream->cursor - size) {
-    const size_t length = stream->cursor + size + offset;
-    void *bigger_buffer = realloc(stream->buffer, length);
+    const u8 length = (u8)stream->cursor + size + offset;
+    if (length > UINT32_MAX)
+      return SU_STREAM_TOO_LARGE;
+
+    void *bigger_buffer = realloc(stream->buffer, (size_t)length);
 
     if (!bigger_buffer)
       return SU_MEMORY_ALLOCATION_FAILURE;
 
     stream->buffer = (u1 *)bigger_buffer;
-    stream->length = length;
+    stream->length = (u4)length;
   }
 
   stream->cursor += offset;
@@ -130,43 +134,49 @@ enum su_error su_stream_wn(struct su_stream *stream, const u1 *buffer, const u2 
   return SU_OK;
 }
 
-enum su_error su_stream_w1(struct su_stream *stream, const u1 value, const u2 offset) {
+enum su_error su_stream_w1(struct su_stream *stream, const u1 value, const u4 offset) {
   if (stream == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
-    
-  const u2 type_size = sizeof(u1);
+
+  const u4 type_size = sizeof(u1);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
-    const size_t length = stream->cursor + type_size + offset;
-    void *bigger_buffer = realloc(stream->buffer, length);
+    const u8 length = (u8)stream->cursor + type_size + offset;
+    if (length > UINT32_MAX)
+      return SU_STREAM_TOO_LARGE;
+
+    void *bigger_buffer = realloc(stream->buffer, (size_t)length);
 
     if (!bigger_buffer)
       return SU_MEMORY_ALLOCATION_FAILURE;
 
     stream->buffer = bigger_buffer;
-    stream->length = length;
+    stream->length = (u4)length;
   }
 
   stream->cursor += offset;
-  *(u1 *)(stream->buffer + stream->cursor) = value;
+  *(stream->buffer + stream->cursor) = value;
   stream->cursor += type_size;
 
   return SU_OK;
 }
 
-enum su_error su_stream_w2(struct su_stream *stream, const u2 value, const u2 offset) {
+enum su_error su_stream_w2(struct su_stream *stream, const u2 value, const u4 offset) {
   if (stream == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
-  const u2 type_size = sizeof(u2);
+  const u4 type_size = sizeof(u2);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
-    const size_t length = stream->cursor + type_size + offset;
-    void *bigger_buffer = realloc(stream->buffer, length);
+    const u8 length = (u8)stream->cursor + type_size + offset;
+    if (length > UINT32_MAX)
+      return SU_STREAM_TOO_LARGE;
+
+    void *bigger_buffer = realloc(stream->buffer, (size_t)length);
 
     if (!bigger_buffer)
       return SU_MEMORY_ALLOCATION_FAILURE;
 
     stream->buffer = bigger_buffer;
-    stream->length = length;
+    stream->length = (u4)length;
   }
 
   stream->cursor += offset;
@@ -176,20 +186,23 @@ enum su_error su_stream_w2(struct su_stream *stream, const u2 value, const u2 of
   return SU_OK;
 }
 
-enum su_error su_stream_w4(struct su_stream *stream, const u4 value, const u2 offset) {
+enum su_error su_stream_w4(struct su_stream *stream, const u4 value, const u4 offset) {
   if (stream == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
-  const u2 type_size = sizeof(u4);
+  const u4 type_size = sizeof(u4);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
-    const size_t length = stream->cursor + type_size + offset;
-    void *bigger_buffer = realloc(stream->buffer, length);
+    const u8 length = (u8)stream->cursor + type_size + offset;
+    if (length > UINT32_MAX)
+      return SU_STREAM_TOO_LARGE;
+
+    void *bigger_buffer = realloc(stream->buffer, (size_t)length);
 
     if (!bigger_buffer)
       return SU_MEMORY_ALLOCATION_FAILURE;
 
     stream->buffer = bigger_buffer;
-    stream->length = length;
+    stream->length = (u4)length;
   }
 
   stream->cursor += offset;
@@ -199,20 +212,23 @@ enum su_error su_stream_w4(struct su_stream *stream, const u4 value, const u2 of
   return SU_OK;
 }
 
-enum su_error su_stream_w8(struct su_stream *stream, const u8 value, const u2 offset) {
+enum su_error su_stream_w8(struct su_stream *stream, const u8 value, const u4 offset) {
   if (stream == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
-    
-  const u2 type_size = sizeof(u8);
+
+  const u4 type_size = sizeof(u8);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
-    const size_t length = stream->cursor + type_size + offset;
-    void *bigger_buffer = realloc(stream->buffer, length);
+    const u8 length = (u8)stream->cursor + type_size + offset;
+    if (length > UINT32_MAX)
+      return SU_STREAM_TOO_LARGE;
+
+    void *bigger_buffer = realloc(stream->buffer, (size_t)length);
 
     if (!bigger_buffer)
       return SU_MEMORY_ALLOCATION_FAILURE;
 
     stream->buffer = bigger_buffer;
-    stream->length = length;
+    stream->length = (u4)length;
   }
 
   stream->cursor += offset;
@@ -229,7 +245,7 @@ enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks
   if (stream->cursor < stream->chunk)
     return SU_STREAM_INVALID_CHUNK;
 
-  const size_t chunk_size = stream->cursor - stream->chunk;
+  const u4 chunk_size = stream->cursor - stream->chunk;
 
   u1 *buffer = NULL;
   if (chunk_size > 0) {
@@ -239,7 +255,7 @@ enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks
     memcpy(buffer, stream->buffer + stream->chunk, chunk_size);
   }
 
-  struct su_chunk *chunk = (struct su_chunk *)malloc(sizeof(struct su_chunk));
+  struct su_chunk *chunk = malloc(sizeof(struct su_chunk));
   if (chunk == NULL) {
     free(buffer);
     return SU_MEMORY_ALLOCATION_FAILURE;
@@ -257,10 +273,10 @@ enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks
 
   stream->chunk = stream->cursor;
 
-  if ((*chunks) == NULL) {
-    (*chunks) = chunk;
+  if (*chunks == NULL) {
+    *chunks = chunk;
     if (chunk_out != NULL)
-      (*chunk_out) = chunk;
+      *chunk_out = chunk;
     return SU_OK;
   }
 
@@ -272,7 +288,41 @@ enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks
   last_chunk->next = chunk;
 
   if (chunk_out != NULL)
-    (*chunk_out) = chunk;
+    *chunk_out = chunk;
 
+  return SU_OK;
+}
+
+enum su_error su_stream_chunk_build(const struct su_chunk *chunks, u1 **buffer, u4 *buffer_size) {
+  if (chunks == NULL || buffer == NULL || buffer_size == NULL)
+    return SU_MISSING_REQUIRED_PARAMETERS;
+
+  u4 sz = 0;
+  u1 *buff = NULL;
+
+  const struct su_chunk *chunk = chunks;
+  while (chunk != NULL) {
+    const u4 chunk_length = chunk->stream.length;
+    if (chunk_length > UINT32_MAX - sz) {
+      free(buff);
+      return SU_STREAM_TOO_LARGE;
+    }
+
+    void *expanded_buff = realloc(buff, (size_t)sz + chunk_length);
+    if (expanded_buff == NULL) {
+      free(buff);
+      return SU_MEMORY_ALLOCATION_FAILURE;
+    }
+
+    buff = (u1 *)expanded_buff;
+    if (chunk_length > 0)
+      memcpy(buff + sz, chunk->stream.buffer, chunk_length);
+
+    sz += chunk_length;
+    chunk = chunk->next;
+  }
+
+  *buffer = buff;
+  *buffer_size = sz;
   return SU_OK;
 }

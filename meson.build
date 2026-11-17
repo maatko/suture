@@ -12,14 +12,18 @@ jni = dependency('jni', version: '>=1.8', modules: ['jvm'], required: true)
 sources = files(
 	'src/suture.c', 'src/hook.c',
 	'src/flag.c', 'src/transform.c',
-	'src/stream.c'
+	'src/stream.c', 'src/disasm.c',
+	'src/asm.c', 'src/code.c',
+	'src/tracker.c', 'src/internal.h'
 )
 
 includes = files(
 	'include/suture.h', 'include/suture/types.h',
 	'include/suture/error.h', 'include/suture/hook.h',
 	'include/suture/flag.h', 'include/suture/transform.h',
-	'include/suture/stream.h', 'include/suture/opcodes.h'
+	'include/suture/stream.h', 'include/suture/opcodes.h',
+	'include/suture/disasm.h', 'include/suture/tracker.h',
+	'include/suture/asm.h', 'include/suture/code.h'
 )
 
 suture = static_library(
@@ -32,6 +36,14 @@ suture = static_library(
 shared_library(
 	'detour',
 	files('examples/detour.c'),
+	dependencies: jni,
+	include_directories: include_directories('include'),
+	link_with: suture
+)
+
+shared_library(
+	'trampoline',
+	files('examples/trampoline.c'),
 	dependencies: jni,
 	include_directories: include_directories('include'),
 	link_with: suture
