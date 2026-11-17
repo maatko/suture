@@ -474,7 +474,7 @@ enum su_error su_asm_build(struct su_insn *instructions, struct su_stream *strea
     goto exit;
   }
 
-  code.length = (u2)length;
+  code.length = length;
 
   u4 index = 0;
   for (const struct su_insn *insn = instructions; insn != NULL; insn = insn->next, index++) {

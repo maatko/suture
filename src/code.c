@@ -50,17 +50,17 @@ static enum su_error su_code_slice(struct su_stream *stream, const u4 length, st
 
   *slice = (struct su_stream){
     .buffer = stream->buffer + stream->cursor,
-    .length = (u2)length,
+    .length = length,
     .cursor = 0,
     .chunk = 0
   };
 
-  stream->cursor += (u2)length;
+  stream->cursor += length;
   return SU_OK;
 }
 
-static enum su_error su_code_patch(struct su_stream *stream, const u2 position, const u4 value) {
-  const u2 cursor = stream->cursor;
+static enum su_error su_code_patch(struct su_stream *stream, const u4 position, const u4 value) {
+  const u4 cursor = stream->cursor;
   stream->cursor = position;
 
   const enum su_error status = su_stream_w4(stream, value, 0);
@@ -69,7 +69,7 @@ static enum su_error su_code_patch(struct su_stream *stream, const u2 position, 
   return status;
 }
 
-static enum su_error su_code_begin(struct su_stream *stream, const u2 name, u2 *attribute) {
+static enum su_error su_code_begin(struct su_stream *stream, const u2 name, u4 *attribute) {
   if (name == 0)
     return SU_CLASS_CODE_INVALID_CONSTANT;
 
@@ -80,8 +80,8 @@ static enum su_error su_code_begin(struct su_stream *stream, const u2 name, u2 *
   return su_stream_w4(stream, 0, 0);
 }
 
-static enum su_error su_code_end(struct su_stream *stream, const u2 attribute) {
-  return su_code_patch(stream, attribute, (u4)(stream->cursor - attribute - sizeof(u4)));
+static enum su_error su_code_end(struct su_stream *stream, const u4 attribute) {
+  return su_code_patch(stream, attribute, stream->cursor - attribute - (u4)sizeof(u4));
 }
 
 static enum su_error su_code_parse_exceptions(struct su_code *code, struct su_stream *stream, const struct su_code_labels *labels) {
@@ -348,7 +348,7 @@ static enum su_error su_code_build_exceptions(const struct su_code *code, struct
 static enum su_error su_code_build_lines(const struct su_code *code, struct su_stream *stream, const struct su_code_labels *labels) {
   enum su_error status = SU_OK;
 
-  u2 attribute;
+  u4 attribute;
   SU_TRY(status, su_code_begin(stream, code->lines_name, &attribute));
   SU_TRY(status, su_stream_w2(stream, code->lines_count, 0));
 
@@ -367,7 +367,7 @@ static enum su_error su_code_build_lines(const struct su_code *code, struct su_s
 static enum su_error su_code_build_locals(const struct su_local *locals, const u2 locals_count, const u2 name, struct su_stream *stream, const struct su_code_labels *labels) {
   enum su_error status = SU_OK;
 
-  u2 attribute;
+  u4 attribute;
   SU_TRY(status, su_code_begin(stream, name, &attribute));
   SU_TRY(status, su_stream_w2(stream, locals_count, 0));
 
@@ -417,7 +417,7 @@ static enum su_error su_code_build_items(struct su_stream *stream, const struct 
 static enum su_error su_code_build_frames(const struct su_code *code, struct su_stream *stream, const struct su_code_labels *labels, const u2 count) {
   enum su_error status = SU_OK;
 
-  u2 attribute;
+  u4 attribute;
   SU_TRY(status, su_code_begin(stream, code->frames_name, &attribute));
   SU_TRY(status, su_stream_w2(stream, count, 0));
 
@@ -492,7 +492,7 @@ enum su_error su_code_parse(struct su_code *code, void **constant_pool, const u2
 
   memset(code, 0, sizeof(struct su_code));
 
-  const u2 start = stream->cursor;
+  const u4 start = stream->cursor;
 
   u4 attribute_length;
   SU_TRY_CATCH(status, su_stream_r2(stream, &code->name, 0), exit);
@@ -569,7 +569,7 @@ enum su_error su_code_build(const struct su_code *code, struct su_stream *stream
   enum su_error status = SU_OK;
   struct su_code_labels labels = { 0 };
 
-  const u2 start = stream->cursor;
+  const u4 start = stream->cursor;
 
   u4 max_locals = code->max_locals;
   u4 frames_count = 0;
@@ -600,12 +600,12 @@ enum su_error su_code_build(const struct su_code *code, struct su_stream *stream
 
   const u2 attributes_count = code->attributes_count + lines + locals + local_types + frames;
 
-  u2 attribute;
+  u4 attribute;
   SU_TRY_CATCH(status, su_code_begin(stream, code->name, &attribute), exit);
   SU_TRY_CATCH(status, su_stream_w2(stream, code->max_stack, 0), exit);
   SU_TRY_CATCH(status, su_stream_w2(stream, (u2)max_locals, 0), exit);
 
-  const u2 code_length_position = stream->cursor;
+  const u4 code_length_position = stream->cursor;
   SU_TRY_CATCH(status, su_stream_w4(stream, 0, 0), exit);
 
   u4 code_length;

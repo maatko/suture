@@ -72,7 +72,7 @@ struct su_code_attribute {
   u2 name;
 
   u1 *bytes;
-  u2 length;
+  u4 length;
 };
 
 struct su_code {

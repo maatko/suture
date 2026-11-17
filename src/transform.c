@@ -49,19 +49,19 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
   struct su_transform transform = { 0 };
 
   u1 *transformed_buffer = NULL;
-  u2 transformed_buffer_len = 0;
+  u4 transformed_buffer_len = 0;
 
   unsigned char *old_bytes = NULL;
   unsigned char *jvmti_buffer = NULL;
 
-  if (class_data_len <= 0 || class_data_len > UINT16_MAX) {
-    status = SU_STREAM_TOO_LARGE;
+  if (class_data_len <= 0) {
+    status = SU_MISSING_REQUIRED_PARAMETERS;
     goto exit;
   }
 
   JVM_TRY_CATCH(status, JVM_INVOKE(jvmti, Allocate, class_data_len, &old_bytes), JVMTI_ERROR_NONE, SU_MEMORY_ALLOCATION_FAILURE, exit);
   memcpy(old_bytes, class_data, class_data_len);
-  SU_TRY_CATCH(status, su_transform_init(&transform, (u1 *)class_data, (u2)class_data_len), exit);
+  SU_TRY_CATCH(status, su_transform_init(&transform, (u1 *)class_data, (u4)class_data_len), exit);
 
   for (u2 j = 0; j < klass->hooks_count; j++) {
     const struct su_hook *hook = &klass->hooks[j];
@@ -90,12 +90,12 @@ void JNICALL su_transform_class_file_load_hook(jvmtiEnv *jvmti, JNIEnv *jni, jcl
   }
 
   SU_TRY_CATCH(status, su_transform_build(&transform, &transformed_buffer, &transformed_buffer_len), exit);
-  JVM_TRY_CATCH(status, JVM_INVOKE(jvmti, Allocate, transformed_buffer_len, &jvmti_buffer), JVMTI_ERROR_NONE, SU_MEMORY_ALLOCATION_FAILURE, exit);
+  JVM_TRY_CATCH(status, JVM_INVOKE(jvmti, Allocate, (jlong)transformed_buffer_len, &jvmti_buffer), JVMTI_ERROR_NONE, SU_MEMORY_ALLOCATION_FAILURE, exit);
 
   memcpy(jvmti_buffer, transformed_buffer, transformed_buffer_len);
 
   *new_class_data = jvmti_buffer;
-  *new_class_data_len = transformed_buffer_len;
+  *new_class_data_len = (jint)transformed_buffer_len;
 
   if (klass->bytes == NULL) {
     klass->bytes = old_bytes;
@@ -118,7 +118,7 @@ static enum su_error su_transform_skip(struct su_stream *stream, const u4 size) 
   if (size > (u4)(stream->length - stream->cursor))
     return SU_STREAM_AT_END;
 
-  stream->cursor += (u2)size;
+  stream->cursor += size;
   return SU_OK;
 }
 
@@ -126,7 +126,7 @@ static char *su_transform_utf8(const struct su_transform *transform, const u2 in
   return index < transform->constant_pool_count ? transform->constant_pool[index] : NULL;
 }
 
-enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, const u2 buffer_length) {
+enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, const u4 buffer_length) {
   if (transform == NULL || buffer == NULL || buffer_length == 0)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
@@ -306,7 +306,7 @@ exit:
   return status;
 }
 
-static enum su_error su_const_add(struct su_transform *transform, const u1 tag, const u1 *data, const u2 data_length, char *utf8, u2 *cp_index) {
+static enum su_error su_const_add(struct su_transform *transform, const u1 tag, const u1 *data, const u4 data_length, char *utf8, u2 *cp_index) {
   if (transform->chunks == NULL || transform->chunks->next == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
@@ -322,7 +322,7 @@ static enum su_error su_const_add(struct su_transform *transform, const u1 tag, 
   enum su_error status = SU_OK;
   struct su_stream *const_pool_stream = &transform->chunks->next->stream;
 
-  const u2 length = const_pool_stream->length;
+  const u4 length = const_pool_stream->length;
   const_pool_stream->cursor = length;
 
   SU_TRY_CATCH(status, su_stream_w1(const_pool_stream, tag, 0), exit);
@@ -363,7 +363,7 @@ enum su_error su_const_add_utf8(struct su_transform *transform, const char *utf8
   }
 
   const size_t length = strlen(utf8);
-  if (length > UINT16_MAX - sizeof(u2))
+  if (length > UINT16_MAX)
     return SU_STREAM_TOO_LARGE;
 
   u1 *data = malloc(sizeof(u2) + length);
@@ -379,7 +379,7 @@ enum su_error su_const_add_utf8(struct su_transform *transform, const char *utf8
   data[1] = (u1)length;
   memcpy(data + sizeof(u2), utf8, length);
 
-  const enum su_error status = su_const_add(transform, CONSTANT_Utf8, data, (u2)(sizeof(u2) + length), string, cp_index);
+  const enum su_error status = su_const_add(transform, CONSTANT_Utf8, data, (u4)(sizeof(u2) + length), string, cp_index);
   if (status != SU_OK)
     SU_FREE(string);
 
@@ -473,7 +473,7 @@ exit:
   return status;
 }
 
-enum su_error su_transform_build(const struct su_transform *transform, u1 **buffer, u2 *buffer_length) {
+enum su_error su_transform_build(const struct su_transform *transform, u1 **buffer, u4 *buffer_length) {
   enum su_error status = SU_OK;
   if (transform == NULL || buffer == NULL || buffer_length == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
@@ -494,7 +494,7 @@ enum su_error su_transform_build(const struct su_transform *transform, u1 **buff
   methods_stream->cursor = methods_stream->length;
 
   u1 *chunks_buffer = NULL;
-  u2 chunks_buffer_size = 0;
+  u4 chunks_buffer_size = 0;
 
   SU_TRY(status, su_stream_chunk_build(transform->chunks, &chunks_buffer, &chunks_buffer_size));
 

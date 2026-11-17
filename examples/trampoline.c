@@ -6,12 +6,6 @@ static void JNICALL click_mouse_trampoline(JNIEnv *env, jobject instance) {
   printf("click_mouse_trampoline: called\n");
 }
 
-static void JNICALL render_game_overlay_trampoline(JNIEnv *env, jobject instance, jfloat partial_ticks) {
-  if (GetAsyncKeyState(VK_ESCAPE) & 0x1) {
-    printf("render_game_overlay_trampoline: escape key pressed (partial ticks: %f)\n", partial_ticks);
-  }
-}
-
 static DWORD WINAPI ThreadMain(LPVOID lpParams) {
   struct su_env env = { 0 };
   if (su_init(&env) != SU_OK) {
@@ -19,12 +13,7 @@ static DWORD WINAPI ThreadMain(LPVOID lpParams) {
     goto exit;
   }
 
-  if (su_trampoline(&env, "ave", "ax", "()V", click_mouse_trampoline) != SU_OK) {
-    fprintf(stderr, "Failed to register method trampoline hook");
-    goto exit;
-  }
-
-  if (su_trampoline(&env, "avo", "a", "(F)V", render_game_overlay_trampoline) != SU_OK) {
+  if (su_trampoline(&env, "a", "b", "()V", click_mouse_trampoline) != SU_OK) {
     fprintf(stderr, "Failed to register method trampoline hook");
     goto exit;
   }

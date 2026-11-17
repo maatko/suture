@@ -6,9 +6,9 @@
 
 struct su_stream {
   u1 *buffer;
-  u2 cursor;
-  u2 length;
-  u2 chunk;
+  u4 cursor;
+  u4 length;
+  u4 chunk;
 };
 
 struct  su_chunk {
@@ -22,29 +22,29 @@ struct  su_chunk {
 extern "C" {
 #endif
 
-enum su_error su_stream_rn(struct su_stream *stream, u1 *buffer, u2 size, u2 offset);
+enum su_error su_stream_rn(struct su_stream *stream, u1 *buffer, u4 size, u4 offset);
 
-enum su_error su_stream_r1(struct su_stream *stream, u1 *value, u2 offset);
+enum su_error su_stream_r1(struct su_stream *stream, u1 *value, u4 offset);
 
-enum su_error su_stream_r2(struct su_stream *stream, u2 *value, u2 offset);
+enum su_error su_stream_r2(struct su_stream *stream, u2 *value, u4 offset);
 
-enum su_error su_stream_r4(struct su_stream *stream, u4 *value, u2 offset);
+enum su_error su_stream_r4(struct su_stream *stream, u4 *value, u4 offset);
 
-enum su_error su_stream_r8(struct su_stream *stream, u8 *value, u2 offset);
+enum su_error su_stream_r8(struct su_stream *stream, u8 *value, u4 offset);
 
-enum su_error su_stream_wn(struct su_stream *stream, const u1 *buffer, u2 size, u2 offset);
+enum su_error su_stream_wn(struct su_stream *stream, const u1 *buffer, u4 size, u4 offset);
 
-enum su_error su_stream_w1(struct su_stream *stream, u1 value, u2 offset);
+enum su_error su_stream_w1(struct su_stream *stream, u1 value, u4 offset);
 
-enum su_error su_stream_w2(struct su_stream *stream, u2 value, u2 offset);
+enum su_error su_stream_w2(struct su_stream *stream, u2 value, u4 offset);
 
-enum su_error su_stream_w4(struct su_stream *stream, u4 value, u2 offset);
+enum su_error su_stream_w4(struct su_stream *stream, u4 value, u4 offset);
 
-enum su_error su_stream_w8(struct su_stream *stream, u8 value, u2 offset);
+enum su_error su_stream_w8(struct su_stream *stream, u8 value, u4 offset);
 
 enum su_error su_stream_chunk(struct su_stream *stream, struct su_chunk **chunks, struct su_chunk **chunk_out);
 
-enum su_error su_stream_chunk_build(const struct su_chunk *chunks, u1 **buffer, u2 *buffer_size);
+enum su_error su_stream_chunk_build(const struct su_chunk *chunks, u1 **buffer, u4 *buffer_size);
 
 #ifdef __cplusplus
 }

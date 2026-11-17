@@ -17,7 +17,7 @@ static void su_disasm_free(struct su_insn *insn) {
   SU_FREE(insn);
 }
 
-static enum su_error su_disasm_label(struct su_insn **labels, const u2 code_length, const s8 pc, struct su_insn **label) {
+static enum su_error su_disasm_label(struct su_insn **labels, const u4 code_length, const s8 pc, struct su_insn **label) {
   if (pc < 0 || pc >= code_length)
     return SU_CLASS_CODE_INVALID_JUMP;
 
@@ -147,7 +147,7 @@ enum su_error su_disasm_parse(struct su_insn **instructions, void **constant_poo
   enum su_error status = SU_OK;
   struct su_stream stream = {
     .buffer = code->buffer + code->cursor,
-    .length = (u2)code_length,
+    .length = code_length,
     .cursor = 0,
     .chunk = 0
   };
@@ -160,7 +160,7 @@ enum su_error su_disasm_parse(struct su_insn **instructions, void **constant_poo
   struct su_insn *tail = NULL;
 
   while (stream.cursor < stream.length) {
-    const u2 pc = stream.cursor;
+    const u2 pc = (u2)stream.cursor;
 
     u1 opcode;
     SU_TRY_CATCH(status, su_stream_r1(&stream, &opcode, 0), exit);
