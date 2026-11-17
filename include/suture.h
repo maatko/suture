@@ -35,7 +35,7 @@ enum su_error su_trampoline(struct su_env *env, const char *class_name, const ch
 
 enum su_error su_mtrampoline(struct su_env *env, jmethodID method, void *function);
 
-enum su_error su_transform(const struct su_env *env);
+enum su_error su_transform(struct su_env *env);
 
 enum su_error su_dispose(struct su_env *env);
 

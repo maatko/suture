@@ -1,18 +1,19 @@
 #ifndef SUTURE_OPCODES_H
 #define SUTURE_OPCODES_H
 
-#define ACC_PUBLIC 0x0001       /**< Accessible from outside its package. */
-#define ACC_PRIVATE 0x0002      /**< Accessible only within the defining class. */
-#define ACC_PROTECTED 0x0004    /**< Accessible within the defining class and its subclasses. */
-#define ACC_STATIC 0x0008       /**< Belongs to the class rather than any instance. */
-#define ACC_FINAL 0x0010        /**< Must not be overridden by subclasses (JVMS §5.4.5). */
-#define ACC_SYNCHRONIZED 0x0020 /**< Invocation is wrapped by a monitor acquire/release. */
-#define ACC_BRIDGE 0x0040       /**< Compiler-generated bridge method for generics/covariance. */
-#define ACC_VARARGS 0x0080      /**< Accepts a variable number of arguments. */
-#define ACC_NATIVE 0x0100       /**< Implemented in a language other than Java. */
-#define ACC_ABSTRACT 0x0400     /**< Declared abstract; no implementation provided. */
-#define ACC_STRICT 0x0800       /**< FP-strict floating-point mode (@c strictfp). */
-#define ACC_SYNTHETIC 0x1000    /**< Compiler-generated; not present in source code. */
+#define ACC_PUBLIC 0x0001
+#define ACC_PRIVATE 0x0002
+#define ACC_PROTECTED 0x0004
+#define ACC_STATIC 0x0008
+#define ACC_FINAL 0x0010
+#define ACC_SYNCHRONIZED 0x0020
+#define ACC_BRIDGE 0x0040
+#define ACC_VARARGS 0x0080
+#define ACC_NATIVE 0x0100
+#define ACC_INTERFACE 0x0200
+#define ACC_ABSTRACT 0x0400
+#define ACC_STRICT 0x0800
+#define ACC_SYNTHETIC 0x1000
 
 #define NOP 0
 #define ACONST_NULL 1
@@ -33,11 +34,33 @@
 #define BIPUSH 16
 #define SIPUSH 17
 #define LDC 18
+#define LDC_W 19
+#define LDC2_W 20
 #define ILOAD 21
 #define LLOAD 22
 #define FLOAD 23
 #define DLOAD 24
 #define ALOAD 25
+#define ILOAD_0 26
+#define ILOAD_1 27
+#define ILOAD_2 28
+#define ILOAD_3 29
+#define LLOAD_0 30
+#define LLOAD_1 31
+#define LLOAD_2 32
+#define LLOAD_3 33
+#define FLOAD_0 34
+#define FLOAD_1 35
+#define FLOAD_2 36
+#define FLOAD_3 37
+#define DLOAD_0 38
+#define DLOAD_1 39
+#define DLOAD_2 40
+#define DLOAD_3 41
+#define ALOAD_0 42
+#define ALOAD_1 43
+#define ALOAD_2 44
+#define ALOAD_3 45
 #define IALOAD 46
 #define LALOAD 47
 #define FALOAD 48
@@ -51,6 +74,26 @@
 #define FSTORE 56
 #define DSTORE 57
 #define ASTORE 58
+#define ISTORE_0 59
+#define ISTORE_1 60
+#define ISTORE_2 61
+#define ISTORE_3 62
+#define LSTORE_0 63
+#define LSTORE_1 64
+#define LSTORE_2 65
+#define LSTORE_3 66
+#define FSTORE_0 67
+#define FSTORE_1 68
+#define FSTORE_2 69
+#define FSTORE_3 70
+#define DSTORE_0 71
+#define DSTORE_1 72
+#define DSTORE_2 73
+#define DSTORE_3 74
+#define ASTORE_0 75
+#define ASTORE_1 76
+#define ASTORE_2 77
+#define ASTORE_3 78
 #define IASTORE 79
 #define LASTORE 80
 #define FASTORE 81
@@ -168,8 +211,11 @@
 #define INSTANCEOF 193
 #define MONITORENTER 194
 #define MONITOREXIT 195
+#define WIDE 196
 #define MULTIANEWARRAY 197
 #define IFNULL 198
 #define IFNONNULL 199
+#define GOTO_W 200
+#define JSR_W 201
 
 #endif // SUTURE_OPCODES_H

@@ -83,5 +83,5 @@ enum su_error su_flag_patchb(const char *name, bool *original, const bool value)
     }
   }
 
-  return SU_DETOUR_NOT_SUPPORTED;
+  return SU_JVM_FLAG_NOT_FOUND;
 }

@@ -115,6 +115,9 @@ enum su_error su_stream_wn(struct su_stream *stream, const u1 *buffer, const u2 
 
   if (size > stream->length - stream->cursor || offset > stream->length - stream->cursor - size) {
     const size_t length = stream->cursor + size + offset;
+    if (length > UINT16_MAX)
+      return SU_STREAM_TOO_LARGE;
+
     void *bigger_buffer = realloc(stream->buffer, length);
 
     if (!bigger_buffer)
@@ -138,6 +141,9 @@ enum su_error su_stream_w1(struct su_stream *stream, const u1 value, const u2 of
   const u2 type_size = sizeof(u1);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
     const size_t length = stream->cursor + type_size + offset;
+    if (length > UINT16_MAX)
+      return SU_STREAM_TOO_LARGE;
+
     void *bigger_buffer = realloc(stream->buffer, length);
 
     if (!bigger_buffer)
@@ -161,6 +167,9 @@ enum su_error su_stream_w2(struct su_stream *stream, const u2 value, const u2 of
   const u2 type_size = sizeof(u2);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
     const size_t length = stream->cursor + type_size + offset;
+    if (length > UINT16_MAX)
+      return SU_STREAM_TOO_LARGE;
+
     void *bigger_buffer = realloc(stream->buffer, length);
 
     if (!bigger_buffer)
@@ -184,6 +193,9 @@ enum su_error su_stream_w4(struct su_stream *stream, const u4 value, const u2 of
   const u2 type_size = sizeof(u4);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
     const size_t length = stream->cursor + type_size + offset;
+    if (length > UINT16_MAX)
+      return SU_STREAM_TOO_LARGE;
+
     void *bigger_buffer = realloc(stream->buffer, length);
 
     if (!bigger_buffer)
@@ -207,6 +219,9 @@ enum su_error su_stream_w8(struct su_stream *stream, const u8 value, const u2 of
   const u2 type_size = sizeof(u8);
   if (type_size > stream->length - stream->cursor || offset > stream->length - stream->cursor - type_size) {
     const size_t length = stream->cursor + type_size + offset;
+    if (length > UINT16_MAX)
+      return SU_STREAM_TOO_LARGE;
+
     void *bigger_buffer = realloc(stream->buffer, length);
 
     if (!bigger_buffer)
@@ -288,6 +303,10 @@ enum su_error su_stream_chunk_build(const struct su_chunk *chunks, u1 **buffer, 
   const struct su_chunk *chunk = chunks;
   while (chunk != NULL) {
     const u2 chunk_length = chunk->stream.length;
+    if (chunk_length > UINT16_MAX - sz) {
+      free(buff);
+      return SU_STREAM_TOO_LARGE;
+    }
 
     void *expanded_buff = realloc(buff, sz + chunk_length);
     if (expanded_buff == NULL) {

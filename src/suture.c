@@ -36,12 +36,22 @@ static enum su_error su_get_class(struct su_env *env, const char *class_name, st
     }
   }
 
+  enum su_error status = SU_OK;
+
   JNIEnv *jni = NULL;
-  su_attach_thread(env->jvm, (void **)&jni, NULL); // todo: handle the return response
+  SU_TRY(status, su_attach_thread(env->jvm, (void **)&jni, NULL));
+
+  const jclass handle = JVM_INVOKE(jni, FindClass, class_name);
+  if (handle == NULL) {
+    JVM_INVOKE(jni, ExceptionClear);
+    return SU_JVM_CLASS_NOT_FOUND;
+  }
 
   void *buffer = realloc(env->classes, sizeof(struct su_class) * (env->classes_count + 1));
-  if (buffer == NULL)
+  if (buffer == NULL) {
+    JVM_INVOKE(jni, DeleteLocalRef, handle);
     return SU_MEMORY_ALLOCATION_FAILURE;
+  }
 
   env->classes = (struct su_class *)buffer;
 
@@ -49,15 +59,35 @@ static enum su_error su_get_class(struct su_env *env, const char *class_name, st
   memset(current_class, 0, sizeof(struct su_class));
 
   current_class->name = strdup(class_name);
-
-  const jclass handle = JVM_INVOKE(jni, FindClass, class_name);
   current_class->handle = JVM_INVOKE(jni, NewGlobalRef, (jobject)handle);
 
   JVM_INVOKE(jni, DeleteLocalRef, handle);
 
+  if (current_class->name == NULL || current_class->handle == NULL) {
+    if (current_class->handle != NULL)
+      JVM_INVOKE(jni, DeleteGlobalRef, current_class->handle);
+
+    SU_FREE(current_class->name);
+    return SU_MEMORY_ALLOCATION_FAILURE;
+  }
+
   *klass = current_class;
   env->classes_count++;
   return SU_OK;
+}
+
+static jmethodID su_get_method(JNIEnv *jni, const jclass klass, const char *name, const char *signature) {
+  jmethodID method = JVM_INVOKE(jni, GetMethodID, klass, name, signature);
+  if (method != NULL)
+    return method;
+
+  JVM_INVOKE(jni, ExceptionClear);
+
+  method = JVM_INVOKE(jni, GetStaticMethodID, klass, name, signature);
+  if (method == NULL)
+    JVM_INVOKE(jni, ExceptionClear);
+
+  return method;
 }
 
 enum su_error su_init(struct su_env *env) {
@@ -93,10 +123,20 @@ enum su_error su_init(struct su_env *env) {
   JVM_TRY(JVM_INVOKE(env->jvmti, SetEventCallbacks, &callbacks, sizeof(callbacks)), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
   JVM_TRY(JVM_INVOKE(env->jvmti, SetEventNotificationMode, JVMTI_ENABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL), JVMTI_ERROR_NONE, SU_JVM_GENERIC_FAILURE);
 
-  return su_flag_patchb("AllowRedefinitionToAddDeleteMethods", &env->allow_redefinition, true);
+  // the flag was added in java 13, the versions before it always allow methods to be added
+  status = su_flag_patchb("AllowRedefinitionToAddDeleteMethods", &env->allow_redefinition, true);
+  if (status == SU_JVM_FLAG_NOT_FOUND)
+    status = SU_OK;
+
+  return status;
 }
 
 static enum su_error su_create_hook(struct su_env *env, enum su_hook_type type, const char *class_name, const char *method_name, const char *method_signature, jmethodID *original, void *function) {
+  if (method_name[0] == '<')
+    return SU_DETOUR_INVALID_TARGET;
+  if (method_signature[0] != '(' || strchr(method_signature, ')') == NULL)
+    return SU_DETOUR_INVALID_TARGET;
+
   enum su_error status = SU_OK;
   struct su_class *klass = NULL;
 
@@ -112,20 +152,26 @@ static enum su_error su_create_hook(struct su_env *env, enum su_hook_type type, 
   hook->type = type;
   hook->name = strdup(method_name);
   hook->signature = strdup(method_signature);
-  hook->jump = su_hook_jump_name(class_name);
+  hook->jump = su_hook_jump_name(method_name);
+  hook->jump_signature = su_hook_jump_signature(type, method_signature);
   hook->native = original;
   hook->function = function;
+
+  if (hook->name == NULL || hook->signature == NULL || hook->jump == NULL || hook->jump_signature == NULL) {
+    SU_FREE(hook->name);
+    SU_FREE(hook->signature);
+    SU_FREE(hook->jump);
+    SU_FREE(hook->jump_signature);
+    return SU_MEMORY_ALLOCATION_FAILURE;
+  }
 
   klass->hooks_count++;
   return SU_OK;
 }
 
 enum su_error su_detour(struct su_env *env, const char *class_name, const char *method_name, const char *method_signature, jmethodID *original_method, void *function) {
-  if (env == NULL || class_name == NULL || method_signature == NULL || function == NULL)
+  if (env == NULL || class_name == NULL || method_name == NULL || method_signature == NULL || function == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
-
-  if (class_name[0] == '<')
-    return SU_DETOUR_INVALID_TARGET;
 
   return su_create_hook(env, SU_HOOK_DETOUR, class_name, method_name, method_signature, original_method, function);
 }
@@ -158,7 +204,7 @@ exit:
 }
 
 enum su_error su_trampoline(struct su_env *env, const char *class_name, const char *method_name, const char *method_signature, void *function) {
-  if (env == NULL || class_name == NULL || method_signature == NULL || function == NULL)
+  if (env == NULL || class_name == NULL || method_name == NULL || method_signature == NULL || function == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
   return su_create_hook(env, SU_HOOK_TRAMPOLINE, class_name, method_name, method_signature, NULL, function);
@@ -191,10 +237,13 @@ exit:
   return status;
 }
 
-enum su_error su_transform(const struct su_env *env) {
+enum su_error su_transform(struct su_env *env) {
   enum su_error status = SU_OK;
   if (env == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
+
+  if (env->classes_count == 0)
+    return SU_OK;
 
   JNIEnv *jni = NULL;
   SU_TRY(status, su_attach_thread(env->jvm, (void **)&jni, NULL));
@@ -206,57 +255,55 @@ enum su_error su_transform(const struct su_env *env) {
   for (u2 i = 0; i < env->classes_count; i++)
     targets[i] = env->classes[i].handle;
 
+  env->error = SU_OK;
+
   JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, SetEnvironmentLocalStorage, env), JVMTI_ERROR_NONE, SU_JVM_ENVIRONMENT_STORAGE_FAILURE, exit);
   JVM_TRY_CATCH(status, JVM_INVOKE(env->jvmti, RetransformClasses, env->classes_count, targets), JVMTI_ERROR_NONE, SU_JVM_RETRANSFORM_FAILURE, exit);
 
-  SU_FREE(targets);
-
-  if (env->error != SU_OK)
-    return env->error;
-
-  JNINativeMethod *methods = NULL;
-  jint methods_count = 0;
+  status = env->error;
 
   for (u2 i = 0; i < env->classes_count; i++) {
     const struct su_class *klass = &env->classes[i];
+    if (klass->bytes == NULL || klass->hooks_count == 0)
+      continue;
+
+    JNINativeMethod *methods = malloc(sizeof(JNINativeMethod) * klass->hooks_count);
+    if (methods == NULL) {
+      status = SU_MEMORY_ALLOCATION_FAILURE;
+      goto exit;
+    }
 
     for (u2 j = 0; j < klass->hooks_count; j++) {
       const struct su_hook *hook = &klass->hooks[j];
-      if (hook->native == NULL)
-        continue;
 
-      void *expanded_methods = realloc(methods, sizeof(JNINativeMethod) * (methods_count + 1));
-      if (expanded_methods == NULL) {
-        return SU_MEMORY_ALLOCATION_FAILURE;
-      }
-
-      methods = (JNINativeMethod *)expanded_methods;
-
-      JNINativeMethod *method = &methods[methods_count];
-      method->name = hook->name;
-      method->signature = hook->signature;
+      JNINativeMethod *method = &methods[j];
       method->fnPtr = hook->function;
 
-      const jclass transformed_class = JVM_INVOKE(jni, FindClass, klass->name);
-      *hook->native = JVM_INVOKE(jni, GetMethodID, transformed_class, hook->jump, hook->signature); // todo: in trampoline hooks, signature is not the same as original method signature
+      if (hook->type == SU_HOOK_TRAMPOLINE) {
+        method->name = hook->jump;
+        method->signature = hook->jump_signature;
+        continue;
+      }
 
-      methods_count++;
+      method->name = hook->name;
+      method->signature = hook->signature;
+
+      if (hook->native != NULL)
+        *hook->native = su_get_method(jni, klass->handle, hook->jump, hook->signature);
     }
 
-    if (methods_count > 0)
-      JVM_TRY_CATCH(status, JVM_INVOKE(jni, RegisterNatives, klass->handle, methods, methods_count), JVMTI_ERROR_NONE, SU_JVM_NATIVE_REGISTRATION_FAILURE, exit_loop);
+    if (JVM_INVOKE(jni, RegisterNatives, klass->handle, methods, klass->hooks_count) != JNI_OK) {
+      JVM_INVOKE(jni, ExceptionClear);
+
+      if (status == SU_OK)
+        status = SU_JVM_NATIVE_REGISTRATION_FAILURE;
+    }
 
     SU_FREE(methods);
-    methods_count = 0;
   }
 
-exit_loop:
-  if (methods != NULL)
-    SU_FREE(methods);
 exit:
-  if (targets != NULL)
-    SU_FREE(targets);
-
+  SU_FREE(targets);
   return status;
 }
 
@@ -264,24 +311,43 @@ enum su_error su_dispose(struct su_env *env) {
   if (env == NULL)
     return SU_MISSING_REQUIRED_PARAMETERS;
 
+  if (env->jvm == NULL || env->jvmti == NULL)
+    return SU_OK;
+
+  enum su_error status = SU_OK;
+
+  const jvmtiEventCallbacks callbacks = { 0 };
+  JVM_INVOKE(env->jvmti, SetEventCallbacks, &callbacks, sizeof(callbacks));
+  JVM_INVOKE(env->jvmti, SetEventNotificationMode, JVMTI_DISABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL);
+  JVM_INVOKE(env->jvmti, SetEnvironmentLocalStorage, NULL);
+
+  JNIEnv *jni = NULL;
+  if (su_attach_thread(env->jvm, (void **)&jni, NULL) != SU_OK)
+    jni = NULL;
+
   if (env->classes != NULL) {
     jvmtiClassDefinition *definitions = malloc(sizeof(jvmtiClassDefinition) * env->classes_count);
     if (definitions == NULL)
-      return SU_MEMORY_ALLOCATION_FAILURE;
+      status = SU_MEMORY_ALLOCATION_FAILURE;
 
-    const jvmtiEventCallbacks callbacks = { 0 };
-    JVM_INVOKE(env->jvmti, SetEventCallbacks, &callbacks, sizeof(callbacks));
-    JVM_INVOKE(env->jvmti, SetEventNotificationMode, JVMTI_DISABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL);
+    jint definitions_count = 0;
+    for (u2 i = 0; i < env->classes_count && definitions != NULL; i++) {
+      const struct su_class *klass = &env->classes[i];
+      if (klass->bytes == NULL)
+        continue;
 
-    JNIEnv *jni;
-    su_attach_thread(env->jvm, (void **)&jni, NULL);
+      definitions[definitions_count].klass = klass->handle;
+      definitions[definitions_count].class_byte_count = klass->bytes_length;
+      definitions[definitions_count].class_bytes = klass->bytes;
+
+      definitions_count++;
+    }
+
+    if (definitions_count > 0 && JVM_INVOKE(env->jvmti, RedefineClasses, definitions_count, definitions) != JVMTI_ERROR_NONE)
+      status = SU_JVM_RETRANSFORM_FAILURE;
 
     for (u2 i = 0; i < env->classes_count; i++) {
       struct su_class *klass = &env->classes[i];
-
-      definitions[i].klass = JVM_INVOKE(jni, FindClass, klass->name);
-      definitions[i].class_byte_count = klass->bytes_length;
-      definitions[i].class_bytes = klass->bytes;
 
       for (u2 j = 0; j < klass->hooks_count; j++) {
         struct su_hook *hook = &klass->hooks[j];
@@ -289,27 +355,31 @@ enum su_error su_dispose(struct su_env *env) {
         SU_FREE(hook->name);
         SU_FREE(hook->signature);
         SU_FREE(hook->jump);
+        SU_FREE(hook->jump_signature);
       }
       SU_FREE(klass->hooks);
 
       SU_FREE(klass->name);
-      JVM_INVOKE(jni, DeleteGlobalRef, klass->handle);
-    }
+      JVM_FREE(env->jvmti, klass->bytes);
 
-    JVM_INVOKE(env->jvmti, RedefineClasses, env->classes_count, definitions);
-
-    for (u2 i = 0; i < env->classes_count; i++) {
-      struct su_class *klass = &env->classes[i];
-      if (klass->bytes != NULL)
-        JVM_FREE(env->jvmti, klass->bytes);
+      if (jni != NULL)
+        JVM_INVOKE(jni, DeleteGlobalRef, klass->handle);
     }
 
     SU_FREE(definitions);
     SU_FREE(env->classes);
   }
+  env->classes_count = 0;
 
   JVM_INVOKE(env->jvmti, ForceGarbageCollection);
   JVM_INVOKE(env->jvm, DetachCurrentThread);
 
-  return su_flag_patchb("AllowRedefinitionToAddDeleteMethods", NULL, env->allow_redefinition);
+  const enum su_error flag_status = su_flag_patchb("AllowRedefinitionToAddDeleteMethods", NULL, env->allow_redefinition);
+  if (flag_status != SU_OK && flag_status != SU_JVM_FLAG_NOT_FOUND && status == SU_OK)
+    status = flag_status;
+
+  env->jvmti = NULL;
+  env->jvm = NULL;
+
+  return status;
 }

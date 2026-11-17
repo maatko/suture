@@ -3,11 +3,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-
-#ifdef NDEBUG
-#  include <stdio.h>
-#  include <string.h>
-#endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,7 +47,7 @@ void su_memory_free(void *ptr);
 #  define strlen(str) su_memory_strlen(str)
 #  define free(ptr) su_memory_free(ptr)
 #else
-#  define print_leaks
+#  define print_leaks() false
 #endif
 
 #endif // SUTURE_TRACKER_H

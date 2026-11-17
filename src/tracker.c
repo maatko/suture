@@ -27,8 +27,8 @@ struct su_memory_tracker {
   struct su_memory_tracker *next;
 };
 
-struct su_memory_tracker *start = NULL;
-struct su_memory_tracker *end = NULL;
+static struct su_memory_tracker *start = NULL;
+static struct su_memory_tracker *end = NULL;
 
 static void su_memory_track(void *ptr, const size_t size, const char *file, const size_t line_number) {
   struct su_memory_tracker *tracker = malloc(sizeof(struct su_memory_tracker));
@@ -81,6 +81,8 @@ bool su_memory_print() {
     it = next;
   }
 
+  start = end = NULL;
+
   if (leaked_bytes == 0)
     return false;
 
@@ -88,7 +90,6 @@ bool su_memory_print() {
   printf("> Total Leaked: %zu bytes\n", leaked_bytes);
   printf("---------------------------\n");
 
-  start = end = NULL;
   return true;
 }
 
@@ -106,13 +107,14 @@ void *su_memory_realloc(void *ptr, const size_t size, const char *file, const si
     return NULL;
   }
 
+  void *new_ptr = realloc(ptr, size);
+  if (new_ptr == NULL)
+    return NULL;
+
   if (ptr != NULL)
     su_memory_untrack(ptr);
 
-  void *new_ptr = realloc(ptr, size);
-  if (new_ptr != NULL)
-    su_memory_track(new_ptr, size, file, line_number);
-
+  su_memory_track(new_ptr, size, file, line_number);
   return new_ptr;
 }
 

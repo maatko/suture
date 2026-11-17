@@ -13,6 +13,7 @@ sources = files(
 	'src/suture.c', 'src/hook.c',
 	'src/flag.c', 'src/transform.c',
 	'src/stream.c', 'src/disasm.c',
+	'src/asm.c', 'src/code.c',
 	'src/tracker.c', 'src/internal.h'
 )
 
@@ -21,7 +22,8 @@ includes = files(
 	'include/suture/error.h', 'include/suture/hook.h',
 	'include/suture/flag.h', 'include/suture/transform.h',
 	'include/suture/stream.h', 'include/suture/opcodes.h',
-	'include/suture/disasm.h', 'include/suture/tracker.h'
+	'include/suture/disasm.h', 'include/suture/tracker.h',
+	'include/suture/asm.h', 'include/suture/code.h'
 )
 
 suture = static_library(

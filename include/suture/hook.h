@@ -1,8 +1,8 @@
 #ifndef SUTURE_HOOK_H
 #define SUTURE_HOOK_H
 
-#include "error.h"
 #include "disasm.h"
+#include "error.h"
 
 #include <jni.h>
 
@@ -19,7 +19,9 @@ struct su_hook {
 
   char *name;
   char *signature;
+
   char *jump;
+  char *jump_signature;
 
   jmethodID *native;
   void *function;
@@ -29,11 +31,13 @@ struct su_hook {
 extern "C" {
 #endif
 
-enum su_error su_hook_detour(const struct su_hook *hook, struct su_transform *transform, struct su_method* method);
+enum su_error su_hook_detour(const struct su_hook *hook, struct su_transform *transform, struct su_method *method);
 
-enum su_error su_hook_trampoline(const struct su_hook *hook, struct su_transform *transform, struct su_method* method);
+enum su_error su_hook_trampoline(const struct su_hook *hook, struct su_transform *transform, struct su_method *method);
 
 char *su_hook_jump_name(const char *name);
+
+char *su_hook_jump_signature(enum su_hook_type type, const char *signature);
 
 #ifdef __cplusplus
 }

@@ -27,18 +27,19 @@ static DWORD WINAPI ThreadMain(LPVOID lpParams) {
     goto exit;
   }
 
-  if (su_detour(&env, "ave", "ax", "()V", &original_click_mouse, click_mouse_detour) != SU_OK) {
+  if (su_detour(&env, "net/minecraft/client/Minecraft", "startAttack", "()V", &original_click_mouse, click_mouse_detour) != SU_OK) {
     fprintf(stderr, "Failed to register method detour hook");
     goto exit;
   }
 
-  if (su_detour(&env, "avo", "a", "(F)V", &original_render_game_overlay, render_game_overlay_detour) != SU_OK) {
-    fprintf(stderr, "Failed to register method detour hook");
-    goto exit;
-  }
+  // if (su_detour(&env, "avo", "a", "(F)V", &original_render_game_overlay, render_game_overlay_detour) != SU_OK) {
+  //   fprintf(stderr, "Failed to register method detour hook");
+  //   goto exit;
+  // }
 
-  if (su_transform(&env) != SU_OK) {
-    fprintf(stderr, "Failed to apply the class transforms");
+  enum su_error status = SU_OK;
+  if ((status = su_transform(&env)) != SU_OK) {
+    fprintf(stderr, "Failed to apply the class transforms (%d)", status);
     goto exit;
   }
 

@@ -37,6 +37,10 @@ struct su_class {
 
 struct su_transform {
   struct su_chunk *chunks;
+  struct su_chunk *methods_chunk;
+
+  u2 access_flags;
+  u2 this_class;
 
   struct su_method *methods;
   u2 methods_count;
@@ -59,6 +63,10 @@ extern void JNICALL su_transform_class_file_load_hook(
 enum su_error su_transform_init(struct su_transform *transform, u1 *buffer, u2 buffer_length);
 
 enum su_error su_const_add_utf8(struct su_transform *transform, const char *utf8, u2 *cp_index);
+
+enum su_error su_const_add_name_and_type(struct su_transform *transform, u2 name_index, u2 desc_index, u2 *cp_index);
+
+enum su_error su_const_add_methodref(struct su_transform *transform, u2 class_index, u2 name_and_type_index, u2 *cp_index);
 
 enum su_error su_add_method(struct su_transform *transform, const char *name, const char *desc, u2 access_flags, struct su_stream **stream);
 
