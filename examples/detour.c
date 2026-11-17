@@ -10,16 +10,6 @@ static void JNICALL click_mouse_detour(JNIEnv *env, jobject instance) {
   (*env)->CallVoidMethod(env, instance, original_click_mouse);
 }
 
-static jmethodID original_render_game_overlay;
-
-static void JNICALL render_game_overlay_detour(JNIEnv *env, jobject instance, jfloat partial_ticks) {
-  (*env)->CallVoidMethod(env, instance, original_render_game_overlay, partial_ticks);
-
-  if (GetAsyncKeyState(VK_ESCAPE) & 0x1) {
-    printf("Escape key pressed\n");
-  }
-}
-
 static DWORD WINAPI ThreadMain(LPVOID lpParams) {
   struct su_env env = { 0 };
   if (su_init(&env) != SU_OK) {
@@ -31,11 +21,6 @@ static DWORD WINAPI ThreadMain(LPVOID lpParams) {
     fprintf(stderr, "Failed to register method detour hook");
     goto exit;
   }
-
-  // if (su_detour(&env, "avo", "a", "(F)V", &original_render_game_overlay, render_game_overlay_detour) != SU_OK) {
-  //   fprintf(stderr, "Failed to register method detour hook");
-  //   goto exit;
-  // }
 
   enum su_error status = SU_OK;
   if ((status = su_transform(&env)) != SU_OK) {
